@@ -1,0 +1,63 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android)
+
+Name: res/drawable/wheel_val.xml
+SHA1-Digest: LYCdBBczBJ+HdO/hafKbf2SkCaY=
+
+Name: res/layout/allgamesrow.xml
+SHA1-Digest: t8m0jprPQ+dUlHS0A1Vs136PZcY=
+
+Name: res/layout/statslist.xml
+SHA1-Digest: TNYs2/tRTe07/A6NzsNe9Sq7yBU=
+
+Name: resources.arsc
+SHA1-Digest: egpDsrodfUXwdFse74Q7AhnEslQ=
+
+Name: classes.dex
+SHA1-Digest: fEM/80DdXQG4Li5qG3O1frF0rLQ=
+
+Name: res/layout/main.xml
+SHA1-Digest: 6+ddyNSP2mwg2Or4JwlZP26sPME=
+
+Name: res/layout/allgames.xml
+SHA1-Digest: 79hQBPcz7KpI1Lev6XISKh5MWVc=
+
+Name: AndroidManifest.xml
+SHA1-Digest: D1zEix8lgyup6uZHhE+eqUVIc/M=
+
+Name: res/layout/scorecardrow.xml
+SHA1-Digest: sabZydQEEUgqLPyBIEFp01yB7lM=
+
+Name: res/layout/statsrow.xml
+SHA1-Digest: JrdClsxM0UiRgRDagLEEAcU5k4U=
+
+Name: res/drawable/icon.png
+SHA1-Digest: Li8LEDBVixePeoztKzhpxwjKKVQ=
+
+Name: res/layout/stats.xml
+SHA1-Digest: nOeYrnzU7YMvecnsq3VrarSXHGI=
+
+Name: res/layout/scorecard.xml
+SHA1-Digest: kQiGUsFeEbCBY1/i13UtBZsxuqw=
+
+Name: res/layout/scorehand.xml
+SHA1-Digest: UBkgcRn4PevidG98Yo4qigGA5Qw=
+
+Name: res/layout-small/curhand.xml
+SHA1-Digest: V+i1suFDBDKmyc+osGAJBL6uMBs=
+
+Name: res/layout/newgame.xml
+SHA1-Digest: 4ZWbX70rTBtRSeyVhNvofhScGAc=
+
+Name: res/layout/rankinglist.xml
+SHA1-Digest: r3XDUM7SLTKvF3DjOfLmfjsqn1g=
+
+Name: res/layout/statslistrow.xml
+SHA1-Digest: 2PRi1+V/ZemSwpxGUkHAMLmPPTs=
+
+Name: res/drawable/wheel_bg.xml
+SHA1-Digest: cPtx9T6VJ5OPaCxlarnNy6ZR9+c=
+
+Name: res/layout/curhand.xml
+SHA1-Digest: zULUs0wDjKgAhZKk9sodZ9F5A/U=
+

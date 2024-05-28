@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/newGameStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Game"
+        android:layout_alignParentBottom="true"/>
+    <Button
+        android:id="@+id/newGameRandomizeTeams"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Randomize Teams"
+        android:layout_above="@+id/newGameStart"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/newGameRandomizeTeams">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Team 1"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/newGameName1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/newGameName3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+            <TextView
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Team 2"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/newGameName2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/newGameName4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Game Limit"
+                    android:layout_weight="1"/>
+                <EditText
+                    android:id="@+id/newGameGameLimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1000"
+                    android:layout_weight="1"
+                    android:inputType="number"/>
+            </LinearLayout>
+            <CheckBox
+                android:id="@+id/newGameAddOnFailedTichu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add on Failed Tichu"/>
+            <CheckBox
+                android:id="@+id/newGameAffectsStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Game Affects Stats"/>
+            <CheckBox
+                android:id="@+id/newGameMercyRule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mercy Rule"/>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
