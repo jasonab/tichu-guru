@@ -4,7 +4,6 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId 'com.tichuguru'
@@ -28,12 +27,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     buildFeatures {
         buildConfig = false
+    }
+    namespace 'com.tichuguru'
+    lint {
+        abortOnError false
     }
 }
 
