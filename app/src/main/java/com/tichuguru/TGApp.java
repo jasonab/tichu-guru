@@ -103,7 +103,7 @@ public class TGApp extends Application {
     }
 
     public void loadGames(File file) {
-        ObjectInputStream in;
+        ObjectInputStream in = null;
         int rev;
         games = new ArrayList();
         try {
@@ -112,24 +112,26 @@ public class TGApp extends Application {
             } else {
                 in = new ObjectInputStream(new FileInputStream(file));
             }
-            try {
-                rev = in.readInt();
-            } finally {
-                in.close();
+            rev = in.readInt();
+            if (rev > 0) {
+                throw new IOException("Game file is newer than software");
+            }
+            int numGames = in.readInt();
+            for (int i = 0; i < numGames; i++) {
+                games.add((Game) in.readObject());
+            }
+            if (games.size() > 0) {
+                curGame = games.get(games.size() - 1);
             }
         } catch (FileNotFoundException e) {
         } catch (Exception e2) {
             Log.e(TAG, "Error while loading games", e2);
-        }
-        if (rev > 0) {
-            throw new IOException("Game file is newer than software");
-        }
-        int numGames = in.readInt();
-        for (int i = 0; i < numGames; i++) {
-            games.add((Game) in.readObject());
-        }
-        if (games.size() > 0) {
-            curGame = games.get(games.size() - 1);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

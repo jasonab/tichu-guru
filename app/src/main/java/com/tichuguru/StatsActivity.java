@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,15 +127,15 @@ public class StatsActivity extends Activity {
             String text = (String) super.getItem(position);
             tv.setText(text);
             if (position == 0 || position == players.size() + 1) {
-                tv.setTypeface(null, 1);
-                expandButton.setVisibility(4);
+                tv.setTypeface(null, Typeface.BOLD);
+                expandButton.setVisibility(View.INVISIBLE);
             } else if (position <= players.size()) {
-                tv.setTypeface(null, 0);
-                expandButton.setVisibility(0);
+                tv.setTypeface(null, Typeface.NORMAL);
+                expandButton.setVisibility(View.VISIBLE);
                 expandButton.setOnClickListener(new PlayerExpandListener(players.get(position - 1)));
             } else {
-                tv.setTypeface(null, 0);
-                expandButton.setVisibility(0);
+                tv.setTypeface(null, Typeface.NORMAL);
+                expandButton.setVisibility(View.VISIBLE);
                 int num = (position - players.size()) - 2;
                 switch (num) {
                     case 0:
@@ -184,8 +185,8 @@ public class StatsActivity extends Activity {
             /* JADX WARN: Type inference failed for: r3v0, types: [java.lang.String[], java.io.Serializable] */
             @Override // android.view.View.OnClickListener
             public void onClick(View v) {
-                ?? r2 = {"Games", "# Played", "Win %", "Hands", "# Played", "Average Pts / Hand", "Average Card Pts / Hand", "# Double Wins", "Hands / Double Win", "Tichus", "# of Tichus", "% Tichus Made", "Non-Calls", "Tichu Efficiency", "# of Grand Tichus", "% Grand Tichus Made", "# of Tichus Stopped", "Tichu Stop %", "Partner Tichu %"};
-                ?? r3 = new String[r2.length];
+                String[] r2 = {"Games", "# Played", "Win %", "Hands", "# Played", "Average Pts / Hand", "Average Card Pts / Hand", "# Double Wins", "Hands / Double Win", "Tichus", "# of Tichus", "% Tichus Made", "Non-Calls", "Tichu Efficiency", "# of Grand Tichus", "% Grand Tichus Made", "# of Tichus Stopped", "Tichu Stop %", "Partner Tichu %"};
+                String[] r3 = new String[r2.length];
                 r3[1] = String.valueOf(this.player.getNumGames());
                 r3[2] = String.format("%.2f", Double.valueOf(this.player.getWinPct()));
                 r3[4] = String.valueOf(this.player.getNumHands());
@@ -241,7 +242,7 @@ public class StatsActivity extends Activity {
                 double log;
                 List<Player> players = TGApp.getPlayers();
                 List<Player> ps = new ArrayList<>(players);
-                ?? r15 = new String[ps.size()];
+                String[] r15 = new String[ps.size()];
                 Collections.sort(ps, new Comparator<Player>() { // from class: com.tichuguru.StatsActivity.StatsAdapter.RankExpandListener.1
                     @Override // java.util.Comparator
                     public int compare(Player p1, Player p2) {
@@ -252,7 +253,7 @@ public class StatsActivity extends Activity {
                         return (int) Math.signum(diff);
                     }
                 });
-                ?? r9 = new String[ps.size()];
+                String[] r9 = new String[ps.size()];
                 for (int i = 0; i < ps.size(); i++) {
                     r9[i] = ps.get(i).getName();
                 }
