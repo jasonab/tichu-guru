@@ -13,6 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 No tests exist in this project.
 
+IMPORTANT: Run `./gradlew assembleDebug` before considering any change complete. After any change to `AndroidManifest.xml` or `build.gradle`, use `./gradlew clean assembleDebug`.
+
 ## Project Overview
 
 **Tichu Guru** is a scoring and statistics tracking Android app for the card game Tichu (a 4-player partnership trick-taking game). It records game sessions, tracks player stats, and supports CSV export.
@@ -24,11 +26,12 @@ No tests exist in this project.
 
 ## Architecture
 
-The app uses a classic Activity-centric architecture with a **singleton Application class** for global state.
+Classic Activity-centric architecture with a **singleton Application class** for global state. No Fragments, no ViewModel, no dependency injection — keep new code consistent with the existing style.
 
 ### Global State (`TGApp.java`)
+
 `TGApp` extends `Application` and holds all in-memory app state:
-- `curGame` — the active `Game` object
+- `curGame` — active `Game` object
 - `games` — list of all historical `Game` objects
 - `players` — list of all `Player` objects
 
@@ -37,16 +40,17 @@ Data is saved to binary files via Java serialization (`Externalizable`) on app p
 - `Players.dat` — serialized player profiles
 
 ### Data Models
+
 - **`Game`** — game state, list of `Hand` objects, player assignments, scoring
 - **`Hand`** — one hand's scoring: Tichu/Grand Tichu bids, card points, outcomes
 - **`Player`** — player profile with cumulative stats (wins, Tichu success rates, etc.)
 
 All models implement `Externalizable` for custom binary serialization.
 
-### Navigation
-`TGActivity` is the launcher — a `TabActivity` hosting tabs for the main screens. Activities for specific flows are launched on top.
-
 ### Activities
+
+`TGActivity` is the launcher — a `TabActivity` hosting tabs. Activities for specific flows are launched on top.
+
 | Activity | Purpose |
 |---|---|
 | `TGActivity` | Tab host / main entry point |
@@ -59,36 +63,17 @@ All models implement `Externalizable` for custom binary serialization.
 | `ScoreHandActivity` | Hand score entry form |
 
 ### Embedded Libraries
-- `kankan.wheel.widget.*` — a scroll-wheel picker widget, embedded directly in source (not a Gradle dependency)
+
+- `kankan.wheel.widget.*` — scroll-wheel picker widget embedded in source (not a Gradle dependency)
 - `SegmentedControlButton` — custom view for Tichu/Grand Tichu call selection
 
-## Key Patterns to Follow
+## Key Patterns
 
-- **Saving data:** Call `TGApp` save methods; data persists via `onPause` lifecycle hooks. Don't bypass this.
-- **Accessing global state:** Use `TGApp.getCurGame()`, `TGApp.getGames()`, `TGApp.getPlayers()` static accessors.
-- **Serialization:** When adding fields to `Game`, `Hand`, or `Player`, update their `writeExternal`/`readExternal` methods and increment any version tracking if present — otherwise saved data will fail to deserialize.
-- **No dependency injection, no Fragments, no ViewModel** — this is pre-modern-Android architecture. Keep new code consistent with the existing style.
-
-## Rules (Distilled from Installed Skills)
-
-### Error Handling
-- Never swallow exceptions silently. Catch specific exception types; log failures in file I/O and deserialization so broken saves surface rather than silently corrupt state.
-- File I/O and `ObjectInputStream` deserialization are the highest-risk failure points — wrap each in try-catch with a meaningful log or user-visible fallback.
-
-### Code Quality
-- Use named constants for Tichu game rule values (e.g., bonus scores, point thresholds) instead of magic numbers. Place them as `static final` fields on the relevant model class.
-- Prefer early returns over deep nesting in Activity logic. Long `if-else` chains across 3+ levels should be flattened.
-- Comments should explain *why* (game rule rationale, edge cases), not restate what the code does.
-- YAGNI: don't add configurability or abstractions for hypothetical future game variants.
-
-### Separation of Concerns
-- Scoring and game-rule logic belongs in model classes (`Game`, `Hand`), not in Activities. Activities handle UI events and delegate to models.
-- Persistence logic (file reads/writes) belongs in `TGApp`, not scattered across Activities.
-
-### Build Verification
-- Run `./gradlew assembleDebug` before considering any change complete. Fix all compiler errors and warnings before moving on.
-- After any change to `AndroidManifest.xml` or `build.gradle`, do a clean build (`./gradlew clean assembleDebug`) to catch configuration issues.
-
-### Security & Data Safety
-- This app writes user game data to local files — never write data to external storage paths accessible to other apps without explicit user action.
-- The `WRITE_EXTERNAL_STORAGE` permission is declared for CSV export only; scope all file writes accordingly.
+- **Global state:** Use `TGApp.getCurGame()`, `TGApp.getGames()`, `TGApp.getPlayers()` static accessors.
+- **Saving data:** Call `TGApp` save methods; data persists via `onPause`. Don't bypass this.
+- **Serialization:** When adding fields to `Game`, `Hand`, or `Player`, update `writeExternal`/`readExternal` and increment version tracking — otherwise saved data will fail to deserialize.
+- **Scoring/rule logic** belongs in model classes (`Game`, `Hand`), not Activities.
+- **Persistence logic** (file reads/writes) belongs in `TGApp`, not scattered across Activities.
+- **File I/O and `ObjectInputStream` deserialization** are the highest-risk failure points — always wrap in try-catch with a meaningful log or user-visible fallback so broken saves surface rather than silently corrupt state.
+- **Tichu game rule values** (bonus scores, point thresholds) must use named `static final` constants on the relevant model class, not magic numbers.
+- **`WRITE_EXTERNAL_STORAGE`** is declared for CSV export only; scope all file writes accordingly.
