@@ -68,3 +68,27 @@ All models implement `Externalizable` for custom binary serialization.
 - **Accessing global state:** Use `TGApp.getCurGame()`, `TGApp.getGames()`, `TGApp.getPlayers()` static accessors.
 - **Serialization:** When adding fields to `Game`, `Hand`, or `Player`, update their `writeExternal`/`readExternal` methods and increment any version tracking if present — otherwise saved data will fail to deserialize.
 - **No dependency injection, no Fragments, no ViewModel** — this is pre-modern-Android architecture. Keep new code consistent with the existing style.
+
+## Rules (Distilled from Installed Skills)
+
+### Error Handling
+- Never swallow exceptions silently. Catch specific exception types; log failures in file I/O and deserialization so broken saves surface rather than silently corrupt state.
+- File I/O and `ObjectInputStream` deserialization are the highest-risk failure points — wrap each in try-catch with a meaningful log or user-visible fallback.
+
+### Code Quality
+- Use named constants for Tichu game rule values (e.g., bonus scores, point thresholds) instead of magic numbers. Place them as `static final` fields on the relevant model class.
+- Prefer early returns over deep nesting in Activity logic. Long `if-else` chains across 3+ levels should be flattened.
+- Comments should explain *why* (game rule rationale, edge cases), not restate what the code does.
+- YAGNI: don't add configurability or abstractions for hypothetical future game variants.
+
+### Separation of Concerns
+- Scoring and game-rule logic belongs in model classes (`Game`, `Hand`), not in Activities. Activities handle UI events and delegate to models.
+- Persistence logic (file reads/writes) belongs in `TGApp`, not scattered across Activities.
+
+### Build Verification
+- Run `./gradlew assembleDebug` before considering any change complete. Fix all compiler errors and warnings before moving on.
+- After any change to `AndroidManifest.xml` or `build.gradle`, do a clean build (`./gradlew clean assembleDebug`) to catch configuration issues.
+
+### Security & Data Safety
+- This app writes user game data to local files — never write data to external storage paths accessible to other apps without explicit user action.
+- The `WRITE_EXTERNAL_STORAGE` permission is declared for CSV export only; scope all file writes accordingly.
