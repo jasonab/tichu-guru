@@ -98,8 +98,8 @@ public class ScoreHandActivity extends Activity {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void updateHandScore() {
-        this.hand.setCardScore1(this.scores[this.score1.getCurrentItem()].intValue());
-        this.hand.setCardScore2(this.scores[this.score2.getCurrentItem()].intValue());
+        this.hand.setCardScore1(this.scores[this.score1.getCurrentItem()]);
+        this.hand.setCardScore2(this.scores[this.score2.getCurrentItem()]);
         this.hand.setOutFirst(this.outFirst.getCurrentItem());
         this.total1.setText(String.valueOf(this.hand.getTotalScore1()));
         this.total2.setText(String.valueOf(this.hand.getTotalScore2()));

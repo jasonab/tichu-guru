@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdk 34
 
     defaultConfig {
         applicationId 'com.tichuguru'
-        minSdkVersion 3
-        targetSdkVersion 4
+        minSdk 30
+        targetSdk 34
         versionCode 4
         versionName "1.03"
 
@@ -23,14 +23,10 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-
-    buildFeatures {
-        buildConfig = false
-    }
     namespace 'com.tichuguru'
     lint {
         abortOnError false

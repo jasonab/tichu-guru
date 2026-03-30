@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(./gradlew assembleDebug --info)",
+      "Bash(adb logcat:*)",
+      "Bash(adb devices:*)",
+      "Bash(winget --version)",
+      "Bash(choco install:*)",
+      "Bash(export PATH=\"$PATH:/c/Users/jason/AppData/Local/Android/Sdk/platform-tools\")",
+      "Bash(adb version:*)",
+      "Bash(adb install:*)",
+      "Bash(adb shell:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(grep -v \"^$\")",
+      "Bash(/dev/null find:*)",
+      "Bash(grep:*)"
     ]
   }
 }

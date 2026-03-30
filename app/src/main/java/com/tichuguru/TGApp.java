@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class TGApp extends Application {
             if (file == null) {
                 out = new ObjectOutputStream(new BufferedOutputStream(openFileOutput(PLAYER_FILE, 0)));
             } else {
-                out = new ObjectOutputStream(new FileOutputStream(file));
+                out = new ObjectOutputStream(Files.newOutputStream(file.toPath()));
             }
             try {
                 out.writeInt(0);
@@ -121,7 +122,7 @@ public class TGApp extends Application {
                 for (int i = 0; i < numGames; i++) {
                     games.add((Game) in.readObject());
                 }
-                if (games.size() > 0) {
+                if (!games.isEmpty()) {
                     curGame = games.get(games.size() - 1);
                 }
             } finally {

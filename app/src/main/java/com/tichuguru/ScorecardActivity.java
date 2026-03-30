@@ -26,48 +26,41 @@ public class ScorecardActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scorecard);
-        Button button = (Button) findViewById(R.id.scorecardDelete);
-        button.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.ScorecardActivity.1
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                ScorecardActivity.this.onDeleteHand();
-            }
-        });
+
+        Button button = findViewById(R.id.scorecardDelete);
+        button.setOnClickListener(v -> ScorecardActivity.this.onDeleteHand());
     }
 
     @Override // android.app.Activity
     protected void onResume() {
         super.onResume();
         List<Player> players = TGApp.getGame().getPlayers();
-        TextView name = (TextView) findViewById(R.id.scorecardName1);
+        TextView name = findViewById(R.id.scorecardName1);
         name.setText(players.get(0).getName());
-        TextView name2 = (TextView) findViewById(R.id.scorecardName2);
+        TextView name2 = findViewById(R.id.scorecardName2);
         name2.setText(players.get(1).getName());
-        TextView name3 = (TextView) findViewById(R.id.scorecardName3);
+        TextView name3 = findViewById(R.id.scorecardName3);
         name3.setText(players.get(2).getName());
-        TextView name4 = (TextView) findViewById(R.id.scorecardName4);
+        TextView name4 = findViewById(R.id.scorecardName4);
         name4.setText(players.get(3).getName());
         ScorecardAdapter adapter = new ScorecardAdapter(this, R.id.scorecardHandScore1, TGApp.getGame());
-        ListView handList = (ListView) findViewById(R.id.scorecardList);
-        handList.setAdapter((ListAdapter) adapter);
+        ListView handList = findViewById(R.id.scorecardList);
+        handList.setAdapter(adapter);
     }
 
     /* JADX INFO: Access modifiers changed from: private */
     public void onDeleteHand() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() { // from class: com.tichuguru.ScorecardActivity.2
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
-                        Game game = TGApp.getGame();
-                        game.removeHand(game.getHands().size() - 1);
-                        ScorecardAdapter adapter = new ScorecardAdapter(ScorecardActivity.this, R.id.scorecardHandScore1, TGApp.getGame());
-                        ListView handList = (ListView) ScorecardActivity.this.findViewById(R.id.scorecardList);
-                        handList.setAdapter((ListAdapter) adapter);
-                        return;
-                    default:
-                        return;
-                }
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
+                    Game game = TGApp.getGame();
+                    game.removeHand(game.getHands().size() - 1);
+                    ScorecardAdapter adapter = new ScorecardAdapter(ScorecardActivity.this, R.id.scorecardHandScore1, TGApp.getGame());
+                    ListView handList = ScorecardActivity.this.findViewById(R.id.scorecardList);
+                    handList.setAdapter(adapter);
+                    return;
+                default:
+                    return;
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -93,7 +86,7 @@ public class ScorecardActivity extends Activity {
             View v = convertView;
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater) ScorecardActivity.this.getSystemService("layout_inflater");
-                v = vi.inflate(R.layout.scorecardrow, (ViewGroup) null);
+                v = vi.inflate(R.layout.scorecardrow, null);
             }
             Hand hand = this.game.getHands().get(position);
             TextView scoreTV = (TextView) v.findViewById(R.id.scorecardHandScore1);
@@ -103,10 +96,10 @@ public class ScorecardActivity extends Activity {
             int score2 = hand.getTotalScore2();
             scoreTV2.setText(String.valueOf(score2 >= 0 ? "+" : "") + String.valueOf(score2));
             List<TextView> tichus = new ArrayList<>();
-            tichus.add((TextView) v.findViewById(R.id.scorecardTichu1));
-            tichus.add((TextView) v.findViewById(R.id.scorecardTichu2));
-            tichus.add((TextView) v.findViewById(R.id.scorecardTichu3));
-            tichus.add((TextView) v.findViewById(R.id.scorecardTichu4));
+            tichus.add(v.findViewById(R.id.scorecardTichu1));
+            tichus.add(v.findViewById(R.id.scorecardTichu2));
+            tichus.add(v.findViewById(R.id.scorecardTichu3));
+            tichus.add(v.findViewById(R.id.scorecardTichu4));
             for (int i = 0; i < 4; i++) {
                 TextView tv = tichus.get(i);
                 if (hand.isTichuFor(i)) {
@@ -129,9 +122,9 @@ public class ScorecardActivity extends Activity {
                 score1 += h.getTotalScore1();
                 score22 += h.getTotalScore2();
             }
-            TextView scoreTV3 = (TextView) v.findViewById(R.id.scorecardTotalScore1);
+            TextView scoreTV3 = v.findViewById(R.id.scorecardTotalScore1);
             scoreTV3.setText(String.valueOf(score1));
-            TextView scoreTV4 = (TextView) v.findViewById(R.id.scorecardTotalScore2);
+            TextView scoreTV4 = v.findViewById(R.id.scorecardTotalScore2);
             scoreTV4.setText(String.valueOf(score22));
             return v;
         }

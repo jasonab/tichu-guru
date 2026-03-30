@@ -46,30 +46,23 @@ public class CurHandActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.curhand);
-        this.score1 = (TextView) findViewById(R.id.curHandScore1);
-        this.score2 = (TextView) findViewById(R.id.curHandScore2);
-        this.name1 = (TextView) findViewById(R.id.curHandP1);
-        this.name2 = (TextView) findViewById(R.id.curHandP2);
-        this.name3 = (TextView) findViewById(R.id.curHandP3);
-        this.name4 = (TextView) findViewById(R.id.curHandP4);
-        this.grp1 = (RadioGroup) findViewById(R.id.curHandP1RG);
-        this.grp2 = (RadioGroup) findViewById(R.id.curHandP2RG);
-        this.grp3 = (RadioGroup) findViewById(R.id.curHandP3RG);
-        this.grp4 = (RadioGroup) findViewById(R.id.curHandP4RG);
-        this.scoreHandButton = (Button) findViewById(R.id.curHandScoreHand);
-        this.scoreHandButton.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.CurHandActivity.1
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                CurHandActivity.this.onScoreHand();
-            }
-        });
-        Button button = (Button) findViewById(R.id.curHandNewGame);
-        button.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.CurHandActivity.2
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                CurHandActivity.this.onNewGame();
-            }
-        });
+        this.score1 = findViewById(R.id.curHandScore1);
+        this.score2 = findViewById(R.id.curHandScore2);
+        this.name1 = findViewById(R.id.curHandP1);
+        this.name2 = findViewById(R.id.curHandP2);
+        this.name3 = findViewById(R.id.curHandP3);
+        this.name4 = findViewById(R.id.curHandP4);
+        this.grp1 = findViewById(R.id.curHandP1RG);
+        this.grp2 = findViewById(R.id.curHandP2RG);
+        this.grp3 = findViewById(R.id.curHandP3RG);
+        this.grp4 = findViewById(R.id.curHandP4RG);
+
+        this.scoreHandButton = findViewById(R.id.curHandScoreHand);
+        this.scoreHandButton.setOnClickListener(v -> CurHandActivity.this.onScoreHand());
+
+        Button button = findViewById(R.id.curHandNewGame);
+        button.setOnClickListener(v -> CurHandActivity.this.onNewGame());
+
         if (savedInstanceState != null) {
             this.grp1.check(savedInstanceState.getInt("tichu1", R.id.curHandP1None));
             this.grp2.check(savedInstanceState.getInt("tichu2", R.id.curHandP2None));
@@ -111,7 +104,7 @@ public class CurHandActivity extends Activity {
         Game curGame = TGApp.getGame();
         Bundle bundle = new Bundle();
         bundle.putSerializable("newGame", new Game(curGame));
-        Intent intent = new Intent(this, (Class<?>) NewGameActivity.class);
+        Intent intent = new Intent(this, NewGameActivity.class);
         intent.putExtras(bundle);
         startActivityForResult(intent, 1);
     }
@@ -122,17 +115,15 @@ public class CurHandActivity extends Activity {
             new AlertDialog.Builder(this).setMessage("You can't end the game when the score is tied.").show();
             return;
         }
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() { // from class: com.tichuguru.CurHandActivity.3
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
-                        TGApp.getGame().endGame();
-                        CurHandActivity.this.updateDisplay();
-                        return;
-                    default:
-                        return;
-                }
+        // from class: com.tichuguru.CurHandActivity.3
+// android.content.DialogInterface.OnClickListener
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
+                    TGApp.getGame().endGame();
+                    CurHandActivity.this.updateDisplay();
+                    return;
+                default:
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -168,7 +159,7 @@ public class CurHandActivity extends Activity {
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable("newHand", hand);
-        Intent intent = new Intent(this, (Class<?>) ScoreHandActivity.class);
+        Intent intent = new Intent(this, ScoreHandActivity.class);
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
     }

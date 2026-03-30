@@ -38,29 +38,21 @@ public class NewGameActivity extends Activity {
         setContentView(R.layout.newgame);
         Bundle data = getIntent().getExtras();
         this.game = (Game) data.getSerializable("newGame");
-        this.gameLimit = (EditText) findViewById(R.id.newGameGameLimit);
-        this.addOnFailedTichuCB = (CheckBox) findViewById(R.id.newGameAddOnFailedTichu);
-        this.affectStatsCB = (CheckBox) findViewById(R.id.newGameAffectsStats);
-        this.mercyRuleCB = (CheckBox) findViewById(R.id.newGameMercyRule);
-        Button button = (Button) findViewById(R.id.newGameRandomizeTeams);
-        button.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.NewGameActivity.1
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                NewGameActivity.this.onRandomizeTeams();
-            }
-        });
-        Button button2 = (Button) findViewById(R.id.newGameStart);
-        button2.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.NewGameActivity.2
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                NewGameActivity.this.onStartGame();
-            }
-        });
+        this.gameLimit = findViewById(R.id.newGameGameLimit);
+        this.addOnFailedTichuCB = findViewById(R.id.newGameAddOnFailedTichu);
+        this.affectStatsCB = findViewById(R.id.newGameAffectsStats);
+        this.mercyRuleCB = findViewById(R.id.newGameMercyRule);
+        Button button = findViewById(R.id.newGameRandomizeTeams);
+        button.setOnClickListener(v -> NewGameActivity.this.onRandomizeTeams());
+        Button button2 = findViewById(R.id.newGameStart);
+        // from class: com.tichuguru.NewGameActivity.2
+// android.view.View.OnClickListener
+        button2.setOnClickListener(v -> NewGameActivity.this.onStartGame());
         this.nameSpinners = new ArrayList();
-        this.nameSpinners.add((Spinner) findViewById(R.id.newGameName1));
-        this.nameSpinners.add((Spinner) findViewById(R.id.newGameName2));
-        this.nameSpinners.add((Spinner) findViewById(R.id.newGameName3));
-        this.nameSpinners.add((Spinner) findViewById(R.id.newGameName4));
+        this.nameSpinners.add(findViewById(R.id.newGameName1));
+        this.nameSpinners.add(findViewById(R.id.newGameName2));
+        this.nameSpinners.add(findViewById(R.id.newGameName3));
+        this.nameSpinners.add(findViewById(R.id.newGameName4));
         List<Player> allPlayers = TGApp.getPlayers();
         List<String> choices = new ArrayList<>();
         for (int i = 0; i < allPlayers.size(); i++) {
@@ -71,7 +63,7 @@ public class NewGameActivity extends Activity {
         for (int i2 = 0; i2 < 4; i2++) {
             Spinner spin = this.nameSpinners.get(i2);
             spin.setOnItemSelectedListener(new PlayerSelectedListener(i2));
-            spin.setAdapter((SpinnerAdapter) this.spinAdapter);
+            spin.setAdapter(this.spinAdapter);
         }
         updateNameSpinners();
         this.affectStatsCB.setChecked(true);
