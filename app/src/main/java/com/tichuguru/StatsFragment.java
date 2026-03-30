@@ -2,6 +2,7 @@ package com.tichuguru;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class StatsFragment extends Fragment {
     private StatsAdapter adapter;
+    private TGViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,15 +33,13 @@ public class StatsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(R.id.statsClearAll).setOnClickListener(v -> onClearStats());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (adapter == null || adapter.getCount() != TGApp.getPlayers().size() + 11) {
-            adapter = new StatsAdapter(requireContext(), R.id.statsName);
-            ((ListView) requireView().findViewById(R.id.statsList)).setAdapter(adapter);
-        }
+        viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
+        viewModel.getAllPlayers().observe(getViewLifecycleOwner(), players -> {
+            if (adapter == null || adapter.getCount() != players.size() + 11) {
+                adapter = new StatsAdapter(requireContext(), R.id.statsName);
+                ((ListView) requireView().findViewById(R.id.statsList)).setAdapter(adapter);
+            }
+        });
     }
 
     private void onClearStats() {

@@ -3,6 +3,7 @@ package com.tichuguru;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -18,6 +19,7 @@ public class TGActivity extends AppCompatActivity {
     private StatsFragment statsFragment;
     private Fragment activeFragment;
     private BottomNavigationView bottomNav;
+    TGViewModel viewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,9 @@ public class TGActivity extends AppCompatActivity {
             statsFragment = (StatsFragment) fm.findFragmentByTag("stats");
         }
         activeFragment = curHandFragment;
+
+        viewModel = new ViewModelProvider(this).get(TGViewModel.class);
+        viewModel.sync();
 
         bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -80,6 +85,7 @@ public class TGActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        viewModel.sync();
         if (TGApp.getGame() == null) {
             createFirstGame();
         }

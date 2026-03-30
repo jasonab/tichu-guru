@@ -2,6 +2,7 @@ package com.tichuguru;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class AllGamesFragment extends Fragment {
+    private TGViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,9 +26,10 @@ public class AllGamesFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        refreshList();
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
+        viewModel.getAllGames().observe(getViewLifecycleOwner(), games -> refreshList());
     }
 
     private void refreshList() {
@@ -36,7 +39,7 @@ public class AllGamesFragment extends Fragment {
         gamesList.setOnItemClickListener((parent, child, position, id) -> {
             CurHandActivity.clearTichuButtonsNow = true;
             List<Game> games = TGApp.getGames();
-            TGApp.setGame(games.get((games.size() - position) - 1));
+            viewModel.setGame(games.get((games.size() - position) - 1));
             ((TGActivity) requireActivity()).navigateToTab(0);
         });
     }
@@ -110,9 +113,9 @@ public class AllGamesFragment extends Fragment {
                     games.remove(gameNum);
                     if (TGApp.getGame() == game) {
                         CurHandActivity.clearTichuButtonsNow = true;
-                        TGApp.setGame(games.isEmpty() ? null : games.get(games.size() - 1));
+                        viewModel.setGame(games.isEmpty() ? null : games.get(games.size() - 1));
                     }
-                    refreshList();
+                    viewModel.notifyGamesChanged();
                     if (TGApp.getGames().isEmpty()) {
                         ((TGActivity) requireActivity()).createFirstGame();
                     }

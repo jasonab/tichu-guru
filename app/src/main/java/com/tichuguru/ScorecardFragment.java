@@ -2,6 +2,7 @@ package com.tichuguru;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScorecardFragment extends Fragment {
+    private TGViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,12 +29,8 @@ public class ScorecardFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(R.id.scorecardDelete).setOnClickListener(v -> onDeleteHand());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        refreshDisplay();
+        viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
+        viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> refreshDisplay());
     }
 
     private void refreshDisplay() {
@@ -52,7 +50,7 @@ public class ScorecardFragment extends Fragment {
             .setPositiveButton("Yes", (dialog, which) -> {
                 Game game = TGApp.getGame();
                 game.removeHand(game.getHands().size() - 1);
-                refreshDisplay();
+                viewModel.notifyGameChanged();
             })
             .setNegativeButton("No", null)
             .show();

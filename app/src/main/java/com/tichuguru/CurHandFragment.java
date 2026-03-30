@@ -2,6 +2,7 @@ package com.tichuguru;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ public class CurHandFragment extends Fragment {
     private static final int MENU_IMPORT = 3;
     private static final int MENU_EXPORTCSV = 4;
 
+    private TGViewModel viewModel;
     RadioGroup grp1, grp2, grp3, grp4;
     TextView name1, name2, name3, name4;
     TextView score1, score2;
@@ -68,7 +70,8 @@ public class CurHandFragment extends Fragment {
             grp3.check(savedInstanceState.getInt("tichu3", R.id.curHandP3None));
             grp4.check(savedInstanceState.getInt("tichu4", R.id.curHandP4None));
         }
-        updateDisplay();
+        viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
+        viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> updateDisplay());
     }
 
     @Override
@@ -89,7 +92,6 @@ public class CurHandFragment extends Fragment {
             CurHandActivity.clearTichuButtonsNow = false;
             clearTichuButtons();
         }
-        updateDisplay();
     }
 
     @Override
@@ -98,6 +100,7 @@ public class CurHandFragment extends Fragment {
         if (resultCode == -1) {
             clearTichuButtons();
         }
+        viewModel.notifyGameChanged();
     }
 
     private void onNewGame() {
