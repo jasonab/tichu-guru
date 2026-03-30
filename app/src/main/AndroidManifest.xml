@@ -20,18 +20,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="Current Score"
-            android:name="CurHandActivity"/>
-        <activity
-            android:label="Scorecard"
-            android:name="ScorecardActivity"/>
-        <activity
-            android:label="Stats"
-            android:name="StatsActivity"/>
-        <activity
-            android:label="All Games"
-            android:name="AllGamesActivity"/>
-        <activity
             android:label="New Game"
             android:name="NewGameActivity"
             android:screenOrientation="portrait"/>

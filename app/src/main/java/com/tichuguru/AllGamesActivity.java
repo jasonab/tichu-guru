@@ -39,8 +39,7 @@ public class AllGamesActivity extends AppCompatActivity {
             CurHandActivity.clearTichuButtonsNow = true;
             List<Game> games = TGApp.getGames();
             TGApp.setGame(games.get((games.size() - position) - 1));
-            TGActivity mainAct = (TGActivity) AllGamesActivity.this.getParent();
-            mainAct.getTabHost().setCurrentTab(0);
+            // superseded by AllGamesFragment
         });
     }
 
@@ -130,8 +129,7 @@ public class AllGamesActivity extends AppCompatActivity {
                         ListView gamesList = (ListView) AllGamesActivity.this.findViewById(R.id.gamesList);
                         gamesList.setAdapter((ListAdapter) adapter);
                         if (TGApp.getGames().isEmpty()) {
-                            TGActivity parent = (TGActivity) AllGamesActivity.this.getParent();
-                            parent.createFirstGame();
+                            // superseded by AllGamesFragment
                             return;
                         }
                         return;

@@ -15,7 +15,8 @@
       "Bash(./gradlew clean:*)",
       "Bash(grep -v \"^$\")",
       "Bash(/dev/null find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(./gradlew --version)"
     ]
   }
 }

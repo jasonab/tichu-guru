@@ -1,37 +1,83 @@
 package com.tichuguru;
 
-import android.app.TabActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TabHost;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: classes.dex */
-public class TGActivity extends TabActivity {
-    @Override // android.app.ActivityGroup, android.app.Activity
+public class TGActivity extends AppCompatActivity {
+    private CurHandFragment curHandFragment;
+    private ScorecardFragment scorecardFragment;
+    private AllGamesFragment allGamesFragment;
+    private StatsFragment statsFragment;
+    private Fragment activeFragment;
+    private BottomNavigationView bottomNav;
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(524288);
         setContentView(R.layout.main);
-        TabHost tabHost = getTabHost();
-        Intent intent = new Intent().setClass(this, CurHandActivity.class);
-        TabHost.TabSpec spec = tabHost.newTabSpec("current").setIndicator("Hand").setContent(intent);
-        tabHost.addTab(spec);
-        Intent intent2 = new Intent().setClass(this, ScorecardActivity.class);
-        TabHost.TabSpec spec2 = tabHost.newTabSpec("scorecard").setIndicator("Scorecard").setContent(intent2);
-        tabHost.addTab(spec2);
-        Intent intent3 = new Intent().setClass(this, AllGamesActivity.class);
-        TabHost.TabSpec spec3 = tabHost.newTabSpec("allgames").setIndicator("All Games").setContent(intent3);
-        tabHost.addTab(spec3);
-        Intent intent4 = new Intent().setClass(this, StatsActivity.class);
-        TabHost.TabSpec spec4 = tabHost.newTabSpec("stats").setIndicator("Stats").setContent(intent4);
-        tabHost.addTab(spec4);
+
+        FragmentManager fm = getSupportFragmentManager();
+        if (savedInstanceState == null) {
+            curHandFragment = new CurHandFragment();
+            scorecardFragment = new ScorecardFragment();
+            allGamesFragment = new AllGamesFragment();
+            statsFragment = new StatsFragment();
+            fm.beginTransaction()
+                .add(R.id.fragment_container, statsFragment, "stats").hide(statsFragment)
+                .add(R.id.fragment_container, allGamesFragment, "allgames").hide(allGamesFragment)
+                .add(R.id.fragment_container, scorecardFragment, "scorecard").hide(scorecardFragment)
+                .add(R.id.fragment_container, curHandFragment, "hand")
+                .commit();
+        } else {
+            curHandFragment = (CurHandFragment) fm.findFragmentByTag("hand");
+            scorecardFragment = (ScorecardFragment) fm.findFragmentByTag("scorecard");
+            allGamesFragment = (AllGamesFragment) fm.findFragmentByTag("allgames");
+            statsFragment = (StatsFragment) fm.findFragmentByTag("stats");
+        }
+        activeFragment = curHandFragment;
+
+        bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            Fragment target;
+            if (id == R.id.nav_hand)          target = curHandFragment;
+            else if (id == R.id.nav_scorecard) target = scorecardFragment;
+            else if (id == R.id.nav_allgames)  target = allGamesFragment;
+            else                               target = statsFragment;
+            if (target != activeFragment) switchFragment(target);
+            return true;
+        });
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    private void switchFragment(Fragment target) {
+        getSupportFragmentManager().beginTransaction()
+            .hide(activeFragment)
+            .show(target)
+            .commit();
+        activeFragment = target;
+    }
+
+    public void navigateToTab(int tabIndex) {
+        int menuId;
+        switch (tabIndex) {
+            case 1:  menuId = R.id.nav_scorecard; break;
+            case 2:  menuId = R.id.nav_allgames;  break;
+            case 3:  menuId = R.id.nav_stats;      break;
+            default: menuId = R.id.nav_hand;       break;
+        }
+        bottomNav.setSelectedItemId(menuId);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (TGApp.getGame() == null) {
@@ -39,7 +85,7 @@ public class TGActivity extends TabActivity {
         }
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onPause() {
         TGApp app = (TGApp) getApplication();
         app.savePlayers(null);
@@ -48,25 +94,16 @@ public class TGActivity extends TabActivity {
     }
 
     public void createFirstGame() {
-        Game game;
         Game curGame = TGApp.getGame();
-        if (curGame == null) {
-            List<Player> allPlayers = TGApp.getPlayers();
-            List<Player> players = new ArrayList<>();
-            for (int i = 0; i < 4; i++) {
-                if (i < allPlayers.size()) {
-                    players.add(allPlayers.get(i));
-                } else {
-                    players.add(new Player("New Player"));
-                }
-            }
-            game = new Game(players);
-        } else {
-            game = new Game(curGame);
+        List<Player> allPlayers = TGApp.getPlayers();
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            players.add(i < allPlayers.size() ? allPlayers.get(i) : new Player("New Player"));
         }
+        Game game = curGame == null ? new Game(players) : new Game(curGame);
         Bundle bundle = new Bundle();
         bundle.putSerializable("newGame", game);
-        Intent intent = new Intent(this, (Class<?>) NewGameActivity.class);
+        Intent intent = new Intent(this, NewGameActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
     }
