@@ -1,7 +1,7 @@
 package com.tichuguru;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import java.util.List;
 import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 
 /* loaded from: classes.dex */
-public class AllGamesActivity extends Activity {
+public class AllGamesActivity extends AppCompatActivity {
     @Override // android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

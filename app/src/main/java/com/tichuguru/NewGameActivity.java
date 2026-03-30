@@ -1,7 +1,7 @@
 package com.tichuguru;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 /* loaded from: classes.dex */
-public class NewGameActivity extends Activity {
+public class NewGameActivity extends AppCompatActivity {
     private CheckBox addOnFailedTichuCB;
     private boolean addingPlayer = false;
     private CheckBox affectStatsCB;

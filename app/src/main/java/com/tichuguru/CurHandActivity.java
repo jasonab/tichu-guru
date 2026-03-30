@@ -1,7 +1,7 @@
 package com.tichuguru;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import kankan.wheel.widget.WheelScroller;
 import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 
 /* loaded from: classes.dex */
-public class CurHandActivity extends Activity {
+public class CurHandActivity extends AppCompatActivity {
     private static final int ACT_NEW_GAME = 1;
     private static final int ACT_SCORE_HAND = 0;
     private static final int MENU_END_GAME = 0;

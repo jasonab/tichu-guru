@@ -1,7 +1,7 @@
 package com.tichuguru;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -19,7 +19,7 @@ import java.util.List;
 import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 
 /* loaded from: classes.dex */
-public class StatsListActivity extends Activity {
+public class StatsListActivity extends AppCompatActivity {
     private Player player;
 
     @Override // android.app.Activity

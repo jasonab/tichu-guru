@@ -1,6 +1,6 @@
 package com.tichuguru;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +14,7 @@ import kankan.wheel.widget.WheelView;
 import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 
 /* loaded from: classes.dex */
-public class ScoreHandActivity extends Activity {
+public class ScoreHandActivity extends AppCompatActivity {
     private Hand hand;
     private WheelView outFirst;
     private WheelView score1;
