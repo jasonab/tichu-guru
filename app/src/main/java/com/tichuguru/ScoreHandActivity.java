@@ -29,32 +29,30 @@ public class ScoreHandActivity extends AppCompatActivity {
         setContentView(R.layout.scorehand);
         Bundle data = getIntent().getExtras();
         this.hand = (Hand) data.getSerializable("newHand");
-        this.total1 = (TextView) findViewById(R.id.scoreHandTotal1);
-        this.total2 = (TextView) findViewById(R.id.scoreHandTotal2);
+        this.total1 = findViewById(R.id.scoreHandTotal1);
+        this.total2 = findViewById(R.id.scoreHandTotal2);
         this.scores = new Integer[32];
         for (int i = 0; i < 31; i++) {
-            this.scores[i] = Integer.valueOf((i * 5) - 25);
+            this.scores[i] = (i * 5) - 25;
         }
         this.scores[31] = 200;
-        OnWheelChangedListener changeListener = new OnWheelChangedListener() { // from class: com.tichuguru.ScoreHandActivity.1
-            @Override // kankan.wheel.widget.OnWheelChangedListener
-            public void onChanged(WheelView wheel, int oldValue, int newValue) {
-                WheelView other;
-                if (wheel != ScoreHandActivity.this.outFirst) {
-                    if (wheel != ScoreHandActivity.this.score1) {
-                        other = ScoreHandActivity.this.score1;
-                    } else {
-                        other = ScoreHandActivity.this.score2;
-                    }
-                    int val = ScoreHandActivity.this.scores[newValue].intValue();
-                    int otherVal = val == 200 ? 0 : 100 - val;
-                    int otherRow = (otherVal + 25) / 5;
-                    if (val != 0 || other.getCurrentItem() != 31) {
-                        other.setCurrentItem(otherRow);
-                    }
+
+        OnWheelChangedListener changeListener = (wheel, oldValue, newValue) -> {
+            WheelView other;
+            if (wheel != ScoreHandActivity.this.outFirst) {
+                if (wheel != ScoreHandActivity.this.score1) {
+                    other = ScoreHandActivity.this.score1;
+                } else {
+                    other = ScoreHandActivity.this.score2;
                 }
-                ScoreHandActivity.this.updateHandScore();
+                int val = ScoreHandActivity.this.scores[newValue];
+                int otherVal = val == 200 ? 0 : 100 - val;
+                int otherRow = (otherVal + 25) / 5;
+                if (val != 0 || other.getCurrentItem() != 31) {
+                    other.setCurrentItem(otherRow);
+                }
             }
+            ScoreHandActivity.this.updateHandScore();
         };
         this.score1 = (WheelView) findViewById(R.id.scoreHandScore1);
         this.score1.setViewAdapter(new ArrayWheelAdapter(this, this.scores));

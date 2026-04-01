@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <TextView
         android:layout_gravity="center"
         android:id="@+id/gamesDate"
@@ -10,27 +10,30 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="2dp"
         android:text="8/11/10"/>
+
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
         <TextView
-            android:ellipsize="end"
-            android:layout_gravity="center_horizontal"
             android:id="@+id/gamesTeam1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tim and Corey"
-            android:scrollHorizontally="true"/>
-        <TextView
-            android:ellipsize="end"
             android:layout_gravity="center_horizontal"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:text="Tim and Corey" />
+
+        <TextView
             android:id="@+id/gamesTeam2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Josh and Mike"
-            android:scrollHorizontally="true"/>
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:text="Josh and Mike" />
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"

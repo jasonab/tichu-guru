@@ -2,27 +2,24 @@ package com.tichuguru;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Context;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Player;
 import java.util.List;
 import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 
-/* loaded from: classes.dex */
 public class StatsListActivity extends AppCompatActivity {
     private Player player;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle data = getIntent().getExtras();
@@ -34,118 +31,103 @@ public class StatsListActivity extends AppCompatActivity {
             this.player = TGApp.getPlayer(playerName);
         }
         setContentView(this.player == null ? R.layout.rankinglist : R.layout.statslist);
-        StatsAdapter adapter = new StatsAdapter(this, R.id.statsLabel, labels, values);
-        ListView statsList = (ListView) findViewById(R.id.statsList);
-        statsList.setAdapter((ListAdapter) adapter);
+
+        RecyclerView statsList = findViewById(R.id.statsList);
+        statsList.setLayoutManager(new LinearLayoutManager(this));
+        statsList.setAdapter(new StatsAdapter(labels, values));
+
         if (this.player != null) {
-            Button clearButton = (Button) findViewById(R.id.statsClearPlayerStats);
-            clearButton.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.StatsListActivity.1
-                @Override // android.view.View.OnClickListener
-                public void onClick(View v) {
-                    StatsListActivity.this.onClearStats();
-                }
-            });
-            Button delButton = (Button) findViewById(R.id.statsDelPlayer);
-            delButton.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.StatsListActivity.2
-                @Override // android.view.View.OnClickListener
-                public void onClick(View v) {
-                    StatsListActivity.this.onDeletePlayer();
-                }
-            });
+            Button clearButton = findViewById(R.id.statsClearPlayerStats);
+            clearButton.setOnClickListener(v -> onClearStats());
+            Button delButton = findViewById(R.id.statsDelPlayer);
+            delButton.setOnClickListener(v -> onDeletePlayer());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void onClearStats() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() { // from class: com.tichuguru.StatsListActivity.3
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
-                        StatsListActivity.this.player.clearStats();
-                        StatsListActivity.this.finish();
-                        return;
-                    default:
-                        return;
-                }
+    private void onClearStats() {
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            if (which == AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE) {
+                this.player.clearStats();
+                finish();
             }
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener).setNegativeButton("No", dialogClickListener).show();
+        new AlertDialog.Builder(this)
+            .setMessage("Are you sure?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener)
+            .show();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void onDeletePlayer() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() { // from class: com.tichuguru.StatsListActivity.4
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
-                        boolean updateSharedGame = false;
-                        List<Game> games = TGApp.getGames();
-                        for (int i = games.size() - 1; i >= 0; i--) {
-                            Game game = games.get(i);
-                            if (game.containsPlayer(StatsListActivity.this.player)) {
-                                games.remove(i);
-                                if (game == TGApp.getGame()) {
-                                    updateSharedGame = true;
-                                }
-                            }
+    private void onDeletePlayer() {
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            if (which == AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE) {
+                boolean updateSharedGame = false;
+                List<Game> games = TGApp.getGames();
+                for (int i = games.size() - 1; i >= 0; i--) {
+                    Game game = games.get(i);
+                    if (game.containsPlayer(this.player)) {
+                        games.remove(i);
+                        if (game == TGApp.getGame()) {
+                            updateSharedGame = true;
                         }
-                        if (updateSharedGame) {
-                            if (games.size() > 0) {
-                                TGApp.setGame(games.get(games.size() - 1));
-                            } else {
-                                TGApp.setGame(null);
-                            }
-                        }
-                        List<Player> allPlayers = TGApp.getPlayers();
-                        allPlayers.remove(StatsListActivity.this.player);
-                        StatsListActivity.this.finish();
-                        return;
-                    default:
-                        return;
+                    }
                 }
+                if (updateSharedGame) {
+                    TGApp.setGame(games.isEmpty() ? null : games.get(games.size() - 1));
+                }
+                TGApp.getPlayers().remove(this.player);
+                finish();
             }
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener).setNegativeButton("No", dialogClickListener).show();
+        new AlertDialog.Builder(this)
+            .setMessage("Are you sure?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener)
+            .show();
     }
 
-    /* loaded from: classes.dex */
-    private class StatsAdapter extends ArrayAdapter<String> {
-        private String[] labels;
-        private String[] values;
+    private static class StatsAdapter extends RecyclerView.Adapter<StatsAdapter.ViewHolder> {
+        private final String[] labels;
+        private final String[] values;
 
-        public StatsAdapter(Context context, int textViewResourceId, String[] labels, String[] values) {
-            super(context, textViewResourceId);
+        StatsAdapter(String[] labels, String[] values) {
             this.labels = labels;
             this.values = values;
-            for (String label : labels) {
-                super.add(label);
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView label, value;
+
+            ViewHolder(View v) {
+                super(v);
+                label = v.findViewById(R.id.statsLabel);
+                value = v.findViewById(R.id.statsValue);
             }
         }
 
-        @Override // android.widget.ArrayAdapter, android.widget.Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater) StatsListActivity.this.getSystemService("layout_inflater");
-                v = vi.inflate(R.layout.statslistrow, (ViewGroup) null);
-            }
-            TextView label = (TextView) v.findViewById(R.id.statsLabel);
-            TextView value = (TextView) v.findViewById(R.id.statsValue);
-            label.setText(this.labels[position]);
-            if (this.values[position] != null) {
-                label.setTypeface(null, 0);
-                label.setTextSize(18.0f);
-                value.setText(this.values[position]);
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.statslistrow, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.label.setText(labels[position]);
+            if (values[position] != null) {
+                holder.label.setTypeface(null, 0);
+                holder.label.setTextSize(18.0f);
+                holder.value.setText(values[position]);
             } else {
-                label.setTypeface(null, 1);
-                label.setTextSize(24.0f);
-                value.setText("");
+                holder.label.setTypeface(null, 1);
+                holder.label.setTextSize(24.0f);
+                holder.value.setText("");
             }
-            return v;
+        }
+
+        @Override
+        public int getItemCount() {
+            return labels.length;
         }
     }
 }

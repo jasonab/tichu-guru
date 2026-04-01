@@ -3,16 +3,15 @@ package com.tichuguru;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.Context;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import com.tichuguru.model.Player;
 import java.lang.reflect.Method;
@@ -22,7 +21,6 @@ import java.util.List;
 
 public class StatsFragment extends Fragment {
     private StatsAdapter adapter;
-    private TGViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -32,12 +30,14 @@ public class StatsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        RecyclerView statsList = view.findViewById(R.id.statsList);
+        statsList.setLayoutManager(new LinearLayoutManager(requireContext()));
         view.findViewById(R.id.statsClearAll).setOnClickListener(v -> onClearStats());
-        viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
+        TGViewModel viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getAllPlayers().observe(getViewLifecycleOwner(), players -> {
-            if (adapter == null || adapter.getCount() != players.size() + 11) {
-                adapter = new StatsAdapter(requireContext(), R.id.statsName);
-                ((ListView) requireView().findViewById(R.id.statsList)).setAdapter(adapter);
+            if (adapter == null || adapter.getItemCount() != players.size() + 11) {
+                adapter = new StatsAdapter();
+                statsList.setAdapter(adapter);
             }
         });
     }
@@ -53,60 +53,72 @@ public class StatsFragment extends Fragment {
             .show();
     }
 
-    private class StatsAdapter extends ArrayAdapter<String> {
-        public StatsAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            super.insert("Players", 0);
-            int index = 1;
-            for (Player p : TGApp.getPlayers()) super.insert(p.getName(), index++);
-            super.insert("Rankings", index++);
-            super.insert("Win %", index++);
-            super.insert("Pts / Hand", index++);
-            super.insert("Card Pts / Hand", index++);
-            super.insert("Hands / Double Win", index++);
-            super.insert("Tichu %", index++);
-            super.insert("Grand Tichu %", index++);
-            super.insert("Tichu Efficiency", index++);
-            super.insert("Tichu Stop %", index++);
-            super.insert("Partner Tichu %", index++);
+    private class StatsAdapter extends RecyclerView.Adapter<StatsAdapter.ViewHolder> {
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView name;
+            Button expandButton;
+
+            ViewHolder(View v) {
+                super(v);
+                name = v.findViewById(R.id.statsName);
+                expandButton = v.findViewById(R.id.statsExpandButton);
+            }
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if (v == null) {
-                v = LayoutInflater.from(requireContext()).inflate(R.layout.statsrow, null);
-            }
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.statsrow, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
             List<Player> players = TGApp.getPlayers();
-            TextView tv = v.findViewById(R.id.statsName);
-            Button expandButton = v.findViewById(R.id.statsExpandButton);
-            tv.setText((String) getItem(position));
+
+            String label;
+            if (position == 0) {
+                label = "Players";
+            } else if (position <= players.size()) {
+                label = players.get(position - 1).getName();
+            } else if (position == players.size() + 1) {
+                label = "Rankings";
+            } else {
+                String[] statLabels = {"Win %", "Pts / Hand", "Card Pts / Hand",
+                    "Hands / Double Win", "Tichu %", "Grand Tichu %",
+                    "Tichu Efficiency", "Tichu Stop %", "Partner Tichu %"};
+                label = statLabels[position - players.size() - 2];
+            }
+            holder.name.setText(label);
 
             if (position == 0 || position == players.size() + 1) {
-                tv.setTypeface(null, Typeface.BOLD);
-                expandButton.setVisibility(View.INVISIBLE);
+                holder.name.setTypeface(null, Typeface.BOLD);
+                holder.expandButton.setVisibility(View.INVISIBLE);
             } else if (position <= players.size()) {
-                tv.setTypeface(null, Typeface.NORMAL);
-                expandButton.setVisibility(View.VISIBLE);
-                expandButton.setOnClickListener(new PlayerExpandListener(players.get(position - 1)));
+                holder.name.setTypeface(null, Typeface.NORMAL);
+                holder.expandButton.setVisibility(View.VISIBLE);
+                holder.expandButton.setOnClickListener(new PlayerExpandListener(players.get(position - 1)));
             } else {
-                tv.setTypeface(null, Typeface.NORMAL);
-                expandButton.setVisibility(View.VISIBLE);
+                holder.name.setTypeface(null, Typeface.NORMAL);
+                holder.expandButton.setVisibility(View.VISIBLE);
                 int num = (position - players.size()) - 2;
                 switch (num) {
-                    case 0: expandButton.setOnClickListener(new RankExpandListener("Win %", true, "WinPct", "NumWins", "NumGames")); break;
-                    case 1: expandButton.setOnClickListener(new RankExpandListener("Pts / Hand", true, "PtsPerHand", "NumHands", null)); break;
-                    case 2: expandButton.setOnClickListener(new RankExpandListener("Card Pts / Hand", true, "CardPtsPerHand", "NumHands", null)); break;
-                    case 3: expandButton.setOnClickListener(new RankExpandListener("Hands / DW", false, "HandsPerDW", "NumDoubleWins", null)); break;
-                    case 4: expandButton.setOnClickListener(new RankExpandListener("Tichu %", true, "TichuPct", "NumTichuMade", "NumTichuCalled")); break;
-                    case 5: expandButton.setOnClickListener(new RankExpandListener("Grand Tichu %", true, "GTPct", "NumGTMade", "NumGTCalled")); break;
-                    case 6: expandButton.setOnClickListener(new RankExpandListener("Tichu Efficiency", true, "TichuEfficiency", "TichuEfficiencyHands", null)); break;
-                    case 7: expandButton.setOnClickListener(new RankExpandListener("Tichu Stop %", true, "TichuStopPct", "NumTichusStopped", "NumTichusCalledByOpps")); break;
-                    case 8: expandButton.setOnClickListener(new RankExpandListener("Partner Tichu %", true, "PartnerTichuPct", "NumTichusMadeByPartner", "NumTichusCalledByPartner")); break;
+                    case 0: holder.expandButton.setOnClickListener(new RankExpandListener("Win %", true, "WinPct", "NumWins", "NumGames")); break;
+                    case 1: holder.expandButton.setOnClickListener(new RankExpandListener("Pts / Hand", true, "PtsPerHand", "NumHands", null)); break;
+                    case 2: holder.expandButton.setOnClickListener(new RankExpandListener("Card Pts / Hand", true, "CardPtsPerHand", "NumHands", null)); break;
+                    case 3: holder.expandButton.setOnClickListener(new RankExpandListener("Hands / DW", false, "HandsPerDW", "NumDoubleWins", null)); break;
+                    case 4: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu %", true, "TichuPct", "NumTichuMade", "NumTichuCalled")); break;
+                    case 5: holder.expandButton.setOnClickListener(new RankExpandListener("Grand Tichu %", true, "GTPct", "NumGTMade", "NumGTCalled")); break;
+                    case 6: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Efficiency", true, "TichuEfficiency", "TichuEfficiencyHands", null)); break;
+                    case 7: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Stop %", true, "TichuStopPct", "NumTichusStopped", "NumTichusCalledByOpps")); break;
+                    case 8: holder.expandButton.setOnClickListener(new RankExpandListener("Partner Tichu %", true, "PartnerTichuPct", "NumTichusMadeByPartner", "NumTichusCalledByPartner")); break;
                     default: throw new RuntimeException("Unknown rank index: " + num);
                 }
             }
-            return v;
+        }
+
+        @Override
+        public int getItemCount() {
+            return TGApp.getPlayers().size() + 11;
         }
 
         class PlayerExpandListener implements View.OnClickListener {

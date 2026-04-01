@@ -1,16 +1,16 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.Context;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Player;
@@ -19,6 +19,7 @@ import java.util.List;
 
 public class AllGamesFragment extends Fragment {
     private TGViewModel viewModel;
+    private RecyclerView gamesList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,71 +29,80 @@ public class AllGamesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        gamesList = view.findViewById(R.id.gamesList);
+        gamesList.setLayoutManager(new LinearLayoutManager(requireContext()));
         viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getAllGames().observe(getViewLifecycleOwner(), games -> refreshList());
     }
 
     private void refreshList() {
-        View view = requireView();
-        ListView gamesList = view.findViewById(R.id.gamesList);
-        gamesList.setAdapter(new GamesAdapter(requireContext(), R.id.gamesDate));
-        gamesList.setOnItemClickListener((parent, child, position, id) -> {
-            CurHandActivity.clearTichuButtonsNow = true;
-            List<Game> games = TGApp.getGames();
-            viewModel.setGame(games.get((games.size() - position) - 1));
-            ((TGActivity) requireActivity()).navigateToTab(0);
-        });
+        gamesList.setAdapter(new GamesAdapter());
     }
 
-    private class GamesAdapter extends ArrayAdapter<Game> {
+    private class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> {
         private final SimpleDateFormat df = new SimpleDateFormat("M/d");
 
-        public GamesAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            int index = 0;
-            for (Game g : TGApp.getGames()) {
-                super.insert(g, index++);
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView date, team1, team2, score1, score2;
+            Button deleteBtn;
+
+            ViewHolder(View v) {
+                super(v);
+                date = v.findViewById(R.id.gamesDate);
+                team1 = v.findViewById(R.id.gamesTeam1);
+                team2 = v.findViewById(R.id.gamesTeam2);
+                score1 = v.findViewById(R.id.gamesScore1);
+                score2 = v.findViewById(R.id.gamesScore2);
+                deleteBtn = v.findViewById(R.id.gamesDeleteOne);
             }
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if (v == null) {
-                v = LayoutInflater.from(requireContext()).inflate(R.layout.allgamesrow, null);
-            }
-            List<Game> games = TGApp.getGames();
-            Game game = games.get((games.size() - position) - 1);
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.allgamesrow, parent, false);
+            return new ViewHolder(v);
+        }
 
-            ((TextView) v.findViewById(R.id.gamesDate)).setText(df.format(game.getDate()));
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            List<Game> games = TGApp.getGames();
+            int idx = games.size() - position - 1;
+            Game game = games.get(idx);
+
+            holder.date.setText(df.format(game.getDate()));
             List<Player> players = game.getPlayers();
-            TextView team1 = v.findViewById(R.id.gamesTeam1);
-            team1.setText(players.get(0).getName() + " and " + players.get(2).getName());
-            TextView team2 = v.findViewById(R.id.gamesTeam2);
-            team2.setText(players.get(1).getName() + " and " + players.get(3).getName());
-            TextView score1 = v.findViewById(R.id.gamesScore1);
-            score1.setText(String.valueOf(game.getScore1()));
-            TextView score2 = v.findViewById(R.id.gamesScore2);
-            score2.setText(String.valueOf(game.getScore2()));
+            holder.team1.setText(players.get(0).getName() + " and " + players.get(2).getName());
+            holder.team2.setText(players.get(1).getName() + " and " + players.get(3).getName());
+            holder.score1.setText(String.valueOf(game.getScore1()));
+            holder.score2.setText(String.valueOf(game.getScore2()));
 
             if (game.isGameOver()) {
                 boolean team1wins = game.getScore1() > game.getScore2();
                 int win = -256, lose = -7829368;
-                team1.setTextColor(team1wins ? win : lose);
-                score1.setTextColor(team1wins ? win : lose);
-                team2.setTextColor(team1wins ? lose : win);
-                score2.setTextColor(team1wins ? lose : win);
+                holder.team1.setTextColor(team1wins ? win : lose);
+                holder.score1.setTextColor(team1wins ? win : lose);
+                holder.team2.setTextColor(team1wins ? lose : win);
+                holder.score2.setTextColor(team1wins ? lose : win);
             } else {
                 int gray = -7829368;
-                team1.setTextColor(gray);
-                score1.setTextColor(gray);
-                team2.setTextColor(gray);
-                score2.setTextColor(gray);
+                holder.team1.setTextColor(gray);
+                holder.score1.setTextColor(gray);
+                holder.team2.setTextColor(gray);
+                holder.score2.setTextColor(gray);
             }
 
-            ((Button) v.findViewById(R.id.gamesDeleteOne))
-                .setOnClickListener(new DeleteGameClickListener((games.size() - position) - 1));
-            return v;
+            holder.deleteBtn.setOnClickListener(new DeleteGameClickListener(idx));
+            holder.itemView.setOnClickListener(v -> {
+                CurHandActivity.clearTichuButtonsNow = true;
+                viewModel.setGame(TGApp.getGames().get(idx));
+                ((TGActivity) requireActivity()).navigateToTab(0);
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return TGApp.getGames().size();
         }
     }
 
