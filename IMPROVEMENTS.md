@@ -110,7 +110,8 @@ These are larger refactors. Do not implement unless explicitly requested.
   `SegmentedControlButton` is a custom view used for Tichu/Grand Tichu call selection.
   `MaterialButtonToggleGroup` (from Material Components) provides the same UX natively.
 
-- [ ] **#20 Replace `onPrepareOptionsMenu` with Toolbar + overflow menu**
-  `CurHandFragment` and `CurHandActivity` use the legacy options menu API.
-  Fix: add a `Toolbar` to the layout and use `MenuProvider` or `onCreateOptionsMenu` on
-  the Toolbar directly.
+- [x] **#20 Replace `onPrepareOptionsMenu` with Toolbar + overflow menu**
+  Menu items were invisible — `NoActionBar` theme with no Toolbar meant they never showed.
+  Fixed: added `Toolbar` to `main.xml`, wired it as support action bar in `TGActivity`,
+  migrated `CurHandFragment` to `MenuProvider` with `menu_curhand.xml`. Removed
+  `setHasOptionsMenu`, `onPrepareOptionsMenu`, and `onOptionsItemSelected`.

@@ -30,5 +30,25 @@
             android:name=".StatsListActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+        <activity
+            android:label="Current Hand"
+            android:name=".CurHandActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:label="All Games"
+            android:name=".AllGamesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:label="Scorecard"
+            android:name=".ScorecardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:label="Statistics"
+            android:name=".StatsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>

@@ -2,12 +2,14 @@ package com.tichuguru;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,23 +21,15 @@ import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
 import java.util.List;
 
-public class CurHandFragment extends Fragment {
+public class CurHandFragment extends Fragment implements MenuProvider {
     private static final int ACT_NEW_GAME = 1;
     private static final int ACT_SCORE_HAND = 0;
-    private static final int MENU_END_GAME = 0;
-    private static final int MENU_QUIT = 1;
 
     private TGViewModel viewModel;
     RadioGroup grp1, grp2, grp3, grp4;
     TextView name1, name2, name3, name4;
     TextView score1, score2;
     Button scoreHandButton;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,6 +61,7 @@ public class CurHandFragment extends Fragment {
         }
         viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> updateDisplay());
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
     }
 
     @Override
@@ -183,25 +178,20 @@ public class CurHandFragment extends Fragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.clear();
-        menu.add(0, MENU_END_GAME, 0, "End Game");
-        menu.add(0, MENU_QUIT, 0, "Quit");
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.menu_curhand, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return switch (item.getItemId()) {
-            case MENU_END_GAME -> {
-                onEndGame();
-                yield true;
-            }
-            case MENU_QUIT -> {
-                requireActivity().finish();
-                yield true;
-            }
-            default -> super.onOptionsItemSelected(item);
-        };
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_end_game) {
+            onEndGame();
+            return true;
+        } else if (id == R.id.menu_quit) {
+            requireActivity().finish();
+            return true;
+        }
+        return false;
     }
 }

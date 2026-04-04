@@ -1,6 +1,7 @@
 package com.tichuguru;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -30,6 +31,9 @@ public class TGActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(524288);
         setContentView(R.layout.main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         FragmentManager fm = getSupportFragmentManager();
         if (savedInstanceState == null) {
