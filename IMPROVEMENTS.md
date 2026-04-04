@@ -11,10 +11,11 @@
 - [x] **#1 `Player.equals()` crashes on non-Player input** (`Player.java:363`)
   Unchecked cast with no null/type guard. Fixed: added `instanceof` check.
 
-- [ ] **#2 `unrecordHand` corrupts tichu efficiency stats** (`Player.java:151-155`)
-  `recordHand` adds ±100 per individual player tichu. `unrecordHand` subtracts
-  `hand.getTichuScore1()` — the whole team's tichu sum — so removing a hand when
-  both team-1 players called tichu subtracts 200 instead of 100.
+- [x] **#2 `unrecordHand` corrupts tichu efficiency stats** (`Player.java:151-155`)
+  `recordHand` adds ±100 per individual player tichu. `unrecordHand` was subtracting
+  `hand.getTichuScore1()`/`getTichuScore2()` — the whole team's tichu sum — so removing
+  a hand when both team-1 players called tichu would subtract 200 instead of 100.
+  Fixed: now subtracts `(seat == hand.outFirst() ? 100 : -100)`, matching `recordHand`.
 
 - [x] **#3 `TGApp.onCreate()` calls `super.onCreate()` last** (`TGApp.java:30`)
   `super.onCreate()` must be first. Fixed.

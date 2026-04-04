@@ -130,7 +130,7 @@ public class Player implements Comparable<Player>, Serializable {
         }
     }
 
-    public void unrecordHand(Hand hand, int seat) {
+    public void unrecordHand(@NonNull Hand hand, int seat) {
         if (this.numHands != 0) {
             this.numHands--;
             int numTichusThisHand = 0;
@@ -148,7 +148,7 @@ public class Player implements Comparable<Player>, Serializable {
                     this.cardPoints -= hand.getCardScore1();
                 }
                 if (hand.isTichuFor(seat)) {
-                    this.tichuEfficiencyPoints -= hand.getTichuScore1();
+                    this.tichuEfficiencyPoints -= (seat == hand.outFirst() ? 100 : -100);
                     this.tichuEfficiencyHands--;
                 }
                 if (hand.isTichuFor(1) || hand.isGrandTichuFor(1)) {
@@ -172,7 +172,7 @@ public class Player implements Comparable<Player>, Serializable {
                     this.cardPoints -= hand.getCardScore2();
                 }
                 if (hand.isTichuFor(seat)) {
-                    this.tichuEfficiencyPoints -= hand.getTichuScore2();
+                    this.tichuEfficiencyPoints -= (seat == hand.outFirst() ? 100 : -100);
                     this.tichuEfficiencyHands--;
                 }
                 if (hand.isTichuFor(0) || hand.isGrandTichuFor(0)) {
