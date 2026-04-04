@@ -12,6 +12,7 @@ public class TGViewModel extends ViewModel {
     private final MutableLiveData<Game> currentGame = new MutableLiveData<>();
     private final MutableLiveData<List<Game>> allGames = new MutableLiveData<>();
     private final MutableLiveData<List<Player>> allPlayers = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> clearTichuButtons = new MutableLiveData<>();
 
     @NonNull
     public LiveData<Game> getCurrentGame() { return currentGame; }
@@ -21,6 +22,13 @@ public class TGViewModel extends ViewModel {
 
     @NonNull
     public LiveData<List<Player>> getAllPlayers() { return allPlayers; }
+
+    /** One-shot event: tells CurHandFragment to clear its Tichu radio buttons. */
+    @NonNull
+    public LiveData<Boolean> getClearTichuButtons() { return clearTichuButtons; }
+
+    /** Signal CurHandFragment to clear its Tichu radio buttons. */
+    public void requestClearTichuButtons() { clearTichuButtons.setValue(true); }
 
     /** Push all current TGApp state into LiveData. Call after any external
      *  mutation (e.g. child Activity finishes and TGApp was updated). */

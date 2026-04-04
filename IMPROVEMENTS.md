@@ -57,9 +57,12 @@
 
 ## Code Quality
 
-- [ ] **#10 `CurHandActivity.clearTichuButtonsNow` is public static mutable** (`CurHandActivity.java:29`)
+- [x] **#10 `CurHandActivity.clearTichuButtonsNow` is public static mutable** (`CurHandActivity.java:29`)
   `CurHandFragment` reads and resets this field from its host Activity's static state.
-  Fix: expose a `clearButtons` LiveData event on `TGViewModel` instead.
+  Fixed: added `requestClearTichuButtons()` / `getClearTichuButtons()` LiveData event on
+  `TGViewModel`; `AllGamesFragment` calls `viewModel.requestClearTichuButtons()` in both
+  places; `CurHandFragment` observes the event in `onViewCreated`, removing the `onResume`
+  static-flag poll.
 
 - [x] **#11 Hardcoded color integers** (`CurHandFragment.java:164-165`, `CurHandActivity.java:183-195`)
   `-256` (yellow) and `-7829368` (gray) replaced with `Color.YELLOW` and `Color.GRAY`.
@@ -74,9 +77,10 @@
   retained on each since `Game` and `Hand` are still passed via `Bundle.putSerializable()`
   between activities.
 
-- [ ] **#14 `CurHandActivity` appears to be dead code**
+- [x] **#14 `CurHandActivity` appears to be dead code**
   `TGActivity` hosts `CurHandFragment`; nothing navigates to `CurHandActivity` directly.
-  Verify, then remove to avoid maintaining duplicate logic.
+  Deleted after fix #10 removed the last external reference (the static flag). Also fixed
+  the remaining magic color numbers in `AllGamesFragment` as part of this cleanup.
 
 ---
 

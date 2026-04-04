@@ -34,17 +34,17 @@
                 android:id="@+id/curHandP1RG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1GT"
                     android:checked="false"
                     android:text="GT"
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1None"
                     android:checked="true"
                     android:text=" "
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1T"
                     android:checked="false"
                     android:text="T"
@@ -65,17 +65,17 @@
                 android:id="@+id/curHandP3RG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3GT"
                     android:checked="false"
                     android:text="GT"
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3None"
                     android:checked="true"
                     android:text=" "
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3T"
                     android:checked="false"
                     android:text="T"
@@ -109,17 +109,17 @@
                 android:id="@+id/curHandP2RG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2GT"
                     android:checked="false"
                     android:text="GT"
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2None"
                     android:checked="true"
                     android:text=" "
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2T"
                     android:checked="false"
                     android:text="T"
@@ -140,17 +140,17 @@
                 android:id="@+id/curHandP4RG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4GT"
                     android:checked="false"
                     android:text="GT"
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4None"
                     android:checked="true"
                     android:text=" "
                     android:layout_weight="1"/>
-                <com.tichuguru.SegmentedControlButton
+                <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4T"
                     android:checked="false"
                     android:text="T"

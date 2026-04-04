@@ -65,6 +65,9 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         }
         viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> updateDisplay());
+        viewModel.getClearTichuButtons().observe(getViewLifecycleOwner(), clear -> {
+            if (Boolean.TRUE.equals(clear)) clearTichuButtons();
+        });
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
     }
 
@@ -77,15 +80,6 @@ public class CurHandFragment extends Fragment implements MenuProvider {
             outState.putInt("tichu4", grp4.getCheckedRadioButtonId());
         }
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (CurHandActivity.clearTichuButtonsNow) {
-            CurHandActivity.clearTichuButtonsNow = false;
-            clearTichuButtons();
-        }
     }
 
     @Override

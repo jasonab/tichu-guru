@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,22 +81,20 @@ public class AllGamesFragment extends Fragment {
 
             if (game.isGameOver()) {
                 boolean team1wins = game.getScore1() > game.getScore2();
-                int win = -256, lose = -7829368;
-                holder.team1.setTextColor(team1wins ? win : lose);
-                holder.score1.setTextColor(team1wins ? win : lose);
-                holder.team2.setTextColor(team1wins ? lose : win);
-                holder.score2.setTextColor(team1wins ? lose : win);
+                holder.team1.setTextColor(team1wins ? Color.YELLOW : Color.GRAY);
+                holder.score1.setTextColor(team1wins ? Color.YELLOW : Color.GRAY);
+                holder.team2.setTextColor(team1wins ? Color.GRAY : Color.YELLOW);
+                holder.score2.setTextColor(team1wins ? Color.GRAY : Color.YELLOW);
             } else {
-                int gray = -7829368;
-                holder.team1.setTextColor(gray);
-                holder.score1.setTextColor(gray);
-                holder.team2.setTextColor(gray);
-                holder.score2.setTextColor(gray);
+                holder.team1.setTextColor(Color.GRAY);
+                holder.score1.setTextColor(Color.GRAY);
+                holder.team2.setTextColor(Color.GRAY);
+                holder.score2.setTextColor(Color.GRAY);
             }
 
             holder.deleteBtn.setOnClickListener(new DeleteGameClickListener(idx));
             holder.itemView.setOnClickListener(v -> {
-                CurHandActivity.clearTichuButtonsNow = true;
+                viewModel.requestClearTichuButtons();
                 viewModel.setGame(TGApp.getGames().get(idx));
                 ((TGActivity) requireActivity()).navigateToTab(0);
             });
@@ -123,7 +122,7 @@ public class AllGamesFragment extends Fragment {
                     Game game = games.get(gameNum);
                     games.remove(gameNum);
                     if (TGApp.getGame() == game) {
-                        CurHandActivity.clearTichuButtonsNow = true;
+                        viewModel.requestClearTichuButtons();
                         viewModel.setGame(games.isEmpty() ? null : games.get(games.size() - 1));
                     }
                     viewModel.notifyGamesChanged();

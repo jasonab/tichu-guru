@@ -30,10 +30,5 @@
             android:name=".StatsListActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
-        <activity
-            android:label="Current Hand"
-            android:name=".CurHandActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
     </application>
 </manifest>

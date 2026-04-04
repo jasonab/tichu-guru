@@ -1,4 +1,4 @@
-package com.tichuguru;
+package com.tichuguru.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.RadioButton;
 
-/* loaded from: classes.dex */
 public class SegmentedControlButton extends RadioButton {
     private float mX;
 
@@ -24,7 +23,7 @@ public class SegmentedControlButton extends RadioButton {
         super(context, attrs, defStyle);
     }
 
-    @Override // android.widget.CompoundButton, android.widget.TextView, android.view.View
+    @Override
     public void onDraw(Canvas canvas) {
         String text = getText().toString();
         Paint textPaint = new Paint();
@@ -52,7 +51,7 @@ public class SegmentedControlButton extends RadioButton {
         canvas.drawRect(rect, paint);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int ow, int oh) {
         super.onSizeChanged(w, h, ow, oh);
         this.mX = w * 0.5f;
