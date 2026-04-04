@@ -6,10 +6,11 @@ Items are ordered by priority within each section. Completed items are in the ar
 
 ## Critical
 
-- [ ] **#5 `fallbackToDestructiveMigration()` silently wipes all data on schema change** (`TichuDatabase.java:21`)
-  Any future Room schema change will silently delete all user game history with no warning.
-  Fix: add explicit Room migrations, or at minimum show a confirmation dialog before
-  destruction so users can back up or cancel.
+- [x] **#5 `fallbackToDestructiveMigration()` silently wipes all data on schema change** (`TichuDatabase.java:21`)
+  Reset DB version to 1 (clean baseline). `fallbackToDestructiveMigration()` retained only
+  to handle the one-time transition from pre-v1 installs (old versions 3/4); remove it once
+  all installs are on v1+. All future version increments must include an explicit
+  `Migration(n, n+1)` — no more silent data loss on schema change.
 
 - [ ] **#22 Sub-screens launched as Activities instead of Fragments**
   `NewGameActivity`, `ScoreHandActivity`, and `StatsListActivity` are launched via
