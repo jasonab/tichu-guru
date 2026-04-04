@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application") version "9.1.0"
+    id("com.android.application")
 }
 
 android {
@@ -31,7 +31,6 @@ android {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
