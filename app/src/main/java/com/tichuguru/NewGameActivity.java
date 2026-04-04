@@ -48,7 +48,7 @@ public class NewGameActivity extends AppCompatActivity {
         // from class: com.tichuguru.NewGameActivity.2
 // android.view.View.OnClickListener
         button2.setOnClickListener(v -> NewGameActivity.this.onStartGame());
-        this.nameSpinners = new ArrayList();
+        this.nameSpinners = new ArrayList<>();
         this.nameSpinners.add(findViewById(R.id.newGameName1));
         this.nameSpinners.add(findViewById(R.id.newGameName2));
         this.nameSpinners.add(findViewById(R.id.newGameName3));

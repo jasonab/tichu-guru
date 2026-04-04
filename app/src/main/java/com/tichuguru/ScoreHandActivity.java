@@ -54,10 +54,10 @@ public class ScoreHandActivity extends AppCompatActivity {
             }
             ScoreHandActivity.this.updateHandScore();
         };
-        this.score1 = (WheelView) findViewById(R.id.scoreHandScore1);
+        this.score1 = findViewById(R.id.scoreHandScore1);
         this.score1.setViewAdapter(new ArrayWheelAdapter(this, this.scores));
         this.score1.addChangingListener(changeListener);
-        this.score2 = (WheelView) findViewById(R.id.scoreHandScore2);
+        this.score2 = findViewById(R.id.scoreHandScore2);
         this.score2.setViewAdapter(new ArrayWheelAdapter(this, this.scores));
         this.score2.addChangingListener(changeListener);
         String[] names = new String[4];
@@ -65,23 +65,23 @@ public class ScoreHandActivity extends AppCompatActivity {
         for (int i2 = 0; i2 < players.size(); i2++) {
             names[i2] = players.get(i2).getName();
         }
-        this.outFirst = (WheelView) findViewById(R.id.scoreHandOutFirst);
+        this.outFirst = findViewById(R.id.scoreHandOutFirst);
         this.outFirst.setViewAdapter(new ArrayWheelAdapter(this, names));
         this.outFirst.addChangingListener(changeListener);
-        Button button = (Button) findViewById(R.id.scoreHandSave);
+        Button button = findViewById(R.id.scoreHandSave);
         button.setOnClickListener(new View.OnClickListener() { // from class: com.tichuguru.ScoreHandActivity.2
             @Override // android.view.View.OnClickListener
             public void onClick(View v) {
                 ScoreHandActivity.this.onSave();
             }
         });
-        TextView name = (TextView) findViewById(R.id.scoreHandName1);
+        TextView name = findViewById(R.id.scoreHandName1);
         name.setText(players.get(0).getName());
-        TextView name2 = (TextView) findViewById(R.id.scoreHandName2);
+        TextView name2 = findViewById(R.id.scoreHandName2);
         name2.setText(players.get(1).getName());
-        TextView name3 = (TextView) findViewById(R.id.scoreHandName3);
+        TextView name3 = findViewById(R.id.scoreHandName3);
         name3.setText(players.get(2).getName());
-        TextView name4 = (TextView) findViewById(R.id.scoreHandName4);
+        TextView name4 = findViewById(R.id.scoreHandName4);
         name4.setText(players.get(3).getName());
         this.score1.setCurrentItem(15);
         this.score2.setCurrentItem(15);
@@ -107,6 +107,7 @@ public class ScoreHandActivity extends AppCompatActivity {
     public void onSave() {
         Game game = TGApp.getGame();
         game.scoreHand(this.hand);
+        ((TGApp) getApplication()).saveGames();
         setResult(-1);
         finish();
     }
