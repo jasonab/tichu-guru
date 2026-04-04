@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
-import java.io.File;
 import java.util.List;
 
 public class CurHandFragment extends Fragment {
@@ -26,7 +24,6 @@ public class CurHandFragment extends Fragment {
     private static final int ACT_SCORE_HAND = 0;
     private static final int MENU_END_GAME = 0;
     private static final int MENU_QUIT = 1;
-    private static final int MENU_EXPORTCSV = 2;
 
     private TGViewModel viewModel;
     RadioGroup grp1, grp2, grp3, grp4;
@@ -41,7 +38,7 @@ public class CurHandFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.curhand, container, false);
     }
 
@@ -185,23 +182,11 @@ public class CurHandFragment extends Fragment {
         }
     }
 
-    private void exportCsv() {
-        File tichuDir = new File(Environment.getExternalStorageDirectory(), "TichuGuru");
-        if (!tichuDir.exists() && !tichuDir.mkdir()) {
-            new AlertDialog.Builder(requireContext()).setMessage("Couldn't access /sdcard/TichuGuru.  Do you need to turn off USB storage?").show();
-            return;
-        }
-        TGApp app = (TGApp) requireActivity().getApplication();
-        app.saveCSV(new File(tichuDir, TGApp.CSV_FILE));
-        new AlertDialog.Builder(requireContext()).setMessage("Data saved to /sdcard/TichuGuru.").show();
-    }
-
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         menu.add(0, MENU_END_GAME, 0, "End Game");
-        menu.add(0, MENU_EXPORTCSV, 0, "Export CSV");
         menu.add(0, MENU_QUIT, 0, "Quit");
     }
 
@@ -214,10 +199,6 @@ public class CurHandFragment extends Fragment {
             }
             case MENU_QUIT -> {
                 requireActivity().finish();
-                yield true;
-            }
-            case MENU_EXPORTCSV -> {
-                exportCsv();
                 yield true;
             }
             default -> super.onOptionsItemSelected(item);

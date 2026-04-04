@@ -19,9 +19,10 @@
 - [x] **#3 `TGApp.onCreate()` calls `super.onCreate()` last** (`TGApp.java:30`)
   `super.onCreate()` must be first. Fixed.
 
-- [ ] **#4 CSV export broken on Android 11+** (`CurHandActivity.java:212`, `CurHandFragment.java:186`)
-  `Environment.getExternalStorageDirectory()` access was revoked on API 30+.
-  Fix: use `getExternalFilesDir(null)` or `MediaStore`.
+- [x] **#4 CSV export removed**
+  Broken on Android 11+ (`Environment.getExternalStorageDirectory()` revoked on API 30+).
+  Removed entirely: `exportCsv()` from `CurHandActivity`/`CurHandFragment`, `saveCSV()`
+  and `CSV_FILE` from `TGApp`, `getCSVHeader()`/`toCSVString()` from `Player`.
 
 ---
 
@@ -67,12 +68,11 @@
   Works but breaks silently on any `Player` getter rename. No compile-time safety.
   Fix: replace with typed `Function<Player, ?>` lambdas.
 
-- [ ] **#13 Dead `Externalizable` code on model classes**
-  `Game`, `Hand`, `Player` all implement `Externalizable` with `readExternal`/`writeExternal`,
-  but the project migrated to Room — these methods are never called.
-  Note: the skills file still lists "Replace Java serialization with Room" as a remaining task,
-  but Room is already in use. The migration is done; only the dead serialization code remains.
-  Fix: remove the implementations and `serialVersionUID` fields.
+- [x] **#13 Dead `Externalizable` code on model classes**
+  `Game`, `Hand`, `Player` migrated from `Externalizable` to plain `Serializable`.
+  Removed `readExternal`/`writeExternal`/`REVISION` from all three. `serialVersionUID`
+  retained on each since `Game` and `Hand` are still passed via `Bundle.putSerializable()`
+  between activities.
 
 - [ ] **#14 `CurHandActivity` appears to be dead code**
   `TGActivity` hosts `CurHandFragment`; nothing navigates to `CurHandActivity` directly.

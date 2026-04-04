@@ -1,13 +1,9 @@
 package com.tichuguru.model;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 
 /* loaded from: classes.dex */
-public class Hand implements Externalizable {
-    private static final int REVISION = 1;
+public class Hand implements Serializable {
     public static final long serialVersionUID = 1;
     private boolean addOnFailure;
     private int cardScore1;
@@ -148,45 +144,6 @@ public class Hand implements Externalizable {
         }
         this.totalScore1 = this.cardScore1 + this.tichuScore1;
         this.totalScore2 = this.cardScore2 + this.tichuScore2;
-    }
-
-    @Override // java.io.Externalizable
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        int rev = in.readInt();
-        if (rev > 1) {
-            throw new IOException("Game newer than software");
-        }
-        this.addOnFailure = in.readBoolean();
-        this.totalScore1 = in.readInt();
-        this.totalScore2 = in.readInt();
-        this.tichuScore1 = in.readInt();
-        this.tichuScore2 = in.readInt();
-        this.cardScore1 = in.readInt();
-        this.cardScore2 = in.readInt();
-        this.outFirst = in.readInt();
-        this.tichu = new boolean[4];
-        this.grandTichu = new boolean[4];
-        for (int i = 0; i < 4; i++) {
-            this.tichu[i] = in.readBoolean();
-            this.grandTichu[i] = in.readBoolean();
-        }
-    }
-
-    @Override // java.io.Externalizable
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(1);
-        out.writeBoolean(this.addOnFailure);
-        out.writeInt(this.totalScore1);
-        out.writeInt(this.totalScore2);
-        out.writeInt(this.tichuScore1);
-        out.writeInt(this.tichuScore2);
-        out.writeInt(this.cardScore1);
-        out.writeInt(this.cardScore2);
-        out.writeInt(this.outFirst);
-        for (int i = 0; i < 4; i++) {
-            out.writeBoolean(this.tichu[i]);
-            out.writeBoolean(this.grandTichu[i]);
-        }
     }
 
     public int getTotalScore1() {

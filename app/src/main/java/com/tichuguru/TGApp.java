@@ -9,16 +9,11 @@ import com.tichuguru.db.TichuDatabase;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TGApp extends Application {
-    public static final String CSV_FILE = "TichuGuru.csv";
     public static final String TAG = "tichuguru";
 
     private static Game curGame;
@@ -107,19 +102,6 @@ public class TGApp extends Application {
                 }
             }
         });
-    }
-
-    public void saveCSV(File file) {
-        try {
-            try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
-                out.println(Player.getCSVHeader());
-                for (Player p : players) {
-                    out.println(p.toCSVString());
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Error saving CSV", e);
-        }
     }
 
     public static List<Game> getGames() { return games; }

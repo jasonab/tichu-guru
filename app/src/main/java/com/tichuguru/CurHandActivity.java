@@ -5,8 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Environment;
-import java.io.File;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +22,6 @@ import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 /* loaded from: classes.dex */
 public class CurHandActivity extends AppCompatActivity {
     private static final int MENU_END_GAME = 0;
-    private static final int MENU_EXPORTCSV = 2;
     private static final int MENU_QUIT = 1;
     public static boolean clearTichuButtonsNow = false;
     RadioGroup grp1;
@@ -208,24 +205,11 @@ public class CurHandActivity extends AppCompatActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    private void exportCsv() {
-        File tichuDir = new File(Environment.getExternalStorageDirectory(), "TichuGuru");
-        if (!tichuDir.exists() && !tichuDir.mkdir()) {
-            new AlertDialog.Builder(this).setMessage("Couldn't access /sdcard/TichuGuru.  Do you need to turn off USB storage?").show();
-            return;
-        }
-        TGApp app = (TGApp) getApplication();
-        app.saveCSV(new File(tichuDir, TGApp.CSV_FILE));
-        new AlertDialog.Builder(this).setMessage("Data saved to /sdcard/TichuGuru.").show();
-    }
-
     @Override // android.app.Activity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         menu.add(0, MENU_END_GAME, 0, "End Game");
-        menu.add(0, MENU_EXPORTCSV, 0, "Export CSV");
         menu.add(0, MENU_QUIT, 0, "Quit");
         return true;
     }
@@ -238,9 +222,6 @@ public class CurHandActivity extends AppCompatActivity {
                 return true;
             case MENU_QUIT:
                 finish();
-                return true;
-            case MENU_EXPORTCSV:
-                exportCsv();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

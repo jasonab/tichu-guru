@@ -2,14 +2,10 @@ package com.tichuguru.model;
 
 import androidx.annotation.NonNull;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 
 /* loaded from: classes.dex */
-public class Player implements Comparable<Player>, Externalizable {
-    private static final int REVISION = 1;
+public class Player implements Comparable<Player>, Serializable {
     public static final long serialVersionUID = 1;
     private int cardPoints;
     private long dbId;
@@ -234,61 +230,6 @@ public class Player implements Comparable<Player>, Externalizable {
         this.numTichusStopped = 0;
         this.numTichusMadeByPartner = 0;
         this.numTichusCalledByPartner = 0;
-    }
-
-    @Override // java.io.Externalizable
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        int rev = in.readInt();
-        if (rev > 1) {
-            throw new IOException("Game newer than software");
-        }
-        this.name = (String) in.readObject();
-        this.numGames = in.readInt();
-        this.numWins = in.readInt();
-        this.numHands = in.readInt();
-        this.totalPoints = in.readInt();
-        this.cardPoints = in.readInt();
-        this.numDoubleWins = in.readInt();
-        this.numTichuCalled = in.readInt();
-        this.numTichuMade = in.readInt();
-        this.numGTCalled = in.readInt();
-        this.numGTMade = in.readInt();
-        this.tichuEfficiencyPoints = in.readInt();
-        this.tichuEfficiencyHands = in.readInt();
-        this.numTichusStopped = in.readInt();
-        this.numTichusCalledByOpps = in.readInt();
-        this.numTichusCalledByPartner = in.readInt();
-        this.numTichusMadeByPartner = in.readInt();
-    }
-
-    @Override // java.io.Externalizable
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(1);
-        out.writeObject(this.name);
-        out.writeInt(this.numGames);
-        out.writeInt(this.numWins);
-        out.writeInt(this.numHands);
-        out.writeInt(this.totalPoints);
-        out.writeInt(this.cardPoints);
-        out.writeInt(this.numDoubleWins);
-        out.writeInt(this.numTichuCalled);
-        out.writeInt(this.numTichuMade);
-        out.writeInt(this.numGTCalled);
-        out.writeInt(this.numGTMade);
-        out.writeInt(this.tichuEfficiencyPoints);
-        out.writeInt(this.tichuEfficiencyHands);
-        out.writeInt(this.numTichusStopped);
-        out.writeInt(this.numTichusCalledByOpps);
-        out.writeInt(this.numTichusCalledByPartner);
-        out.writeInt(this.numTichusMadeByPartner);
-    }
-
-    public static String getCSVHeader() {
-        return "Name,NumGames,NumWins,NumHands,TotalPts,CardPts,NumDW,NumTCalled,NumTMade,NumGTCalled,NumGTMade,TEffPts,TEffHands,NumTStopped,NumTCalledOpps,NumTCalledPartner,NumTMadePartner";
-    }
-
-    public String toCSVString() {
-        return String.valueOf(this.name) + "," + this.numGames + "," + this.numWins + "," + this.numHands + "," + this.totalPoints + "," + this.cardPoints + "," + this.numDoubleWins + "," + this.numTichuCalled + "," + this.numTichuMade + "," + this.numGTCalled + "," + this.numGTMade + "," + this.tichuEfficiencyPoints + "," + this.tichuEfficiencyHands + "," + this.numTichusStopped + "," + this.numTichusCalledByOpps + "," + this.numTichusCalledByPartner + "," + this.numTichusMadeByPartner;
     }
 
     public double getWinPct() {

@@ -2,19 +2,13 @@ package com.tichuguru.model;
 
 import androidx.annotation.NonNull;
 
-import com.tichuguru.TGApp;
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /* loaded from: classes.dex */
-public class Game implements Externalizable {
-    private static final int REVISION = 1;
+public class Game implements Serializable {
     public static final long serialVersionUID = 1;
     private boolean addOnFailure;
     private Date date;
@@ -113,64 +107,6 @@ public class Game implements Externalizable {
             }
         }
         return false;
-    }
-
-    @Override // java.io.Externalizable
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        int rev = in.readInt();
-        if (rev > 1) {
-            throw new IOException("Game newer than software");
-        }
-        this.players = new ArrayList();
-        for (int i = 0; i < 4; i++) {
-            String name = (String) in.readObject();
-            Player foundP = null;
-            List<Player> allPlayers = TGApp.getPlayers();
-            Iterator<Player> it = allPlayers.iterator();
-            while (true) {
-                if (!it.hasNext()) {
-                    break;
-                }
-                Player p = it.next();
-                if (name.equals(p.getName())) {
-                    foundP = p;
-                    break;
-                }
-            }
-            if (foundP == null) {
-                foundP = new Player(name);
-                if (!name.equals("New Player")) {
-                    throw new RuntimeException("Couldn't find player " + name);
-                }
-            }
-            this.players.add(foundP);
-        }
-        this.hands = (List) in.readObject();
-        this.score1 = in.readInt();
-        this.score2 = in.readInt();
-        this.gameLimit = in.readInt();
-        this.gameOver = in.readBoolean();
-        this.date = (Date) in.readObject();
-        this.mercyRule = in.readBoolean();
-        this.ignoreStats = in.readBoolean();
-        this.addOnFailure = in.readBoolean();
-    }
-
-    @Override // java.io.Externalizable
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(1);
-        for (int i = 0; i < 4; i++) {
-            out.writeObject(this.players.get(i).getName());
-        }
-        out.writeObject(this.hands);
-        out.writeInt(this.score1);
-        out.writeInt(this.score2);
-        out.writeInt(this.gameLimit);
-        out.writeBoolean(this.gameOver);
-        out.writeObject(this.date);
-        out.writeBoolean(this.mercyRule);
-        out.writeBoolean(this.ignoreStats);
-        out.writeBoolean(this.addOnFailure);
     }
 
     public List<Player> getPlayers() {
