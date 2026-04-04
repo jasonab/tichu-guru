@@ -16,6 +16,7 @@ public class Game implements Externalizable {
     public static final long serialVersionUID = 1;
     private boolean addOnFailure;
     private Date date;
+    private long dbId;
     private int gameLimit;
     private boolean gameOver;
     private List<Hand> hands;
@@ -46,14 +47,14 @@ public class Game implements Externalizable {
     }
 
     public int lastScore1() {
-        if (this.hands.size() == 0) {
+        if (this.hands.isEmpty()) {
             return 0;
         }
         return this.hands.get(this.hands.size() - 1).getTotalScore1();
     }
 
     public int lastScore2() {
-        if (this.hands.size() == 0) {
+        if (this.hands.isEmpty()) {
             return 0;
         }
         return this.hands.get(this.hands.size() - 1).getTotalScore2();
@@ -226,7 +227,16 @@ public class Game implements Externalizable {
         return this.hands;
     }
 
+    public long getDbId() { return dbId; }
+    public void setDbId(long dbId) { this.dbId = dbId; }
+
     public void setGameLimit(int gameLimit) {
         this.gameLimit = gameLimit;
     }
+
+    public void setScore1(int score1) { this.score1 = score1; }
+    public void setScore2(int score2) { this.score2 = score2; }
+    public void setGameOver(boolean gameOver) { this.gameOver = gameOver; }
+    public void setDate(Date date) { this.date = date; }
+    public void setHands(List<Hand> hands) { this.hands = hands; }
 }

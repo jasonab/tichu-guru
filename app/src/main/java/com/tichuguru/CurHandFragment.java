@@ -3,7 +3,6 @@ package com.tichuguru;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,9 +25,7 @@ public class CurHandFragment extends Fragment {
     private static final int ACT_SCORE_HAND = 0;
     private static final int MENU_END_GAME = 0;
     private static final int MENU_QUIT = 1;
-    private static final int MENU_EXPORT = 2;
-    private static final int MENU_IMPORT = 3;
-    private static final int MENU_EXPORTCSV = 4;
+    private static final int MENU_EXPORTCSV = 2;
 
     private TGViewModel viewModel;
     RadioGroup grp1, grp2, grp3, grp4;
@@ -184,56 +181,15 @@ public class CurHandFragment extends Fragment {
         }
     }
 
-    private File getTichuDir() {
+    private void exportCsv() {
         File tichuDir = new File(Environment.getExternalStorageDirectory(), "TichuGuru");
         if (!tichuDir.exists() && !tichuDir.mkdir()) {
             new AlertDialog.Builder(requireContext()).setMessage("Couldn't access /sdcard/TichuGuru.  Do you need to turn off USB storage?").show();
-            return null;
+            return;
         }
-        return tichuDir;
-    }
-
-    private void exportData() {
-        File dir = getTichuDir();
-        if (dir != null) {
-            TGApp app = (TGApp) requireActivity().getApplication();
-            app.savePlayers(new File(dir, TGApp.PLAYER_FILE));
-            app.saveGames(new File(dir, TGApp.GAME_FILE));
-            new AlertDialog.Builder(requireContext()).setMessage("Data saved to /sdcard/TichuGuru.").show();
-        }
-    }
-
-    private void exportCsv() {
-        File dir = getTichuDir();
-        if (dir != null) {
-            TGApp app = (TGApp) requireActivity().getApplication();
-            app.saveCSV(new File(dir, TGApp.CSV_FILE));
-            new AlertDialog.Builder(requireContext()).setMessage("Data saved to /sdcard/TichuGuru.").show();
-        }
-    }
-
-    private void importData() {
-        new AlertDialog.Builder(requireContext())
-            .setMessage("This will replace all existing data with the data from /sdcard/TichuGuru.  Are you sure?")
-            .setPositiveButton("Yes", (dialog, which) -> {
-                File dir = getTichuDir();
-                if (dir == null) return;
-                File playerFile = new File(dir, TGApp.PLAYER_FILE);
-                File gameFile = new File(dir, TGApp.GAME_FILE);
-                if (!playerFile.exists() || !gameFile.exists()) {
-                    new AlertDialog.Builder(requireContext()).setMessage("/sdcard/TichuGuru/Players.dat and Games.dat must both exist").show();
-                    return;
-                }
-                TGApp app = (TGApp) requireActivity().getApplication();
-                app.loadPlayers(playerFile);
-                app.loadGames(gameFile);
-                List<Game> games = TGApp.getGames();
-                TGApp.setGame(games.get(games.size() - 1));
-                updateDisplay();
-                new AlertDialog.Builder(requireContext()).setMessage("Data imported").show();
-            })
-            .setNegativeButton("No", null)
-            .show();
+        TGApp app = (TGApp) requireActivity().getApplication();
+        app.saveCSV(new File(tichuDir, TGApp.CSV_FILE));
+        new AlertDialog.Builder(requireContext()).setMessage("Data saved to /sdcard/TichuGuru.").show();
     }
 
     @Override
@@ -241,8 +197,6 @@ public class CurHandFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         menu.add(0, MENU_END_GAME, 0, "End Game");
-        menu.add(0, MENU_EXPORT, 0, "Export Data");
-        menu.add(0, MENU_IMPORT, 0, "Import Data");
         menu.add(0, MENU_EXPORTCSV, 0, "Export CSV");
         menu.add(0, MENU_QUIT, 0, "Quit");
     }
@@ -252,8 +206,6 @@ public class CurHandFragment extends Fragment {
         switch (item.getItemId()) {
             case MENU_END_GAME:   onEndGame(); return true;
             case MENU_QUIT:       requireActivity().finish(); return true;
-            case MENU_EXPORT:     exportData(); return true;
-            case MENU_IMPORT:     importData(); return true;
             case MENU_EXPORTCSV:  exportCsv(); return true;
             default: return super.onOptionsItemSelected(item);
         }

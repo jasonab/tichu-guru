@@ -10,6 +10,7 @@ public class Player implements Comparable<Player>, Externalizable {
     private static final int REVISION = 1;
     public static final long serialVersionUID = 1;
     private int cardPoints;
+    private long dbId;
     private String name;
     private int numDoubleWins;
     private int numGTCalled;
@@ -299,14 +300,14 @@ public class Player implements Comparable<Player>, Externalizable {
         if (this.numHands == 0) {
             return 0.0d;
         }
-        return this.totalPoints / this.numHands;
+        return (double) this.totalPoints / this.numHands;
     }
 
     public double getCardPtsPerHand() {
         if (this.numHands == 0) {
             return 0.0d;
         }
-        return this.cardPoints / this.numHands;
+        return (double) this.cardPoints / this.numHands;
     }
 
     public double getTichuPct() {
@@ -327,14 +328,14 @@ public class Player implements Comparable<Player>, Externalizable {
         if (this.tichuEfficiencyHands == 0) {
             return 0.0d;
         }
-        return this.tichuEfficiencyPoints / this.tichuEfficiencyHands;
+        return (double) this.tichuEfficiencyPoints / this.tichuEfficiencyHands;
     }
 
     public double getHandsPerDW() {
         if (this.numDoubleWins == 0) {
             return 1000.0d;
         }
-        return this.numHands / this.numDoubleWins;
+        return (double) this.numHands / this.numDoubleWins;
     }
 
     public int nonCalls() {
@@ -424,4 +425,26 @@ public class Player implements Comparable<Player>, Externalizable {
     public int getNumTichusMadeByPartner() {
         return this.numTichusMadeByPartner;
     }
+
+    public int getTotalPoints() { return this.totalPoints; }
+    public int getCardPoints() { return this.cardPoints; }
+    public int getTichuEfficiencyPoints() { return this.tichuEfficiencyPoints; }
+
+    public void setNumGames(int v) { this.numGames = v; }
+    public void setNumWins(int v) { this.numWins = v; }
+    public void setNumHands(int v) { this.numHands = v; }
+    public void setTotalPoints(int v) { this.totalPoints = v; }
+    public void setCardPoints(int v) { this.cardPoints = v; }
+    public void setNumDoubleWins(int v) { this.numDoubleWins = v; }
+    public void setNumTichuCalled(int v) { this.numTichuCalled = v; }
+    public void setNumTichuMade(int v) { this.numTichuMade = v; }
+    public void setNumGTCalled(int v) { this.numGTCalled = v; }
+    public void setNumGTMade(int v) { this.numGTMade = v; }
+    public void setTichuEfficiencyPoints(int v) { this.tichuEfficiencyPoints = v; }
+    public void setTichuEfficiencyHands(int v) { this.tichuEfficiencyHands = v; }
+    public void setNumTichusCalledByOpps(int v) { this.numTichusCalledByOpps = v; }
+    public void setNumTichusCalledByPartner(int v) { this.numTichusCalledByPartner = v; }
+    public void setNumTichusMadeByPartner(int v) { this.numTichusMadeByPartner = v; }
+    public long getDbId() { return dbId; }
+    public void setDbId(long dbId) { this.dbId = dbId; }
 }

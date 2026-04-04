@@ -2,183 +2,143 @@ package com.tichuguru;
 
 import android.app.Application;
 import android.util.Log;
+import com.tichuguru.db.GameEntity;
+import com.tichuguru.db.HandEntity;
+import com.tichuguru.db.PlayerEntity;
+import com.tichuguru.db.TichuDatabase;
 import com.tichuguru.model.Game;
+import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-/* loaded from: classes.dex */
 public class TGApp extends Application {
     public static final String CSV_FILE = "TichuGuru.csv";
-    private static final int GAMEREV = 0;
-    public static final String GAME_FILE = "Games.dat";
-    private static final int PLAYERREV = 0;
-    public static final String PLAYER_FILE = "Players.dat";
     public static final String TAG = "tichuguru";
+
     private static Game curGame;
     private static List<Game> games;
     private static List<Player> players;
+    private TichuDatabase db;
 
-    @Override // android.app.Application
+    @Override
     public void onCreate() {
-        loadPlayers(null);
-        loadGames(null);
+        db = TichuDatabase.getInstance(this);
+        loadPlayers();
+        loadGames();
         super.onCreate();
     }
 
-    public void loadPlayers(File file) {
-        ObjectInputStream in;
-        players = new ArrayList();
-        try {
-            if (file == null) {
-                in = new ObjectInputStream(new BufferedInputStream(openFileInput(PLAYER_FILE)));
-            } else {
-                in = new ObjectInputStream(new FileInputStream(file));
-            }
-            try {
-                int rev = in.readInt();
-                if (rev > 0) {
-                    throw new IOException("Player file is newer than software");
-                }
-                int numPlayers = in.readInt();
-                for (int i = 0; i < numPlayers; i++) {
-                    players.add((Player) in.readObject());
-                }
-            } finally {
-                in.close();
-            }
-        } catch (FileNotFoundException e) {
-        } catch (Exception e2) {
-            Log.e(TAG, "Error while loading players", e2);
+    public void loadPlayers() {
+        players = new ArrayList<>();
+        for (PlayerEntity e : db.playerDao().getAll()) {
+            players.add(e.toPlayer());
         }
     }
 
-    public void savePlayers(File file) {
-        ObjectOutputStream out;
-        try {
-            if (file == null) {
-                out = new ObjectOutputStream(new BufferedOutputStream(openFileOutput(PLAYER_FILE, 0)));
-            } else {
-                out = new ObjectOutputStream(Files.newOutputStream(file.toPath()));
-            }
-            try {
-                out.writeInt(0);
-                out.writeInt(players.size());
-                for (Player p : players) {
-                    out.writeObject(p);
-                }
-            } finally {
-                out.close();
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Error while saving players", e);
+    public void savePlayers() {
+        List<PlayerEntity> entities = new ArrayList<>(players.size());
+        for (Player p : players) {
+            entities.add(PlayerEntity.from(p));
         }
+        List<Long> ids = db.playerDao().insertAll(entities);
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).setDbId(ids.get(i));
+        }
+    }
+
+    public void loadGames() {
+        games = new ArrayList<>();
+        for (GameEntity ge : db.gameDao().getAll()) {
+            Game g = buildGameFromEntity(ge);
+            if (g != null) games.add(g);
+        }
+        if (!games.isEmpty()) curGame = games.get(games.size() - 1);
+    }
+
+    private Game buildGameFromEntity(GameEntity ge) {
+        List<Player> gamePlayers = new ArrayList<>(4);
+        long[] playerIds = {ge.player0, ge.player1, ge.player2, ge.player3};
+        for (long pid : playerIds) {
+            Player p = getPlayerById(pid);
+            if (p == null) {
+                Log.e(TAG, "Player not found when loading game, id=" + pid);
+                return null;
+            }
+            gamePlayers.add(p);
+        }
+        Game g = new Game(gamePlayers);
+        g.setDbId(ge.id);
+        g.setScore1(ge.score1);
+        g.setScore2(ge.score2);
+        g.setGameLimit(ge.gameLimit);
+        g.setGameOver(ge.gameOver);
+        g.setDate(new Date(ge.dateMs));
+        g.setMercyRule(ge.mercyRule);
+        g.setIgnoreStats(ge.ignoreStats);
+        g.setAddOnFailure(ge.addOnFailure);
+        List<HandEntity> handEntities = db.handDao().getHandsForGame(ge.id);
+        List<Hand> hands = new ArrayList<>(handEntities.size());
+        for (HandEntity he : handEntities) {
+            hands.add(he.toHand());
+        }
+        g.setHands(hands);
+        return g;
+    }
+
+    public void saveGames() {
+        db.runInTransaction(() -> {
+            for (Game g : games) {
+                long gameId = db.gameDao().insert(GameEntity.from(g));
+                g.setDbId(gameId);
+                db.handDao().deleteHandsForGame(gameId);
+                List<Hand> hands = g.getHands();
+                if (!hands.isEmpty()) {
+                    List<HandEntity> handEntities = new ArrayList<>(hands.size());
+                    for (int i = 0; i < hands.size(); i++) {
+                        handEntities.add(HandEntity.from(hands.get(i), gameId, i));
+                    }
+                    db.handDao().insertAll(handEntities);
+                }
+            }
+        });
     }
 
     public void saveCSV(File file) {
         try {
-            PrintWriter out = new PrintWriter(new FileWriter(file));
-            try {
+            try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
                 out.println(Player.getCSVHeader());
                 for (Player p : players) {
                     out.println(p.toCSVString());
                 }
-            } finally {
-                out.close();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Error while saving players", e);
+            Log.e(TAG, "Error saving CSV", e);
         }
     }
 
-    public void loadGames(File file) {
-        ObjectInputStream in;
-        int rev;
-        games = new ArrayList();
-        try {
-            if (file == null) {
-                in = new ObjectInputStream(new BufferedInputStream(openFileInput(GAME_FILE)));
-            } else {
-                in = new ObjectInputStream(new FileInputStream(file));
-            }
-            try {
-                rev = in.readInt();
-                if (rev > 0) {
-                    throw new IOException("Game file is newer than software");
-                }
-                int numGames = in.readInt();
-                for (int i = 0; i < numGames; i++) {
-                    games.add((Game) in.readObject());
-                }
-                if (!games.isEmpty()) {
-                    curGame = games.get(games.size() - 1);
-                }
-            } finally {
-                in.close();
-            }
-        } catch (FileNotFoundException e) {
-        } catch (Exception e2) {
-            Log.e(TAG, "Error while loading games", e2);
-        }
-
-    }
-
-    public void saveGames(File file) {
-        ObjectOutputStream out;
-        try {
-            if (file == null) {
-                out = new ObjectOutputStream(new BufferedOutputStream(openFileOutput(GAME_FILE, 0)));
-            } else {
-                out = new ObjectOutputStream(new FileOutputStream(file));
-            }
-            try {
-                out.writeInt(0);
-                out.writeInt(games.size());
-                for (Game g : games) {
-                    out.writeObject(g);
-                }
-            } finally {
-                out.close();
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Error while saving games", e);
-        }
-    }
-
-    public static List<Game> getGames() {
-        return games;
-    }
-
-    public static List<Player> getPlayers() {
-        return players;
-    }
+    public static List<Game> getGames() { return games; }
+    public static List<Player> getPlayers() { return players; }
 
     public static Player getPlayer(String name) {
         for (Player p : players) {
-            if (name.equals(p.getName())) {
-                return p;
-            }
+            if (name.equals(p.getName())) return p;
         }
         return null;
     }
 
-    public static Game getGame() {
-        return curGame;
+    public static Player getPlayerById(long id) {
+        for (Player p : players) {
+            if (p.getDbId() == id) return p;
+        }
+        return null;
     }
 
-    public static void setGame(Game game) {
-        curGame = game;
-    }
+    public static Game getGame() { return curGame; }
+    public static void setGame(Game game) { curGame = game; }
 }

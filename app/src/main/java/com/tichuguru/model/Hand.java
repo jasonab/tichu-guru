@@ -228,4 +228,24 @@ public class Hand implements Externalizable {
     public int getCardScore2() {
         return this.cardScore2;
     }
+
+    public boolean isAddOnFailure() { return this.addOnFailure; }
+    public void setAddOnFailure(boolean v) { this.addOnFailure = v; }
+
+    /** Set cardScore1 without recalculating totals (use when loading persisted data). */
+    public void setCardScore1Direct(int v) { this.cardScore1 = v; }
+    /** Set cardScore2 without recalculating totals (use when loading persisted data). */
+    public void setCardScore2Direct(int v) { this.cardScore2 = v; }
+    /** Set outFirst without recalculating tichu scores (use when loading persisted data). */
+    public void setOutFirstDirect(int v) { this.outFirst = v; }
+    /** Set tichu flag directly without recalculating scores (use when loading persisted data). */
+    public void setTichuDirect(int player, boolean v) {
+        if (this.tichu == null) this.tichu = new boolean[4];
+        this.tichu[player] = v;
+    }
+    /** Set grand tichu flag directly without recalculating scores (use when loading persisted data). */
+    public void setGrandTichuDirect(int player, boolean v) {
+        if (this.grandTichu == null) this.grandTichu = new boolean[4];
+        this.grandTichu[player] = v;
+    }
 }

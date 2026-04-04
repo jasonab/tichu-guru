@@ -94,8 +94,8 @@ public class TGActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         TGApp app = (TGApp) getApplication();
-        app.savePlayers(null);
-        app.saveGames(null);
+        app.savePlayers();
+        app.saveGames();
         super.onPause();
     }
 

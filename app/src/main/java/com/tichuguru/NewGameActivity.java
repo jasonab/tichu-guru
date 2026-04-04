@@ -74,7 +74,7 @@ public class NewGameActivity extends AppCompatActivity {
     @Override // android.app.Activity
     protected void onPause() {
         TGApp app = (TGApp) getApplication();
-        app.savePlayers(null);
+        app.savePlayers();
         super.onPause();
     }
 

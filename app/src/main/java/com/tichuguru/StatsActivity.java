@@ -1,5 +1,6 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
@@ -114,8 +115,9 @@ public class StatsActivity extends AppCompatActivity {
         }
 
         /* JADX WARN: Failed to find 'out' block for switch in B:14:0x007a. Please report as an issue. */
+        @NonNull
         @Override // android.widget.ArrayAdapter, android.widget.Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             View v = convertView;
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater) StatsActivity.this.getSystemService("layout_inflater");
@@ -217,10 +219,10 @@ public class StatsActivity extends AppCompatActivity {
         /* JADX INFO: Access modifiers changed from: package-private */
         /* loaded from: classes.dex */
         public class RankExpandListener implements View.OnClickListener {
-            private Getter extraGetter1;
+            private final Getter extraGetter1;
             private Getter extraGetter2;
-            private Getter rankValueGetter;
-            private boolean sortDescending;
+            private final Getter rankValueGetter;
+            private final boolean sortDescending;
             private String title;
 
             public RankExpandListener(String title, boolean sortDescending, String rankValue, String extra1, String extra2) {
@@ -243,15 +245,12 @@ public class StatsActivity extends AppCompatActivity {
                 List<Player> players = TGApp.getPlayers();
                 List<Player> ps = new ArrayList<>(players);
                 String[] r15 = new String[ps.size()];
-                Collections.sort(ps, new Comparator<Player>() { // from class: com.tichuguru.StatsActivity.StatsAdapter.RankExpandListener.1
-                    @Override // java.util.Comparator
-                    public int compare(Player p1, Player p2) {
-                        double diff = ((Double) RankExpandListener.this.rankValueGetter.getValue(p1)).doubleValue() - ((Double) RankExpandListener.this.rankValueGetter.getValue(p2)).doubleValue();
-                        if (RankExpandListener.this.sortDescending) {
-                            diff = -diff;
-                        }
-                        return (int) Math.signum(diff);
+                ps.sort((p1, p2) -> {
+                    double diff = (Double) RankExpandListener.this.rankValueGetter.getValue(p1) - (Double) RankExpandListener.this.rankValueGetter.getValue(p2);
+                    if (RankExpandListener.this.sortDescending) {
+                        diff = -diff;
                     }
+                    return (int) Math.signum(diff);
                 });
                 String[] r9 = new String[ps.size()];
                 for (int i = 0; i < ps.size(); i++) {
@@ -260,9 +259,9 @@ public class StatsActivity extends AppCompatActivity {
                 int digits = 1;
                 for (Player p : ps) {
                     if (this.extraGetter2 != null) {
-                        log = Math.log10(((Integer) this.extraGetter2.getValue(p)).intValue()) + 1.0d;
+                        log = Math.log10((Integer) this.extraGetter2.getValue(p)) + 1.0d;
                     } else {
-                        log = Math.log10(((Integer) this.extraGetter1.getValue(p)).intValue()) + 1.0d;
+                        log = Math.log10((Integer) this.extraGetter1.getValue(p)) + 1.0d;
                     }
                     if (Double.isNaN(log)) {
                         log = 1.0d;
@@ -298,7 +297,7 @@ public class StatsActivity extends AppCompatActivity {
     /* JADX INFO: Access modifiers changed from: private */
     /* loaded from: classes.dex */
     public static class Getter {
-        private Method getMethod;
+        private final Method getMethod;
 
         public Getter(String valName) {
             try {
