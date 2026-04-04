@@ -61,9 +61,8 @@
   `CurHandFragment` reads and resets this field from its host Activity's static state.
   Fix: expose a `clearButtons` LiveData event on `TGViewModel` instead.
 
-- [ ] **#11 Hardcoded color integers** (`CurHandFragment.java:164-165`, `CurHandActivity.java:183-195`)
-  `-256` (yellow) and `-7829368` (gray) should be `@ColorRes` entries in `colors.xml`,
-  referenced via `ContextCompat.getColor()`.
+- [x] **#11 Hardcoded color integers** (`CurHandFragment.java:164-165`, `CurHandActivity.java:183-195`)
+  `-256` (yellow) and `-7829368` (gray) replaced with `Color.YELLOW` and `Color.GRAY`.
 
 - [ ] **#12 Reflection in `StatsActivity.Getter`** (`StatsActivity.java:302-315`)
   Works but breaks silently on any `Player` getter rename. No compile-time safety.

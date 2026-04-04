@@ -5,7 +5,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,9 +18,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
+
 import java.util.List;
 
 public class CurHandFragment extends Fragment implements MenuProvider {
@@ -108,28 +112,28 @@ public class CurHandFragment extends Fragment implements MenuProvider {
             return;
         }
         new AlertDialog.Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes", (dialog, which) -> {
-                TGApp.getGame().endGame();
-                TGApp app = (TGApp) requireActivity().getApplication();
-                app.saveGames();
-                app.savePlayers();
-                updateDisplay();
-            })
-            .setNegativeButton("No", null)
-            .show();
+                .setMessage("Are you sure?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    TGApp.getGame().endGame();
+                    TGApp app = (TGApp) requireActivity().getApplication();
+                    app.saveGames();
+                    app.savePlayers();
+                    updateDisplay();
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     private void onScoreHand() {
         Hand hand = new Hand(TGApp.getGame());
         if (grp1.getCheckedRadioButtonId() == R.id.curHandP1GT) hand.setGrandTichuFor(0);
-        if (grp1.getCheckedRadioButtonId() == R.id.curHandP1T)  hand.setTichuFor(0);
+        if (grp1.getCheckedRadioButtonId() == R.id.curHandP1T) hand.setTichuFor(0);
         if (grp2.getCheckedRadioButtonId() == R.id.curHandP2GT) hand.setGrandTichuFor(1);
-        if (grp2.getCheckedRadioButtonId() == R.id.curHandP2T)  hand.setTichuFor(1);
+        if (grp2.getCheckedRadioButtonId() == R.id.curHandP2T) hand.setTichuFor(1);
         if (grp3.getCheckedRadioButtonId() == R.id.curHandP3GT) hand.setGrandTichuFor(2);
-        if (grp3.getCheckedRadioButtonId() == R.id.curHandP3T)  hand.setTichuFor(2);
+        if (grp3.getCheckedRadioButtonId() == R.id.curHandP3T) hand.setTichuFor(2);
         if (grp4.getCheckedRadioButtonId() == R.id.curHandP4GT) hand.setGrandTichuFor(3);
-        if (grp4.getCheckedRadioButtonId() == R.id.curHandP4T)  hand.setTichuFor(3);
+        if (grp4.getCheckedRadioButtonId() == R.id.curHandP4T) hand.setTichuFor(3);
         Bundle bundle = new Bundle();
         bundle.putSerializable("newHand", hand);
         Intent intent = new Intent(requireActivity(), ScoreHandActivity.class);
@@ -156,8 +160,8 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         name4.setText(players.get(3).getName());
         if (game.isGameOver()) {
             boolean team1wins = game.getScore1() > game.getScore2();
-            int winColor = -256;     // yellow
-            int loseColor = -7829368; // gray
+            int winColor = Color.YELLOW;
+            int loseColor = Color.GRAY;
             score1.setTextColor(team1wins ? winColor : loseColor);
             name1.setTextColor(team1wins ? winColor : loseColor);
             name3.setTextColor(team1wins ? winColor : loseColor);
@@ -166,7 +170,7 @@ public class CurHandFragment extends Fragment implements MenuProvider {
             name4.setTextColor(team1wins ? loseColor : winColor);
             scoreHandButton.setEnabled(false);
         } else {
-            int color = -7829368;
+            int color = Color.GRAY;
             score1.setTextColor(color);
             name1.setTextColor(color);
             name3.setTextColor(color);

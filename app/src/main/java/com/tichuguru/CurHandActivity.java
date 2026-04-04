@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -165,7 +166,6 @@ public class CurHandActivity extends AppCompatActivity {
         this.grp4.check(R.id.curHandP4None);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
     public void updateDisplay() {
         Game game = TGApp.getGame();
         if (game != null) {
@@ -178,29 +178,29 @@ public class CurHandActivity extends AppCompatActivity {
             this.name4.setText(players.get(3).getName());
             if (game.isGameOver()) {
                 if (game.getScore1() > game.getScore2()) {
-                    this.score1.setTextColor(-256);
-                    this.name1.setTextColor(-256);
-                    this.name3.setTextColor(-256);
-                    this.score2.setTextColor(-7829368);
-                    this.name2.setTextColor(-7829368);
-                    this.name4.setTextColor(-7829368);
+                    this.score1.setTextColor(Color.YELLOW);
+                    this.name1.setTextColor(Color.YELLOW);
+                    this.name3.setTextColor(Color.YELLOW);
+                    this.score2.setTextColor(Color.GRAY);
+                    this.name2.setTextColor(Color.GRAY);
+                    this.name4.setTextColor(Color.GRAY);
                 } else {
-                    this.score1.setTextColor(-7829368);
-                    this.name1.setTextColor(-7829368);
-                    this.name3.setTextColor(-7829368);
-                    this.score2.setTextColor(-256);
-                    this.name2.setTextColor(-256);
-                    this.name4.setTextColor(-256);
+                    this.score1.setTextColor(Color.GRAY);
+                    this.name1.setTextColor(Color.GRAY);
+                    this.name3.setTextColor(Color.GRAY);
+                    this.score2.setTextColor(Color.YELLOW);
+                    this.name2.setTextColor(Color.YELLOW);
+                    this.name4.setTextColor(Color.YELLOW);
                 }
                 this.scoreHandButton.setEnabled(false);
                 return;
             }
-            this.score1.setTextColor(-7829368);
-            this.name1.setTextColor(-7829368);
-            this.name3.setTextColor(-7829368);
-            this.score2.setTextColor(-7829368);
-            this.name2.setTextColor(-7829368);
-            this.name4.setTextColor(-7829368);
+            this.score1.setTextColor(Color.GRAY);
+            this.name1.setTextColor(Color.GRAY);
+            this.name3.setTextColor(Color.GRAY);
+            this.score2.setTextColor(Color.GRAY);
+            this.name2.setTextColor(Color.GRAY);
+            this.name4.setTextColor(Color.GRAY);
             this.scoreHandButton.setEnabled(true);
         }
     }
