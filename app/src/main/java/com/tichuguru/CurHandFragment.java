@@ -1,5 +1,6 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -72,7 +73,7 @@ public class CurHandFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         if (grp1 != null) {
             outState.putInt("tichu1", grp1.getCheckedRadioButtonId());
             outState.putInt("tichu2", grp2.getCheckedRadioButtonId());
@@ -202,12 +203,21 @@ public class CurHandFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_END_GAME:   onEndGame(); return true;
-            case MENU_QUIT:       requireActivity().finish(); return true;
-            case MENU_EXPORTCSV:  exportCsv(); return true;
-            default: return super.onOptionsItemSelected(item);
-        }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        return switch (item.getItemId()) {
+            case MENU_END_GAME -> {
+                onEndGame();
+                yield true;
+            }
+            case MENU_QUIT -> {
+                requireActivity().finish();
+                yield true;
+            }
+            case MENU_EXPORTCSV -> {
+                exportCsv();
+                yield true;
+            }
+            default -> super.onOptionsItemSelected(item);
+        };
     }
 }

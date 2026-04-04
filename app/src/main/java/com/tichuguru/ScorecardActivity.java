@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +90,7 @@ public class ScorecardActivity extends AppCompatActivity {
                 v = vi.inflate(R.layout.scorecardrow, null);
             }
             Hand hand = this.game.getHands().get(position);
-            TextView scoreTV = (TextView) v.findViewById(R.id.scorecardHandScore1);
+            TextView scoreTV = v.findViewById(R.id.scorecardHandScore1);
             int score = hand.getTotalScore1();
             scoreTV.setText(String.valueOf(score >= 0 ? "+" : "") + String.valueOf(score));
             TextView scoreTV2 = (TextView) v.findViewById(R.id.scorecardHandScore2);
@@ -112,7 +113,7 @@ public class ScorecardActivity extends AppCompatActivity {
                 if (hand.outFirst() == i) {
                     tv.setTextColor(0xFF00AA00);
                 } else {
-                    tv.setTextColor(-65536);
+                    tv.setTextColor(Color.RED);
                 }
             }
             int score1 = 0;
