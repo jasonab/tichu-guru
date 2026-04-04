@@ -1,11 +1,15 @@
 package com.tichuguru;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Player;
@@ -51,6 +55,17 @@ public class TGActivity extends AppCompatActivity {
         viewModel.sync();
 
         bottomNav = findViewById(R.id.bottom_nav);
+
+        View root = findViewById(R.id.main_root);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+            Insets statusBars = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            Insets navInsets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.systemGestures());
+            v.setPadding(0, statusBars.top, 0, 0);
+            bottomNav.setPadding(0, 0, 0, navInsets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             Fragment target;

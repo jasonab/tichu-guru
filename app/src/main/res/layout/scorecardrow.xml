@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:baselineAligned="false"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -9,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTichu1"
             android:layout_width="wrap_content"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTichu3"
             android:layout_width="wrap_content"
@@ -35,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardHandScore1"
             android:layout_width="wrap_content"
@@ -46,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTotalScore1"
@@ -60,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardHandScore2"
             android:layout_width="wrap_content"
@@ -71,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTotalScore2"
@@ -85,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTichu2"
             android:layout_width="wrap_content"
@@ -98,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scorecardTichu4"
             android:layout_width="wrap_content"

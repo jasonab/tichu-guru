@@ -6,30 +6,33 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
+
 import java.util.List;
 
 public class ScorecardFragment extends Fragment {
     private TGViewModel viewModel;
-    private RecyclerView scorecardList;
     private ScorecardAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.scorecard, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        scorecardList = view.findViewById(R.id.scorecardList);
+        RecyclerView scorecardList = view.findViewById(R.id.scorecardList);
         scorecardList.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ScorecardAdapter();
         scorecardList.setAdapter(adapter);
@@ -58,14 +61,14 @@ public class ScorecardFragment extends Fragment {
 
     private void onDeleteHand() {
         new AlertDialog.Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes", (dialog, which) -> {
-                Game game = TGApp.getGame();
-                game.removeHand(game.getHands().size() - 1);
-                viewModel.notifyGameChanged();
-            })
-            .setNegativeButton("No", null)
-            .show();
+                .setMessage("Are you sure?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Game game = TGApp.getGame();
+                    game.removeHand(game.getHands().size() - 1);
+                    viewModel.notifyGameChanged();
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     private static class ScorecardAdapter extends RecyclerView.Adapter<ScorecardAdapter.ViewHolder> {
@@ -96,8 +99,8 @@ public class ScorecardFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Game game = TGApp.getGame();
-            Hand hand = game.getHands().get(position);
+            var game = TGApp.getGame();
+            var hand = game.getHands().get(position);
             int score = hand.getTotalScore1();
             holder.score1.setText((score >= 0 ? "+" : "") + score);
             int score2 = hand.getTotalScore2();
@@ -108,7 +111,7 @@ public class ScorecardFragment extends Fragment {
                 if (hand.isTichuFor(i)) tv.setText("T");
                 else if (hand.isGrandTichuFor(i)) tv.setText("GT");
                 else tv.setText("");
-                tv.setTextColor(hand.outFirst() == i ? 0xFF00AA00 : -65536);
+                tv.setTextColor(hand.outFirst() == i ? 0xFF00AA00 : Color.RED);
             }
 
             int s1 = 0, s2 = 0;
