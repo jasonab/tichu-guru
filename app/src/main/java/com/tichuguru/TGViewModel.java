@@ -1,5 +1,6 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,8 +13,13 @@ public class TGViewModel extends ViewModel {
     private final MutableLiveData<List<Game>> allGames = new MutableLiveData<>();
     private final MutableLiveData<List<Player>> allPlayers = new MutableLiveData<>();
 
+    @NonNull
     public LiveData<Game> getCurrentGame() { return currentGame; }
+
+    @NonNull
     public LiveData<List<Game>> getAllGames() { return allGames; }
+
+    @NonNull
     public LiveData<List<Player>> getAllPlayers() { return allPlayers; }
 
     /** Push all current TGApp state into LiveData. Call after any external

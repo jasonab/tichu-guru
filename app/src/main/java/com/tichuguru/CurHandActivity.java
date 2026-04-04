@@ -1,5 +1,6 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
@@ -229,7 +230,7 @@ public class CurHandActivity extends AppCompatActivity {
     }
 
     @Override // android.app.Activity
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case MENU_END_GAME:
                 onEndGame();

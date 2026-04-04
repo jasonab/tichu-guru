@@ -30,7 +30,7 @@ public class StatsFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView statsList = view.findViewById(R.id.statsList);
         statsList.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -67,6 +67,7 @@ public class StatsFragment extends Fragment {
             }
         }
 
+        @NonNull
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.statsrow, parent, false);
@@ -74,7 +75,7 @@ public class StatsFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             List<Player> players = TGApp.getPlayers();
 
             String label;
