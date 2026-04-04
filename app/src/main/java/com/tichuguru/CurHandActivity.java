@@ -216,15 +216,16 @@ public class CurHandActivity extends AppCompatActivity {
 
     @Override // android.app.Activity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_END_GAME:
+        return switch (item.getItemId()) {
+            case MENU_END_GAME -> {
                 onEndGame();
-                return true;
-            case MENU_QUIT:
+                yield true;
+            }
+            case MENU_QUIT -> {
                 finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+                yield true;
+            }
+            default -> super.onOptionsItemSelected(item);
+        };
     }
 }
