@@ -24,8 +24,8 @@ Items are ordered by priority within each section. Completed items are in the ar
 
 ## High
 
-- [ ] **#9 Magic number `524288` for window flag** (`TGActivity.java:31`)
-  One-line fix: replace with `WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS`.
+- [x] **#9 Magic number `524288` for window flag** (`TGActivity.java:31`)
+  Replaced with `WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS`.
 
 - [ ] **#12 Reflection in `StatsFragment.Getter`** (`StatsFragment.java`)
   `Getter` uses `Player.class.getMethod("get" + valName)` to invoke stat getters by name.
