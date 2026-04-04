@@ -361,8 +361,8 @@ public class Player implements Comparable<Player>, Externalizable {
     }
 
     public boolean equals(Object o) {
-        Player p = (Player) o;
-        return this.name.equals(p.name);
+        if (o == null || !(o instanceof Player)) return false;
+        return this.name.equals(((Player) o).name);
     }
 
     @Override // java.lang.Comparable

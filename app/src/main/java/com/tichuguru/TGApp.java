@@ -28,10 +28,10 @@ public class TGApp extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         db = TichuDatabase.getInstance(this);
         loadPlayers();
         loadGames();
-        super.onCreate();
     }
 
     public void loadPlayers() {
