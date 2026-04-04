@@ -110,7 +110,7 @@ public class ScorecardActivity extends AppCompatActivity {
                     tv.setText("");
                 }
                 if (hand.outFirst() == i) {
-                    tv.setTextColor(-1);
+                    tv.setTextColor(0xFF00AA00);
                 } else {
                     tv.setTextColor(-65536);
                 }

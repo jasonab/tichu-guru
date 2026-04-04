@@ -108,7 +108,7 @@ public class ScorecardFragment extends Fragment {
                 if (hand.isTichuFor(i)) tv.setText("T");
                 else if (hand.isGrandTichuFor(i)) tv.setText("GT");
                 else tv.setText("");
-                tv.setTextColor(hand.outFirst() == i ? -1 : -65536);
+                tv.setTextColor(hand.outFirst() == i ? 0xFF00AA00 : -65536);
             }
 
             int s1 = 0, s2 = 0;
