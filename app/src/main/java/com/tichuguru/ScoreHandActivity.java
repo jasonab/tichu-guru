@@ -100,9 +100,10 @@ public class ScoreHandActivity extends AppCompatActivity {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void onSave() {
-        Game game = TGApp.getGame();
-        game.scoreHand(this.hand);
-        ((TGApp) getApplication()).saveGames();
+        TGApp app = (TGApp) getApplication();
+        app.getGame().scoreHand(this.hand);
+        app.saveGames();
+        app.savePlayers();
         setResult(-1);
         finish();
     }

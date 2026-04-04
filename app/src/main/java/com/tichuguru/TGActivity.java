@@ -106,14 +106,6 @@ public class TGActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        TGApp app = (TGApp) getApplication();
-        app.savePlayers();
-        app.saveGames();
-        super.onPause();
-    }
-
     public void createFirstGame() {
         Game curGame = TGApp.getGame();
         List<Player> allPlayers = TGApp.getPlayers();

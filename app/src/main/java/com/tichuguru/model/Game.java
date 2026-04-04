@@ -1,5 +1,7 @@
 package com.tichuguru.model;
 
+import androidx.annotation.NonNull;
+
 import com.tichuguru.TGApp;
 import java.io.Externalizable;
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class Game implements Externalizable {
         }
     }
 
-    public void scoreHand(Hand hand) {
+    public void scoreHand(@NonNull Hand hand) {
         if (!this.gameOver) {
             this.hands.add(hand);
             this.score1 += hand.getTotalScore1();

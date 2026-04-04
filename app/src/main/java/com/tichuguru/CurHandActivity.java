@@ -112,12 +112,13 @@ public class CurHandActivity extends AppCompatActivity {
             new AlertDialog.Builder(this).setMessage("You can't end the game when the score is tied.").show();
             return;
         }
-        // from class: com.tichuguru.CurHandActivity.3
-// android.content.DialogInterface.OnClickListener
         DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
             switch (which) {
                 case AbstractWheelTextAdapter.TEXT_VIEW_ITEM_RESOURCE /* -1 */:
                     TGApp.getGame().endGame();
+                    TGApp app = (TGApp) getApplication();
+                    app.saveGames();
+                    app.savePlayers();
                     CurHandActivity.this.updateDisplay();
                     return;
                 default:

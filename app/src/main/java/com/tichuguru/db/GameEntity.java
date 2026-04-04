@@ -1,5 +1,6 @@
 package com.tichuguru.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -34,7 +35,8 @@ public class GameEntity {
     public boolean ignoreStats;
     public boolean addOnFailure;
 
-    public static GameEntity from(Game g) {
+    @NonNull
+    public static GameEntity from(@NonNull Game g) {
         GameEntity e = new GameEntity();
         e.id = g.getDbId();
         e.player0 = g.getPlayers().get(0).getDbId();

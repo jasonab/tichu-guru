@@ -1,5 +1,7 @@
 package com.tichuguru.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -31,11 +33,11 @@ public class Player implements Comparable<Player>, Externalizable {
     public Player() {
     }
 
-    public Player(String name) {
+    public Player(@NonNull String name) {
         this.name = name;
     }
 
-    public void recordGame(Game game, int seat) {
+    public void recordGame(@NonNull Game game, int seat) {
         this.numGames++;
         if (seat == 0 || seat == 2) {
             if (game.getScore1() > game.getScore2()) {
@@ -46,7 +48,7 @@ public class Player implements Comparable<Player>, Externalizable {
         }
     }
 
-    public void unrecordGame(Game game, int seat) {
+    public void unrecordGame(@NonNull Game game, int seat) {
         this.numGames--;
         if (seat == 0 || seat == 2) {
             if (game.getScore1() > game.getScore2()) {

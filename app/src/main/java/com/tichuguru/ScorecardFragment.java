@@ -65,6 +65,9 @@ public class ScorecardFragment extends Fragment {
                 .setPositiveButton("Yes", (dialog, which) -> {
                     Game game = TGApp.getGame();
                     game.removeHand(game.getHands().size() - 1);
+                    TGApp app = (TGApp) requireActivity().getApplication();
+                    app.saveGames();
+                    app.savePlayers();
                     viewModel.notifyGameChanged();
                 })
                 .setNegativeButton("No", null)

@@ -1,5 +1,6 @@
 package com.tichuguru.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import com.tichuguru.model.Player;
@@ -8,6 +9,7 @@ import com.tichuguru.model.Player;
 public class PlayerEntity {
     @PrimaryKey(autoGenerate = true)
     public long id;
+    @NonNull
     public String name;
     public int numGames;
     public int numWins;
@@ -26,7 +28,8 @@ public class PlayerEntity {
     public int numTichusCalledByPartner;
     public int numTichusMadeByPartner;
 
-    public static PlayerEntity from(Player p) {
+    @NonNull
+    public static PlayerEntity from(@NonNull Player p) {
         PlayerEntity e = new PlayerEntity();
         e.id = p.getDbId();
         e.name = p.getName();
@@ -49,6 +52,7 @@ public class PlayerEntity {
         return e;
     }
 
+    @NonNull
     public Player toPlayer() {
         Player p = new Player(name);
         p.setDbId(id);

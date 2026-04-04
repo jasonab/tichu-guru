@@ -71,13 +71,6 @@ public class NewGameActivity extends AppCompatActivity {
         this.mercyRuleCB.setChecked(this.game.isMercyRule());
     }
 
-    @Override // android.app.Activity
-    protected void onPause() {
-        TGApp app = (TGApp) getApplication();
-        app.savePlayers();
-        super.onPause();
-    }
-
     /* JADX INFO: Access modifiers changed from: private */
     public void onRandomizeTeams() {
         Random rand = new Random();
@@ -124,11 +117,11 @@ public class NewGameActivity extends AppCompatActivity {
         List<Game> games = TGApp.getGames();
         games.add(this.game);
         TGApp.setGame(this.game);
+        ((TGApp) getApplication()).saveGames();
         setResult(-1);
         finish();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
     public void updateNameSpinners() {
         List<Player> players = this.game.getPlayers();
         for (int i = 0; i < 4; i++) {
@@ -182,13 +175,8 @@ public class NewGameActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     Editable value = input.getText();
                     String name = value.toString();
-                    if (name.length() == 0) {
-                        NewGameActivity.this.runOnUiThread(new Runnable() { // from class: com.tichuguru.NewGameActivity.PlayerSelectedListener.1.1
-                            @Override // java.lang.Runnable
-                            public void run() {
-                                PlayerSelectedListener.this.getNewPlayerName();
-                            }
-                        });
+                    if (name.isEmpty()) {
+                        NewGameActivity.this.runOnUiThread(PlayerSelectedListener.this::getNewPlayerName);
                         return;
                     }
                     Player newPlayer = null;
@@ -212,6 +200,7 @@ public class NewGameActivity extends AppCompatActivity {
                         allPlayers.add(newPlayer);
                         Collections.sort(allPlayers);
                         NewGameActivity.this.spinAdapter.insert(newPlayer.getName(), allPlayers.indexOf(newPlayer));
+                        ((TGApp) NewGameActivity.this.getApplication()).savePlayers();
                     }
                     NewGameActivity.this.game.setPlayer(PlayerSelectedListener.this.playerNum, newPlayer);
                     NewGameActivity.this.addingPlayer = false;

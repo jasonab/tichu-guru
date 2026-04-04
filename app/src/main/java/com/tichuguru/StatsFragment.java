@@ -49,6 +49,7 @@ public class StatsFragment extends Fragment {
             .setMessage("Are you sure?")
             .setPositiveButton("Yes", (dialog, which) -> {
                 for (Player p : TGApp.getPlayers()) p.clearStats();
+                ((TGApp) requireActivity().getApplication()).savePlayers();
                 adapter.notifyDataSetChanged();
             })
             .setNegativeButton("No", null)

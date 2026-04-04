@@ -119,6 +119,9 @@ public class CurHandFragment extends Fragment {
             .setMessage("Are you sure?")
             .setPositiveButton("Yes", (dialog, which) -> {
                 TGApp.getGame().endGame();
+                TGApp app = (TGApp) requireActivity().getApplication();
+                app.saveGames();
+                app.savePlayers();
                 updateDisplay();
             })
             .setNegativeButton("No", null)

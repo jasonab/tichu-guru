@@ -63,6 +63,7 @@ public class StatsActivity extends AppCompatActivity {
                         for (Player p : TGApp.getPlayers()) {
                             p.clearStats();
                         }
+                        ((TGApp) StatsActivity.this.getApplication()).savePlayers();
                         StatsActivity.this.adapter.notifyDataSetChanged();
                         return;
                     default:
