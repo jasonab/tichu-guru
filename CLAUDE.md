@@ -33,9 +33,9 @@ com.tichuguru/
 ├── ScorecardFragment.java   # Tab: scorecard for current game
 ├── AllGamesFragment.java    # Tab: historical game list
 ├── StatsFragment.java       # Tab: statistics dashboard
-├── NewGameActivity.java     # Sub-screen: new game setup
-├── ScoreHandActivity.java   # Sub-screen: score entry (uses kankan wheels)
-├── StatsListActivity.java   # Sub-screen: per-player stats + rankings
+├── NewGameFragment.java     # Sub-screen: new game setup
+├── ScoreHandFragment.java   # Sub-screen: score entry (uses kankan wheels)
+├── StatsListFragment.java   # Sub-screen: per-player stats + rankings
 ├── ui/
 │   └── SegmentedControlButton.java  # Custom RadioButton for Tichu/GT selection
 ├── model/
@@ -64,6 +64,6 @@ kankan/wheel/widget/         # Embedded scroll-wheel library (not a Gradle dep)
 ## Known Issues
 
 See `IMPROVEMENTS.md` for the full tracked list. Key pending items:
-- **#22** — `NewGameActivity`, `ScoreHandActivity`, `StatsListActivity` should be Fragments (currently use deprecated `startActivityForResult`)
+- **#12** — Reflection in `StatsFragment.Getter` should be replaced with typed lambdas
 - **#18** — `kankan.wheel.widget` should be replaced with `NumberPicker`
 - **#12** — Reflection in `StatsFragment.Getter` should be replaced with typed lambdas

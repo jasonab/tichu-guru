@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -155,14 +154,9 @@ public class StatsFragment extends Fragment {
                 values[17] = String.format("%.2f", player.getTichuStopPct());
                 values[18] = String.format("%.2f", player.getPartnerTichuPct());
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("title", "Stats for " + player.getName());
-                bundle.putSerializable("labels", labels);
-                bundle.putSerializable("values", values);
-                bundle.putSerializable("playerName", player.getName());
-                Intent intent = new Intent(requireActivity(), StatsListActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                ((TGActivity) v.getContext()).pushFragment(
+                    StatsListFragment.newInstance("Stats for " + player.getName(), labels, values, player.getName())
+                );
             }
         }
 
@@ -209,13 +203,9 @@ public class StatsFragment extends Fragment {
                         : String.format(fmt, rankValueGetter.getValue(p), extraGetter1.getValue(p));
                 }
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("title", title);
-                bundle.putSerializable("labels", names);
-                bundle.putSerializable("values", values);
-                Intent intent = new Intent(requireActivity(), StatsListActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                ((TGActivity) v.getContext()).pushFragment(
+                    StatsListFragment.newInstance(title, names, values, null)
+                );
             }
         }
     }

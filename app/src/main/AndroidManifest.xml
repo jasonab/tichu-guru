@@ -15,20 +15,5 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:label="New Game"
-            android:name=".NewGameActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:label="Score Hand"
-            android:name=".ScoreHandActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:label="Statistics"
-            android:name=".StatsListActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
     </application>
 </manifest>

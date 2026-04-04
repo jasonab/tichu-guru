@@ -8,7 +8,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -71,6 +70,15 @@ public class TGActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
+        fm.addOnBackStackChangedListener(() -> {
+            boolean subScreen = fm.getBackStackEntryCount() > 0;
+            bottomNav.setVisibility(subScreen ? View.GONE : View.VISIBLE);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(subScreen);
+                if (!subScreen) setTitle(R.string.app_name);
+            }
+        });
+
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             Fragment target;
@@ -81,6 +89,24 @@ public class TGActivity extends AppCompatActivity {
             if (target != activeFragment) switchFragment(target);
             return true;
         });
+    }
+
+    /** Push a sub-screen fragment over the current tab, hiding the BottomNav. */
+    public void pushFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+            .hide(activeFragment)
+            .add(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            return true;
+        }
+        return super.onSupportNavigateUp();
     }
 
     private void switchFragment(Fragment target) {
@@ -112,17 +138,13 @@ public class TGActivity extends AppCompatActivity {
     }
 
     public void createFirstGame() {
-        Game curGame = TGApp.getGame();
         List<Player> allPlayers = TGApp.getPlayers();
         List<Player> players = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             players.add(i < allPlayers.size() ? allPlayers.get(i) : new Player("New Player"));
         }
+        Game curGame = TGApp.getGame();
         Game game = curGame == null ? new Game(players) : new Game(curGame);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("newGame", game);
-        Intent intent = new Intent(this, NewGameActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        pushFragment(NewGameFragment.newInstance(game));
     }
 }

@@ -5,8 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,17 +16,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
-
 import java.util.List;
 
 public class CurHandFragment extends Fragment implements MenuProvider {
-    private static final int ACT_NEW_GAME = 1;
-    private static final int ACT_SCORE_HAND = 0;
-
     private TGViewModel viewModel;
     RadioGroup grp1, grp2, grp3, grp4;
     TextView name1, name2, name3, name4;
@@ -63,11 +56,22 @@ public class CurHandFragment extends Fragment implements MenuProvider {
             grp3.check(savedInstanceState.getInt("tichu3", R.id.curHandP3None));
             grp4.check(savedInstanceState.getInt("tichu4", R.id.curHandP4None));
         }
+
         viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> updateDisplay());
         viewModel.getClearTichuButtons().observe(getViewLifecycleOwner(), clear -> {
             if (Boolean.TRUE.equals(clear)) clearTichuButtons();
         });
+
+        getParentFragmentManager().setFragmentResultListener("score_hand", getViewLifecycleOwner(), (key, result) -> {
+            clearTichuButtons();
+            viewModel.notifyGameChanged();
+        });
+        getParentFragmentManager().setFragmentResultListener("new_game", getViewLifecycleOwner(), (key, result) -> {
+            clearTichuButtons();
+            viewModel.notifyGameChanged();
+        });
+
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
     }
 
@@ -82,21 +86,10 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == -1) {
-            clearTichuButtons();
-        }
-        viewModel.notifyGameChanged();
-    }
-
     private void onNewGame() {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("newGame", new Game(TGApp.getGame()));
-        Intent intent = new Intent(requireActivity(), NewGameActivity.class);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, ACT_NEW_GAME);
+        ((TGActivity) requireActivity()).pushFragment(
+            NewGameFragment.newInstance(new Game(TGApp.getGame()))
+        );
     }
 
     private void onEndGame() {
@@ -128,11 +121,7 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         if (grp3.getCheckedRadioButtonId() == R.id.curHandP3T) hand.setTichuFor(2);
         if (grp4.getCheckedRadioButtonId() == R.id.curHandP4GT) hand.setGrandTichuFor(3);
         if (grp4.getCheckedRadioButtonId() == R.id.curHandP4T) hand.setTichuFor(3);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("newHand", hand);
-        Intent intent = new Intent(requireActivity(), ScoreHandActivity.class);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, ACT_SCORE_HAND);
+        ((TGActivity) requireActivity()).pushFragment(ScoreHandFragment.newInstance(hand));
     }
 
     private void clearTichuButtons() {

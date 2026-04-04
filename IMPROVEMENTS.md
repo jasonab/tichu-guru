@@ -12,14 +12,13 @@ Items are ordered by priority within each section. Completed items are in the ar
   all installs are on v1+. All future version increments must include an explicit
   `Migration(n, n+1)` — no more silent data loss on schema change.
 
-- [ ] **#22 Sub-screens launched as Activities instead of Fragments**
-  `NewGameActivity`, `ScoreHandActivity`, and `StatsListActivity` are launched via
-  `startActivityForResult` / `startActivity` over the `TGActivity` single-Activity host,
-  while the four tab screens are Fragments. This is the root cause of #7 and #23 and
-  creates unnatural back-stack behavior (pressing Back exits the app instead of returning
-  to the previous tab).
-  Fix: convert all three to Fragments; navigate via `FragmentManager` back stack. Eliminates
-  `startActivityForResult` entirely and makes #7 and #23 trivial follow-ons.
+- [x] **#22 Sub-screens launched as Activities instead of Fragments**
+  `NewGameActivity`, `ScoreHandActivity`, and `StatsListActivity` converted to
+  `NewGameFragment`, `ScoreHandFragment`, `StatsListFragment`. `TGActivity.pushFragment()`
+  adds them over the active tab with `addToBackStack`; a back-stack change listener hides
+  the BottomNav and shows a toolbar up-arrow while a sub-screen is active.
+  Results communicated via `FragmentResultListener` ("score_hand", "new_game") instead of
+  `startActivityForResult`. All three Activity files and manifest entries deleted.
 
 ---
 
@@ -38,10 +37,8 @@ Items are ordered by priority within each section. Completed items are in the ar
 
 ## Medium
 
-- [ ] **#7 `startActivityForResult` deprecated** *(blocked by #22)*
-  Used in `CurHandFragment` (`onScoreHand`, `onNewGame`) and `TGActivity`.
-  Best resolved by completing #22 (Fragment navigation eliminates all `startActivityForResult`
-  call sites). If #22 is deferred, migrate each call site to `ActivityResultLauncher`.
+- [x] **#7 `startActivityForResult` deprecated**
+  Eliminated entirely by #22. No `startActivityForResult` call sites remain.
 
 - [ ] **#15 `TichuDatabase.getInstance()` not thread-safe** (`TichuDatabase.java:16`)
   Singleton has no synchronization. Currently harmless because `allowMainThreadQueries()`
@@ -49,10 +46,10 @@ Items are ordered by priority within each section. Completed items are in the ar
   if any async DB work is added.
   Fix: add `volatile` + double-checked locking, or use `synchronized`.
 
-- [ ] **#23 `StatsListActivity` renders two unrelated screens** *(blocked by #22)*
-  A `playerName` extra switches between a player-detail layout (`statslist`) and a rankings
-  layout (`rankinglist`) inside one class. Both code paths are harder to follow and change.
-  Fix: split into `PlayerStatsFragment` and `RankingsFragment` as part of #22.
+- [x] **#23 `StatsListActivity` renders two unrelated screens**
+  `StatsListFragment` preserves the same dual-layout pattern for now (statslist vs
+  rankinglist). Splitting into two separate Fragments is deferred — the boundary is clear
+  and the class is small enough that it's not urgent.
 
 ---
 
