@@ -95,13 +95,12 @@ Do not implement unless explicitly requested.
   All DB I/O blocks the UI thread. Acceptable with small datasets; worth revisiting if the
   app needs to handle large game histories. Requires #15 and ideally #25 to be done first.
 
-- [ ] **#18 Replace `kankan.wheel.widget` with `NumberPicker` or Material `Slider`**
-  The embedded scroll-wheel library (`kankan/wheel/widget/`) is unmaintained third-party
-  source living under a foreign root package (`kankan.*`) inside `src/main/java`, mixing
-  external code with app source and making updates impossible via Gradle.
-  Used in `ScoreHandFragment` for score entry and player-out-first selection.
-  Fix: replace with standard `NumberPicker` or a Material `Slider`. Removes ~10 files and
-  resolves the package pollution. (Supersedes #24.)
+- [x] **#18 Replace `kankan.wheel.widget` with `NumberPicker`**
+  Replaced all three `WheelView` instances in `ScoreHandFragment` with `android.widget.NumberPicker`.
+  API mapping: `setViewAdapter` → `setMinValue/setMaxValue/setDisplayedValues`; `addChangingListener` →
+  `setOnValueChangedListener`; `getCurrentItem/setCurrentItem` → `getValue/setValue`.
+  Score pickers use `setWrapSelectorWheel(false)`; player picker uses `true`.
+  Deleted all 15 kankan source files and 2 drawables (`wheel_bg.xml`, `wheel_val.xml`).
 
 - [ ] **#19 Replace `SegmentedControlButton` with `MaterialButtonToggleGroup`**
   `SegmentedControlButton` (`com.tichuguru.ui`) is a custom `RadioButton` subclass used

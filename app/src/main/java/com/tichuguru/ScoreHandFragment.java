@@ -5,19 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import com.tichuguru.model.Hand;
 import com.tichuguru.model.Player;
 import java.util.List;
-import kankan.wheel.widget.OnWheelChangedListener;
-import kankan.wheel.widget.WheelView;
-import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 
 public class ScoreHandFragment extends Fragment {
     private Hand hand;
-    private WheelView outFirst;
-    private WheelView score1;
-    private WheelView score2;
+    private NumberPicker outFirst;
+    private NumberPicker score1;
+    private NumberPicker score2;
     private TextView total1;
     private TextView total2;
 
@@ -43,33 +41,47 @@ public class ScoreHandFragment extends Fragment {
         total1 = view.findViewById(R.id.scoreHandTotal1);
         total2 = view.findViewById(R.id.scoreHandTotal2);
 
-        OnWheelChangedListener changeListener = (wheel, oldValue, newValue) -> {
-            if (wheel != outFirst) {
-                WheelView other = (wheel == score1) ? score2 : score1;
-                int val = Hand.CARD_SCORE_OPTIONS[newValue];
+        String[] scoreLabels = new String[Hand.CARD_SCORE_OPTIONS.length];
+        for (int i = 0; i < Hand.CARD_SCORE_OPTIONS.length; i++) {
+            scoreLabels[i] = String.valueOf(Hand.CARD_SCORE_OPTIONS[i]);
+        }
+
+        NumberPicker.OnValueChangeListener changeListener = (picker, oldVal, newVal) -> {
+            if (picker != outFirst) {
+                NumberPicker other = (picker == score1) ? score2 : score1;
+                int val = Hand.CARD_SCORE_OPTIONS[newVal];
                 int otherVal = Hand.otherCardScore(val);
-                if (val != 0 || other.getCurrentItem() != Hand.cardScoreIndex(200)) {
-                    other.setCurrentItem(Hand.cardScoreIndex(otherVal));
+                if (val != 0 || other.getValue() != Hand.cardScoreIndex(200)) {
+                    other.setValue(Hand.cardScoreIndex(otherVal));
                 }
             }
             updateHandScore();
         };
 
         score1 = view.findViewById(R.id.scoreHandScore1);
-        score1.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), Hand.CARD_SCORE_OPTIONS));
-        score1.addChangingListener(changeListener);
+        score1.setMinValue(0);
+        score1.setMaxValue(Hand.CARD_SCORE_OPTIONS.length - 1);
+        score1.setDisplayedValues(scoreLabels);
+        score1.setWrapSelectorWheel(false);
+        score1.setOnValueChangedListener(changeListener);
 
         score2 = view.findViewById(R.id.scoreHandScore2);
-        score2.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), Hand.CARD_SCORE_OPTIONS));
-        score2.addChangingListener(changeListener);
+        score2.setMinValue(0);
+        score2.setMaxValue(Hand.CARD_SCORE_OPTIONS.length - 1);
+        score2.setDisplayedValues(scoreLabels);
+        score2.setWrapSelectorWheel(false);
+        score2.setOnValueChangedListener(changeListener);
 
         List<Player> players = TGApp.getGame().getPlayers();
         String[] names = new String[4];
         for (int i = 0; i < 4; i++) names[i] = players.get(i).getName();
 
         outFirst = view.findViewById(R.id.scoreHandOutFirst);
-        outFirst.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), names));
-        outFirst.addChangingListener(changeListener);
+        outFirst.setMinValue(0);
+        outFirst.setMaxValue(3);
+        outFirst.setDisplayedValues(names);
+        outFirst.setWrapSelectorWheel(true);
+        outFirst.setOnValueChangedListener(changeListener);
 
         view.findViewById(R.id.scoreHandSave).setOnClickListener(v -> onSave());
 
@@ -78,11 +90,11 @@ public class ScoreHandFragment extends Fragment {
         ((TextView) view.findViewById(R.id.scoreHandName3)).setText(players.get(2).getName());
         ((TextView) view.findViewById(R.id.scoreHandName4)).setText(players.get(3).getName());
 
-        score1.setCurrentItem(Hand.cardScoreIndex(50));
-        score2.setCurrentItem(Hand.cardScoreIndex(50));
+        score1.setValue(Hand.cardScoreIndex(50));
+        score2.setValue(Hand.cardScoreIndex(50));
         for (int i = 0; i < 4; i++) {
             if (hand.isTichuFor(i) || hand.isGrandTichuFor(i)) {
-                outFirst.setCurrentItem(i);
+                outFirst.setValue(i);
                 break;
             }
         }
@@ -90,9 +102,9 @@ public class ScoreHandFragment extends Fragment {
     }
 
     private void updateHandScore() {
-        hand.setCardScore1(Hand.CARD_SCORE_OPTIONS[score1.getCurrentItem()]);
-        hand.setCardScore2(Hand.CARD_SCORE_OPTIONS[score2.getCurrentItem()]);
-        hand.setOutFirst(outFirst.getCurrentItem());
+        hand.setCardScore1(Hand.CARD_SCORE_OPTIONS[score1.getValue()]);
+        hand.setCardScore2(Hand.CARD_SCORE_OPTIONS[score2.getValue()]);
+        hand.setOutFirst(outFirst.getValue());
         total1.setText(String.valueOf(hand.getTotalScore1()));
         total2.setText(String.valueOf(hand.getTotalScore2()));
     }

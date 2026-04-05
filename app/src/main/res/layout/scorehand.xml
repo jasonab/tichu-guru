@@ -41,10 +41,12 @@
                     android:layout_height="wrap_content"
                     android:text="P3"
                     android:scrollHorizontally="true"/>
-                <kankan.wheel.widget.WheelView
+                <NumberPicker
                     android:id="@+id/scoreHandScore1"
+                    android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/wheel_bg"/>
                 <TextView
                     android:textSize="24sp"
                     android:layout_gravity="center_horizontal"
@@ -66,10 +68,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Out First"/>
-                <kankan.wheel.widget.WheelView
+                <NumberPicker
                     android:id="@+id/scoreHandOutFirst"
+                    android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/wheel_bg"/>
                 <TextView
                     android:textSize="24dp"
                     android:layout_width="wrap_content"
@@ -100,10 +104,12 @@
                     android:layout_height="wrap_content"
                     android:text="P4"
                     android:scrollHorizontally="true"/>
-                <kankan.wheel.widget.WheelView
+                <NumberPicker
                     android:id="@+id/scoreHandScore2"
+                    android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/wheel_bg"/>
                 <TextView
                     android:textSize="24dp"
                     android:layout_gravity="center_horizontal"
