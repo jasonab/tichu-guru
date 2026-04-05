@@ -75,15 +75,38 @@ Do not implement unless explicitly requested.
   retain `serialVersionUID` in the companion object.
   Files: `Player`, `Hand`, `Game`.
 
-- [ ] **#28 Convert `TGViewModel` and `TGApp` to Kotlin (Tier 3)**
+- [x] **#28 Convert `TGViewModel` and `TGApp` to Kotlin (Tier 3)**
   `TGViewModel` is idiomatic Kotlin — LiveData, companion object for tag constants.
-  `TGApp` uses companion object for static accessors; instance fields become `lateinit var`.
+  `TGApp` uses companion object for `@JvmStatic` accessors; all state is instance fields
+  backed by `lateinit var db` and `companion object { lateinit var instance }`.
+  `saveGames` uses `deleteOrphanHands` (instead of delete-all + re-insert) now that `Hand`
+  carries a `dbId` field for DB identity.
   Files: `TGViewModel`, `TGApp`.
 
 - [ ] **#29 Convert Fragments and `TGActivity` to Kotlin (Tier 4 — do last)**
   8 files. Highest risk due to lifecycle complexity; convert after lower layers are stable.
   Lambda syntax and null safety clean up Fragment boilerplate significantly.
   Files: all `*Fragment.java` classes + `TGActivity`.
+
+---
+
+## Testing
+
+No tests currently exist in this project. Add in priority order.
+
+- [ ] **#30 Unit tests for `model/` business logic**
+  `Game` score calculation, `Hand` bid/outcome logic, and `Player` stat accumulation
+  (`recordHand`/`unrecordHand`) are pure logic with no Android dependencies — ideal for
+  plain JUnit tests in `src/test/`. Focus on edge cases: double win, mercy rule trigger,
+  tichu success/failure, grand tichu, score boundaries.
+
+- [ ] **#31 Unit tests for `db/` entity mappers**
+  `GameEntity.from()`/`toGame()`, `HandEntity.from()`/`toHand()`, `PlayerEntity.from()`/`toPlayer()` 
+  are pure data transforms. Test round-trip fidelity and null/default handling.
+
+- [ ] **#32 Integration tests for Room DAOs**
+  Use `androidx.room:room-testing` with an in-memory database to test upsert, orphan deletion,
+  and transaction semantics. Requires `src/androidTest/`.
 
 ---
 
