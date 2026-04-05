@@ -68,7 +68,7 @@ Do not implement unless explicitly requested.
   Files: `PlayerEntity`, `HandEntity`, `GameEntity`, `PlayerDao`, `HandDao`, `GameDao`,
   `TichuDatabase`.
 
-- [ ] **#27 Convert `model/` package to Kotlin (Tier 2 — highest payoff)**
+- [x] **#27 Convert `model/` package to Kotlin (Tier 2 — highest payoff)**
   All 3 files. `Player` is 393 lines of Java getters/setters — Kotlin properties eliminate
   most of that boilerplate. `Player` implements `Comparable<Player>`; becomes
   `operator fun compareTo`. `Game` and `Hand` are passed as `Serializable` via `Bundle` —
