@@ -40,11 +40,9 @@ Items are ordered by priority within each section. Completed items are in the ar
 - [x] **#7 `startActivityForResult` deprecated**
   Eliminated entirely by #22. No `startActivityForResult` call sites remain.
 
-- [ ] **#15 `TichuDatabase.getInstance()` not thread-safe** (`TichuDatabase.java:16`)
-  Singleton has no synchronization. Currently harmless because `allowMainThreadQueries()`
-  means only one thread ever touches it, but this is a latent race condition that will bite
-  if any async DB work is added.
-  Fix: add `volatile` + double-checked locking, or use `synchronized`.
+- [x] **#15 `TichuDatabase.getInstance()` not thread-safe** (`TichuDatabase.java:16`)
+  Resolved as part of migrating `TichuDatabase` to Kotlin. Kotlin companion object uses
+  `@Volatile` + `synchronized(this)` double-checked locking. Java file deleted.
 
 - [x] **#23 `StatsListActivity` renders two unrelated screens**
   `StatsListFragment` preserves the same dual-layout pattern for now (statslist vs
@@ -137,12 +135,13 @@ Do not implement unless explicitly requested.
   `MaterialButtonToggleGroup` (Material Components) provides the same UX natively with
   theming, accessibility, and state-management support built in.
 
-- [ ] **#25 No repository layer — `TGApp` owns both global state and Room I/O**
-  `TGApp` acts as Application class, in-memory state store, and persistence layer.
-  This makes it hard to move DB work off the main thread (#16) since there is no
-  intermediate layer to put async logic in.
-  Fix: introduce a `TichuRepository` in a `repository/` package that owns the Room↔model
-  bridge; `TGApp` becomes a thin Application subclass that initialises the repository.
+- [x] **#25 No repository layer — `TGApp` owns both global state and Room I/O**
+  Introduced `TichuRepository` in `repository/` package. Owns all DB I/O:
+  `loadPlayers`, `savePlayers`, `loadGames`, `saveGames`, `deleteGame`.
+  `TGApp` is now a thin Application subclass: initialises the repository in `onCreate()`,
+  holds in-memory state (`curGame`, `games`, `players`, `pendingGame`, `pendingHand`),
+  and exposes `@JvmStatic` accessors + delegates `savePlayers`/`saveGames`/`deleteGame`
+  to the repository. Unblocks async DB work (#16).
 
 ---
 
