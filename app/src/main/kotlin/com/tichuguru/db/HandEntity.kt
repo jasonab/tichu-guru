@@ -40,6 +40,7 @@ data class HandEntity(
     companion object {
         @JvmStatic
         fun from(h: Hand, gameId: Long, order: Int) = HandEntity(
+            id = h.dbId,
             gameId = gameId,
             handOrder = order,
             addOnFailure = h.isAddOnFailure,
@@ -63,6 +64,7 @@ data class HandEntity(
 
     fun toHand(): Hand {
         val h = Hand()
+        h.dbId = id
         h.isAddOnFailure = addOnFailure
         h.setCardScore1Direct(cardScore1)
         h.setCardScore2Direct(cardScore2)

@@ -16,6 +16,7 @@ class Hand {
         fun cardScoreIndex(score: Int) = if (score == 200) 21 else score / 5
     }
 
+    var dbId: Long = 0
     var isAddOnFailure: Boolean = false
     private var tichu = BooleanArray(4)
     private var grandTichu = BooleanArray(4)

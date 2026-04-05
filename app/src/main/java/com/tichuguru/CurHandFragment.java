@@ -60,7 +60,7 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         viewModel = new ViewModelProvider(requireActivity()).get(TGViewModel.class);
         viewModel.getCurrentGame().observe(getViewLifecycleOwner(), game -> updateDisplay());
         viewModel.getClearTichuButtons().observe(getViewLifecycleOwner(), clear -> {
-            if (Boolean.TRUE.equals(clear)) clearTichuButtons();
+            if (clear) clearTichuButtons();
         });
 
         getParentFragmentManager().setFragmentResultListener("score_hand", getViewLifecycleOwner(), (key, result) -> {

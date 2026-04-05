@@ -47,7 +47,7 @@ public class TGApp extends Application {
         for (Player p : players) {
             entities.add(PlayerEntity.from(p));
         }
-        List<Long> ids = db.playerDao().insertAll(entities);
+        List<Long> ids = db.playerDao().upsertAll(entities);
         for (int i = 0; i < players.size(); i++) {
             players.get(i).setDbId(ids.get(i));
         }
@@ -95,16 +95,21 @@ public class TGApp extends Application {
     public void saveGames() {
         db.runInTransaction(() -> {
             for (Game g : games) {
-                long gameId = db.gameDao().insert(GameEntity.from(g));
+                long gameId = db.gameDao().upsert(GameEntity.from(g));
                 g.setDbId(gameId);
-                db.handDao().deleteHandsForGame(gameId);
                 List<Hand> hands = g.getHands();
-                if (!hands.isEmpty()) {
+                if (hands.isEmpty()) {
+                    db.handDao().deleteHandsForGame(gameId);
+                } else {
                     List<HandEntity> handEntities = new ArrayList<>(hands.size());
                     for (int i = 0; i < hands.size(); i++) {
                         handEntities.add(HandEntity.from(hands.get(i), gameId, i));
                     }
-                    db.handDao().insertAll(handEntities);
+                    List<Long> handIds = db.handDao().upsertAll(handEntities);
+                    for (int i = 0; i < hands.size(); i++) {
+                        hands.get(i).setDbId(handIds.get(i));
+                    }
+                    db.handDao().deleteOrphanHands(gameId, handIds);
                 }
             }
         });
