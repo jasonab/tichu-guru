@@ -83,10 +83,16 @@ Do not implement unless explicitly requested.
   carries a `dbId` field for DB identity.
   Files: `TGViewModel`, `TGApp`.
 
-- [ ] **#29 Convert Fragments and `TGActivity` to Kotlin (Tier 4 — do last)**
-  8 files. Highest risk due to lifecycle complexity; convert after lower layers are stable.
-  Lambda syntax and null safety clean up Fragment boilerplate significantly.
-  Files: all `*Fragment.java` classes + `TGActivity`.
+- [x] **#29 Convert Fragments and `TGActivity` to Kotlin (Tier 4 — do last)**
+  All 8 files converted. Lambda syntax replaces anonymous inner classes (`OnClickListener`,
+  `OnItemSelectedListener`, `RankExpandListener` etc.). Kotlin null safety enforced with `!!`
+  at TGApp accessor call sites. `inner class` used where outer capture is needed (e.g.
+  `GamesAdapter` → `viewModel`). `ToDoubleFunction<Player>` / `ToIntFunction<Player>` replaced
+  with Kotlin function types `(Player) -> Double` / `(Player) -> Int`.
+  `Hand.CARD_SCORE_OPTIONS` changed from `Array<Int>` to `IntArray` (literal `intArrayOf`) to
+  avoid a D8 stack-map-table bug in AGP 9.1.0 with Kotlin-compiled lambda array initializers.
+  Files: `TGActivity`, `CurHandFragment`, `ScorecardFragment`, `AllGamesFragment`,
+  `StatsFragment`, `NewGameFragment`, `ScoreHandFragment`, `StatsListFragment`.
 
 ---
 
