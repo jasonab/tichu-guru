@@ -104,6 +104,10 @@ public class TGApp extends Application {
         });
     }
 
+    public void deleteGame(Game game) {
+        db.gameDao().deleteById(game.getDbId());
+    }
+
     public static List<Game> getGames() { return games; }
     public static List<Player> getPlayers() { return players; }
 

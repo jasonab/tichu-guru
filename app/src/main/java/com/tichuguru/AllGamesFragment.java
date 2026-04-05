@@ -120,6 +120,7 @@ public class AllGamesFragment extends Fragment {
                 .setPositiveButton("Yes", (dialog, which) -> {
                     List<Game> games = TGApp.getGames();
                     Game game = games.get(gameNum);
+                    ((TGApp) requireActivity().getApplication()).deleteGame(game);
                     games.remove(gameNum);
                     if (TGApp.getGame() == game) {
                         viewModel.requestClearTichuButtons();

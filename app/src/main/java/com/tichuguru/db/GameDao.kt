@@ -12,4 +12,7 @@ interface GameDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(game: GameEntity): Long
+
+    @Query("DELETE FROM games WHERE id = :id")
+    fun deleteById(id: Long)
 }
