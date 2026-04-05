@@ -58,11 +58,13 @@ Items are ordered by priority within each section. Completed items are in the ar
 Convert in order — each tier is independently deployable due to Java/Kotlin interop.
 Do not implement unless explicitly requested.
 
-- [ ] **#26 Convert `db/` package to Kotlin (Tier 1 — easy wins)**
-  All 7 files. Entities become Kotlin `data class` (with `var` + default values for Room's
-  no-arg constructor requirement). DAOs are interfaces — near-identical. `TichuDatabase`
-  becomes an `object` companion. Entities' `from()`/`toXxx()` methods become companion
-  functions and extension functions.
+- [x] **#26 Convert `db/` package to Kotlin (Tier 1 — easy wins)**
+  All 7 files converted. Entities are Kotlin `data class` with `var` + defaults (Room
+  no-arg constructor). `from()` methods are `companion object` functions annotated `@JvmStatic`;
+  entity fields annotated `@JvmField` for direct-access interop with `TGApp.java`. DAOs are
+  Kotlin interfaces. `TichuDatabase` uses a `companion object` singleton. AGP 9.x has
+  built-in Kotlin support (no `kotlin-android` plugin needed); `annotationProcessor` retained
+  for Room's compiler.
   Files: `PlayerEntity`, `HandEntity`, `GameEntity`, `PlayerDao`, `HandDao`, `GameDao`,
   `TichuDatabase`.
 
