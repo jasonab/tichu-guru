@@ -8,7 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.RadioButton;
 
-public class SegmentedControlButton extends RadioButton {
+public class SegmentedControlButton extends androidx.appcompat.widget.AppCompatRadioButton {
     private float mX;
 
     public SegmentedControlButton(Context context) {

@@ -1,5 +1,6 @@
 package com.tichuguru;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -98,7 +99,7 @@ public class TGActivity extends AppCompatActivity {
     }
 
     /** Push a sub-screen fragment over the current tab, hiding the BottomNav. */
-    public void pushFragment(Fragment fragment) {
+    public void pushFragment(@NonNull Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
             .hide(activeFragment)
             .add(R.id.fragment_container, fragment)
@@ -124,13 +125,12 @@ public class TGActivity extends AppCompatActivity {
     }
 
     public void navigateToTab(int tabIndex) {
-        int menuId;
-        switch (tabIndex) {
-            case 1:  menuId = R.id.nav_scorecard; break;
-            case 2:  menuId = R.id.nav_allgames;  break;
-            case 3:  menuId = R.id.nav_stats;      break;
-            default: menuId = R.id.nav_hand;       break;
-        }
+        int menuId = switch (tabIndex) {
+            case 1 -> R.id.nav_scorecard;
+            case 2 -> R.id.nav_allgames;
+            case 3 -> R.id.nav_stats;
+            default -> R.id.nav_hand;
+        };
         bottomNav.setSelectedItemId(menuId);
     }
 
