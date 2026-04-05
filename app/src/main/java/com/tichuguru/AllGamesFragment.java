@@ -79,7 +79,7 @@ public class AllGamesFragment extends Fragment {
             holder.score1.setText(String.valueOf(game.getScore1()));
             holder.score2.setText(String.valueOf(game.getScore2()));
 
-            if (game.isGameOver()) {
+            if (game.getGameOver()) {
                 boolean team1wins = game.getScore1() > game.getScore2();
                 holder.team1.setTextColor(team1wins ? Color.YELLOW : Color.GRAY);
                 holder.score1.setTextColor(team1wins ? Color.YELLOW : Color.GRAY);

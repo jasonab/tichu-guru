@@ -69,8 +69,8 @@ public class NewGameFragment extends Fragment {
         }
         updateNameSpinners();
         affectStatsCB.setChecked(true);
-        addOnFailedTichuCB.setChecked(game.isAddOnFailure());
-        mercyRuleCB.setChecked(game.isMercyRule());
+        addOnFailedTichuCB.setChecked(game.getAddOnFailure());
+        mercyRuleCB.setChecked(game.getMercyRule());
     }
 
     private void onRandomizeTeams() {

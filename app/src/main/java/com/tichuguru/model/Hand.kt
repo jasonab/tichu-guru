@@ -34,7 +34,7 @@ class Hand {
     constructor()
 
     constructor(game: Game) {
-        isAddOnFailure = game.isAddOnFailure
+        isAddOnFailure = game.addOnFailure
     }
 
     fun setCardScore1(score: Int) {

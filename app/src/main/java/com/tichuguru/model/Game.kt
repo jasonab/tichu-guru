@@ -10,10 +10,10 @@ class Game {
     var score1: Int = 0
     var score2: Int = 0
     var gameLimit: Int = 0
-    var isGameOver: Boolean = false
-    var isMercyRule: Boolean = false
-    var isIgnoreStats: Boolean = false
-    var isAddOnFailure: Boolean = false
+    var gameOver: Boolean = false
+    var mercyRule: Boolean = false
+    var ignoreStats: Boolean = false
+    var addOnFailure: Boolean = false
     var date: Date = Date()
     var dbId: Long = 0
 
@@ -22,39 +22,35 @@ class Game {
     constructor(players: List<Player>) {
         this.players = players.toMutableList()
         this.gameLimit = 1000
-        this.isMercyRule = true
+        this.mercyRule = true
         this.date = Date()
     }
 
     constructor(g: Game) : this(g.players) {
-        this.isMercyRule = g.isMercyRule
-        this.isAddOnFailure = g.isAddOnFailure
+        this.mercyRule = g.mercyRule
+        this.addOnFailure = g.addOnFailure
     }
 
-    fun lastScore1() = if (hands.isEmpty()) 0 else hands.last().totalScore1
-
-    fun lastScore2() = if (hands.isEmpty()) 0 else hands.last().totalScore2
-
     fun endGame() {
-        isGameOver = true
-        if (!isIgnoreStats) {
+        gameOver = true
+        if (!ignoreStats) {
             for (i in 0..3) players[i].recordGame(this, i)
         }
     }
 
     fun scoreHand(hand: Hand) {
-        if (!isGameOver) {
+        if (!gameOver) {
             hands.add(hand)
             score1 += hand.totalScore1
             score2 += hand.totalScore2
             if (score1 != score2 && (score1 >= gameLimit || score2 >= gameLimit ||
-                    (isMercyRule && abs(score1 - score2) >= gameLimit))) {
-                isGameOver = true
+                    (mercyRule && abs(score1 - score2) >= gameLimit))) {
+                gameOver = true
             }
-            if (!isIgnoreStats) {
+            if (!ignoreStats) {
                 for (i in 0..3) {
                     players[i].recordHand(hand, i)
-                    if (isGameOver) players[i].recordGame(this, i)
+                    if (gameOver) players[i].recordGame(this, i)
                 }
             }
         }
@@ -62,8 +58,8 @@ class Game {
 
     fun removeHand(handNum: Int) {
         val hand = hands[handNum]
-        val undoGame = isGameOver
-        isGameOver = false
+        val undoGame = gameOver
+        gameOver = false
         for (i in 0..3) {
             val p = players[i]
             if (undoGame) p.unrecordGame(this, i)

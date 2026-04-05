@@ -141,7 +141,7 @@ public class CurHandFragment extends Fragment implements MenuProvider {
         name2.setText(players.get(1).getName());
         name3.setText(players.get(2).getName());
         name4.setText(players.get(3).getName());
-        if (game.isGameOver()) {
+        if (game.getGameOver()) {
             boolean team1wins = game.getScore1() > game.getScore2();
             int winColor = Color.YELLOW;
             int loseColor = Color.GRAY;

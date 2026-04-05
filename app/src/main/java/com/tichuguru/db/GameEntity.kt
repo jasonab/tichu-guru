@@ -42,11 +42,11 @@ data class GameEntity(
             score1 = g.score1,
             score2 = g.score2,
             gameLimit = g.gameLimit,
-            gameOver = g.isGameOver,
+            gameOver = g.gameOver,
             dateMs = g.date.time,
-            mercyRule = g.isMercyRule,
-            ignoreStats = g.isIgnoreStats,
-            addOnFailure = g.isAddOnFailure
+            mercyRule = g.mercyRule,
+            ignoreStats = g.ignoreStats,
+            addOnFailure = g.addOnFailure
         )
     }
 }
