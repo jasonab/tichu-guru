@@ -29,11 +29,8 @@ public class NewGameFragment extends Fragment {
     private ArrayAdapter<String> spinAdapter;
 
     public static NewGameFragment newInstance(Game game) {
-        NewGameFragment f = new NewGameFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("newGame", game);
-        f.setArguments(args);
-        return f;
+        TGApp.setPendingGame(game);
+        return new NewGameFragment();
     }
 
     @Override
@@ -46,7 +43,7 @@ public class NewGameFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         requireActivity().setTitle("New Game");
 
-        game = (Game) requireArguments().getSerializable("newGame");
+        game = TGApp.getPendingGame();
         gameLimit = view.findViewById(R.id.newGameGameLimit);
         addOnFailedTichuCB = view.findViewById(R.id.newGameAddOnFailedTichu);
         affectStatsCB = view.findViewById(R.id.newGameAffectsStats);

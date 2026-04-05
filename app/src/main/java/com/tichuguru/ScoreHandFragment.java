@@ -20,11 +20,8 @@ public class ScoreHandFragment extends Fragment {
     private TextView total2;
 
     public static ScoreHandFragment newInstance(Hand hand) {
-        ScoreHandFragment f = new ScoreHandFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("newHand", hand);
-        f.setArguments(args);
-        return f;
+        TGApp.setPendingHand(hand);
+        return new ScoreHandFragment();
     }
 
     @Override
@@ -37,7 +34,7 @@ public class ScoreHandFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         requireActivity().setTitle("Score Hand");
 
-        hand = (Hand) requireArguments().getSerializable("newHand");
+        hand = TGApp.getPendingHand();
         total1 = view.findViewById(R.id.scoreHandTotal1);
         total2 = view.findViewById(R.id.scoreHandTotal2);
 

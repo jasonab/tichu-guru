@@ -2,6 +2,10 @@ package com.tichuguru;
 
 import android.app.Application;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.tichuguru.db.GameEntity;
 import com.tichuguru.db.HandEntity;
 import com.tichuguru.db.PlayerEntity;
@@ -17,6 +21,8 @@ public class TGApp extends Application {
     public static final String TAG = "tichuguru";
 
     private static Game curGame;
+    private static Game pendingGame;
+    private static Hand pendingHand;
     private static List<Game> games;
     private static List<Player> players;
     private TichuDatabase db;
@@ -104,20 +110,22 @@ public class TGApp extends Application {
         });
     }
 
-    public void deleteGame(Game game) {
+    public void deleteGame(@NonNull Game game) {
         db.gameDao().deleteById(game.getDbId());
     }
 
     public static List<Game> getGames() { return games; }
     public static List<Player> getPlayers() { return players; }
 
-    public static Player getPlayer(String name) {
+    @Nullable
+    public static Player getPlayer(@NonNull String name) {
         for (Player p : players) {
             if (name.equals(p.getName())) return p;
         }
         return null;
     }
 
+    @Nullable
     public static Player getPlayerById(long id) {
         for (Player p : players) {
             if (p.getDbId() == id) return p;
@@ -127,4 +135,8 @@ public class TGApp extends Application {
 
     public static Game getGame() { return curGame; }
     public static void setGame(Game game) { curGame = game; }
+    public static Game getPendingGame() { return pendingGame; }
+    public static void setPendingGame(Game game) { pendingGame = game; }
+    public static Hand getPendingHand() { return pendingHand; }
+    public static void setPendingHand(Hand hand) { pendingHand = hand; }
 }

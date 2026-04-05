@@ -52,22 +52,22 @@ data class PlayerEntity(
     fun toPlayer(): Player {
         val p = Player(name)
         p.dbId = id
-        p.setNumGames(numGames)
-        p.setNumWins(numWins)
-        p.setNumHands(numHands)
-        p.setTotalPoints(totalPoints)
-        p.setCardPoints(cardPoints)
-        p.setNumDoubleWins(numDoubleWins)
-        p.setNumTichuCalled(numTichuCalled)
-        p.setNumTichuMade(numTichuMade)
-        p.setNumGTCalled(numGTCalled)
-        p.setNumGTMade(numGTMade)
-        p.setTichuEfficiencyPoints(tichuEfficiencyPoints)
-        p.setTichuEfficiencyHands(tichuEfficiencyHands)
-        p.setNumTichusStopped(numTichusStopped)
-        p.setNumTichusCalledByOpps(numTichusCalledByOpps)
-        p.setNumTichusCalledByPartner(numTichusCalledByPartner)
-        p.setNumTichusMadeByPartner(numTichusMadeByPartner)
+        p.numGames = numGames
+        p.numWins = numWins
+        p.numHands = numHands
+        p.totalPoints = totalPoints
+        p.cardPoints = cardPoints
+        p.numDoubleWins = numDoubleWins
+        p.numTichuCalled = numTichuCalled
+        p.numTichuMade = numTichuMade
+        p.numGTCalled = numGTCalled
+        p.numGTMade = numGTMade
+        p.tichuEfficiencyPoints = tichuEfficiencyPoints
+        p.tichuEfficiencyHands = tichuEfficiencyHands
+        p.numTichusStopped = numTichusStopped
+        p.numTichusCalledByOpps = numTichusCalledByOpps
+        p.numTichusCalledByPartner = numTichusCalledByPartner
+        p.numTichusMadeByPartner = numTichusMadeByPartner
         return p
     }
 }
