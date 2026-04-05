@@ -14,10 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import com.tichuguru.model.Player;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
 
 public class StatsFragment extends Fragment {
     private StatsAdapter adapter;
@@ -55,7 +56,7 @@ public class StatsFragment extends Fragment {
             .show();
     }
 
-    private class StatsAdapter extends RecyclerView.Adapter<StatsAdapter.ViewHolder> {
+    private static class StatsAdapter extends RecyclerView.Adapter<StatsAdapter.ViewHolder> {
         static class ViewHolder extends RecyclerView.ViewHolder {
             TextView name;
             Button expandButton;
@@ -105,15 +106,15 @@ public class StatsFragment extends Fragment {
                 holder.expandButton.setVisibility(View.VISIBLE);
                 int num = (position - players.size()) - 2;
                 switch (num) {
-                    case 0: holder.expandButton.setOnClickListener(new RankExpandListener("Win %", true, "WinPct", "NumWins", "NumGames")); break;
-                    case 1: holder.expandButton.setOnClickListener(new RankExpandListener("Pts / Hand", true, "PtsPerHand", "NumHands", null)); break;
-                    case 2: holder.expandButton.setOnClickListener(new RankExpandListener("Card Pts / Hand", true, "CardPtsPerHand", "NumHands", null)); break;
-                    case 3: holder.expandButton.setOnClickListener(new RankExpandListener("Hands / DW", false, "HandsPerDW", "NumDoubleWins", null)); break;
-                    case 4: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu %", true, "TichuPct", "NumTichuMade", "NumTichuCalled")); break;
-                    case 5: holder.expandButton.setOnClickListener(new RankExpandListener("Grand Tichu %", true, "GTPct", "NumGTMade", "NumGTCalled")); break;
-                    case 6: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Efficiency", true, "TichuEfficiency", "TichuEfficiencyHands", null)); break;
-                    case 7: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Stop %", true, "TichuStopPct", "NumTichusStopped", "NumTichusCalledByOpps")); break;
-                    case 8: holder.expandButton.setOnClickListener(new RankExpandListener("Partner Tichu %", true, "PartnerTichuPct", "NumTichusMadeByPartner", "NumTichusCalledByPartner")); break;
+                    case 0: holder.expandButton.setOnClickListener(new RankExpandListener("Win %", true, Player::getWinPct, Player::getNumWins, Player::getNumGames)); break;
+                    case 1: holder.expandButton.setOnClickListener(new RankExpandListener("Pts / Hand", true, Player::getPtsPerHand, Player::getNumHands, null)); break;
+                    case 2: holder.expandButton.setOnClickListener(new RankExpandListener("Card Pts / Hand", true, Player::getCardPtsPerHand, Player::getNumHands, null)); break;
+                    case 3: holder.expandButton.setOnClickListener(new RankExpandListener("Hands / DW", false, Player::getHandsPerDW, Player::getNumDoubleWins, null)); break;
+                    case 4: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu %", true, Player::getTichuPct, Player::getNumTichuMade, Player::getNumTichuCalled)); break;
+                    case 5: holder.expandButton.setOnClickListener(new RankExpandListener("Grand Tichu %", true, Player::getGTPct, Player::getNumGTMade, Player::getNumGTCalled)); break;
+                    case 6: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Efficiency", true, Player::getTichuEfficiency, Player::getTichuEfficiencyHands, null)); break;
+                    case 7: holder.expandButton.setOnClickListener(new RankExpandListener("Tichu Stop %", true, Player::getTichuStopPct, Player::getNumTichusStopped, Player::getNumTichusCalledByOpps)); break;
+                    case 8: holder.expandButton.setOnClickListener(new RankExpandListener("Partner Tichu %", true, Player::getPartnerTichuPct, Player::getNumTichusMadeByPartner, Player::getNumTichusCalledByPartner)); break;
                     default: throw new RuntimeException("Unknown rank index: " + num);
                 }
             }
@@ -124,7 +125,7 @@ public class StatsFragment extends Fragment {
             return TGApp.getPlayers().size() + 11;
         }
 
-        class PlayerExpandListener implements View.OnClickListener {
+        static class PlayerExpandListener implements View.OnClickListener {
             private final Player player;
             PlayerExpandListener(Player player) { this.player = player; }
 
@@ -161,32 +162,36 @@ public class StatsFragment extends Fragment {
         }
 
         class RankExpandListener implements View.OnClickListener {
-            private final Getter rankValueGetter, extraGetter1;
-            private final Getter extraGetter2;
+            private final ToDoubleFunction<Player> rankValueGetter;
+            private final ToIntFunction<Player> extraGetter1;
+            private final ToIntFunction<Player> extraGetter2;
             private final boolean sortDescending;
             private final String title;
 
-            RankExpandListener(String title, boolean sortDescending, String rankValue, String extra1, String extra2) {
+            RankExpandListener(String title, boolean sortDescending,
+                               ToDoubleFunction<Player> rankValue,
+                               ToIntFunction<Player> extra1,
+                               ToIntFunction<Player> extra2) {
                 this.title = title;
                 this.sortDescending = sortDescending;
-                this.rankValueGetter = new Getter(rankValue);
-                this.extraGetter1 = new Getter(extra1);
-                this.extraGetter2 = extra2 != null ? new Getter(extra2) : null;
+                this.rankValueGetter = rankValue;
+                this.extraGetter1 = extra1;
+                this.extraGetter2 = extra2;
             }
 
             @Override
             public void onClick(View v) {
                 List<Player> players = new ArrayList<>(TGApp.getPlayers());
-                Collections.sort(players, (p1, p2) -> {
-                    double diff = (Double) rankValueGetter.getValue(p1) - (Double) rankValueGetter.getValue(p2);
+                players.sort((p1, p2) -> {
+                    double diff = rankValueGetter.applyAsDouble(p1) - rankValueGetter.applyAsDouble(p2);
                     if (sortDescending) diff = -diff;
                     return (int) Math.signum(diff);
                 });
 
                 int digits = 1;
                 for (Player p : players) {
-                    Getter g = extraGetter2 != null ? extraGetter2 : extraGetter1;
-                    double log = Math.log10((Integer) g.getValue(p)) + 1.0;
+                    ToIntFunction<Player> g = extraGetter2 != null ? extraGetter2 : extraGetter1;
+                    double log = Math.log10(g.applyAsInt(p)) + 1.0;
                     if (!Double.isNaN(log)) digits = (int) Math.max(digits, log);
                 }
                 String fmt = extraGetter2 != null
@@ -199,8 +204,8 @@ public class StatsFragment extends Fragment {
                     Player p = players.get(i);
                     names[i] = p.getName();
                     values[i] = extraGetter2 != null
-                        ? String.format(fmt, rankValueGetter.getValue(p), extraGetter1.getValue(p), extraGetter2.getValue(p))
-                        : String.format(fmt, rankValueGetter.getValue(p), extraGetter1.getValue(p));
+                        ? String.format(fmt, rankValueGetter.applyAsDouble(p), extraGetter1.applyAsInt(p), extraGetter2.applyAsInt(p))
+                        : String.format(fmt, rankValueGetter.applyAsDouble(p), extraGetter1.applyAsInt(p));
                 }
 
                 ((TGActivity) v.getContext()).pushFragment(
@@ -210,23 +215,4 @@ public class StatsFragment extends Fragment {
         }
     }
 
-    private static class Getter {
-        private final Method getMethod;
-
-        Getter(String valName) {
-            try {
-                this.getMethod = Player.class.getMethod("get" + valName);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Object getValue(Player p) {
-            try {
-                return getMethod.invoke(p);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 }

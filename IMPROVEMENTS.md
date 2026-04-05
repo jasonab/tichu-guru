@@ -27,11 +27,11 @@ Items are ordered by priority within each section. Completed items are in the ar
 - [x] **#9 Magic number `524288` for window flag** (`TGActivity.java:31`)
   Replaced with `WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS`.
 
-- [ ] **#12 Reflection in `StatsFragment.Getter`** (`StatsFragment.java`)
-  `Getter` uses `Player.class.getMethod("get" + valName)` to invoke stat getters by name.
-  Any `Player` getter rename silently breaks the ranking screens at runtime with no
-  compile-time warning.
-  Fix: replace with typed `Function<Player, ?>` lambdas passed directly to `RankExpandListener`.
+- [x] **#12 Reflection in `StatsFragment.Getter`** (`StatsFragment.java`)
+  Replaced `Getter` (reflection via `Player.class.getMethod("get" + valName)`) with typed
+  `ToDoubleFunction<Player>` / `ToIntFunction<Player>` lambdas. `RankExpandListener` now
+  takes method references directly (`Player::getWinPct`, `Player::getNumWins`, etc.).
+  Renames to `Player` getters are now caught at compile time.
 
 ---
 
@@ -53,6 +53,38 @@ Items are ordered by priority within each section. Completed items are in the ar
 
 ---
 
+## Kotlin Migration
+
+Convert in order — each tier is independently deployable due to Java/Kotlin interop.
+Do not implement unless explicitly requested.
+
+- [ ] **#26 Convert `db/` package to Kotlin (Tier 1 — easy wins)**
+  All 7 files. Entities become Kotlin `data class` (with `var` + default values for Room's
+  no-arg constructor requirement). DAOs are interfaces — near-identical. `TichuDatabase`
+  becomes an `object` companion. Entities' `from()`/`toXxx()` methods become companion
+  functions and extension functions.
+  Files: `PlayerEntity`, `HandEntity`, `GameEntity`, `PlayerDao`, `HandDao`, `GameDao`,
+  `TichuDatabase`.
+
+- [ ] **#27 Convert `model/` package to Kotlin (Tier 2 — highest payoff)**
+  All 3 files. `Player` is 393 lines of Java getters/setters — Kotlin properties eliminate
+  most of that boilerplate. `Player` implements `Comparable<Player>`; becomes
+  `operator fun compareTo`. `Game` and `Hand` are passed as `Serializable` via `Bundle` —
+  retain `serialVersionUID` in the companion object.
+  Files: `Player`, `Hand`, `Game`.
+
+- [ ] **#28 Convert `TGViewModel` and `TGApp` to Kotlin (Tier 3)**
+  `TGViewModel` is idiomatic Kotlin — LiveData, companion object for tag constants.
+  `TGApp` uses companion object for static accessors; instance fields become `lateinit var`.
+  Files: `TGViewModel`, `TGApp`.
+
+- [ ] **#29 Convert Fragments and `TGActivity` to Kotlin (Tier 4 — do last)**
+  8 files. Highest risk due to lifecycle complexity; convert after lower layers are stable.
+  Lambda syntax and null safety clean up Fragment boilerplate significantly.
+  Files: all `*Fragment.java` classes + `TGActivity`.
+
+---
+
 ## Low / Large Refactors
 
 Do not implement unless explicitly requested.
@@ -65,7 +97,7 @@ Do not implement unless explicitly requested.
   The embedded scroll-wheel library (`kankan/wheel/widget/`) is unmaintained third-party
   source living under a foreign root package (`kankan.*`) inside `src/main/java`, mixing
   external code with app source and making updates impossible via Gradle.
-  Used in `ScoreHandActivity` for score entry and player-out-first selection.
+  Used in `ScoreHandFragment` for score entry and player-out-first selection.
   Fix: replace with standard `NumberPicker` or a Material `Slider`. Removes ~10 files and
   resolves the package pollution. (Supersedes #24.)
 
