@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tichuguru.model.Game;
 import com.tichuguru.model.Player;
@@ -24,6 +25,8 @@ public class TGActivity extends AppCompatActivity {
     private StatsFragment statsFragment;
     private Fragment activeFragment;
     private BottomNavigationView bottomNav;
+    private FrameLayout fragmentContainer;
+    private int navBarInsetBottom = 0;
     TGViewModel viewModel;
 
     @Override
@@ -59,6 +62,7 @@ public class TGActivity extends AppCompatActivity {
         viewModel.sync();
 
         bottomNav = findViewById(R.id.bottom_nav);
+        fragmentContainer = findViewById(R.id.fragment_container);
 
         View root = findViewById(R.id.main_root);
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
@@ -66,13 +70,15 @@ public class TGActivity extends AppCompatActivity {
             Insets navInsets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.systemGestures());
             v.setPadding(0, statusBars.top, 0, 0);
-            bottomNav.setPadding(0, 0, 0, navInsets.bottom);
+            navBarInsetBottom = navInsets.bottom;
+            bottomNav.setPadding(0, 0, 0, navBarInsetBottom);
             return WindowInsetsCompat.CONSUMED;
         });
 
         fm.addOnBackStackChangedListener(() -> {
             boolean subScreen = fm.getBackStackEntryCount() > 0;
             bottomNav.setVisibility(subScreen ? View.GONE : View.VISIBLE);
+            fragmentContainer.setPadding(0, 0, 0, subScreen ? navBarInsetBottom : 0);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(subScreen);
                 if (!subScreen) setTitle(R.string.app_name);

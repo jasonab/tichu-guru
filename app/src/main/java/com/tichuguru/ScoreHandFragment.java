@@ -18,7 +18,6 @@ public class ScoreHandFragment extends Fragment {
     private WheelView outFirst;
     private WheelView score1;
     private WheelView score2;
-    private Integer[] scores;
     private TextView total1;
     private TextView total2;
 
@@ -44,29 +43,24 @@ public class ScoreHandFragment extends Fragment {
         total1 = view.findViewById(R.id.scoreHandTotal1);
         total2 = view.findViewById(R.id.scoreHandTotal2);
 
-        scores = new Integer[32];
-        for (int i = 0; i < 31; i++) scores[i] = (i * 5) - 25;
-        scores[31] = 200;
-
         OnWheelChangedListener changeListener = (wheel, oldValue, newValue) -> {
             if (wheel != outFirst) {
                 WheelView other = (wheel == score1) ? score2 : score1;
-                int val = scores[newValue];
-                int otherVal = val == 200 ? 0 : 100 - val;
-                int otherRow = (otherVal + 25) / 5;
-                if (val != 0 || other.getCurrentItem() != 31) {
-                    other.setCurrentItem(otherRow);
+                int val = Hand.CARD_SCORE_OPTIONS[newValue];
+                int otherVal = Hand.otherCardScore(val);
+                if (val != 0 || other.getCurrentItem() != Hand.cardScoreIndex(200)) {
+                    other.setCurrentItem(Hand.cardScoreIndex(otherVal));
                 }
             }
             updateHandScore();
         };
 
         score1 = view.findViewById(R.id.scoreHandScore1);
-        score1.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), scores));
+        score1.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), Hand.CARD_SCORE_OPTIONS));
         score1.addChangingListener(changeListener);
 
         score2 = view.findViewById(R.id.scoreHandScore2);
-        score2.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), scores));
+        score2.setViewAdapter(new ArrayWheelAdapter<>(requireContext(), Hand.CARD_SCORE_OPTIONS));
         score2.addChangingListener(changeListener);
 
         List<Player> players = TGApp.getGame().getPlayers();
@@ -84,8 +78,8 @@ public class ScoreHandFragment extends Fragment {
         ((TextView) view.findViewById(R.id.scoreHandName3)).setText(players.get(2).getName());
         ((TextView) view.findViewById(R.id.scoreHandName4)).setText(players.get(3).getName());
 
-        score1.setCurrentItem(15);
-        score2.setCurrentItem(15);
+        score1.setCurrentItem(Hand.cardScoreIndex(50));
+        score2.setCurrentItem(Hand.cardScoreIndex(50));
         for (int i = 0; i < 4; i++) {
             if (hand.isTichuFor(i) || hand.isGrandTichuFor(i)) {
                 outFirst.setCurrentItem(i);
@@ -96,8 +90,8 @@ public class ScoreHandFragment extends Fragment {
     }
 
     private void updateHandScore() {
-        hand.setCardScore1(scores[score1.getCurrentItem()]);
-        hand.setCardScore2(scores[score2.getCurrentItem()]);
+        hand.setCardScore1(Hand.CARD_SCORE_OPTIONS[score1.getCurrentItem()]);
+        hand.setCardScore2(Hand.CARD_SCORE_OPTIONS[score2.getCurrentItem()]);
         hand.setOutFirst(outFirst.getCurrentItem());
         total1.setText(String.valueOf(hand.getTotalScore1()));
         total2.setText(String.valueOf(hand.getTotalScore2()));

@@ -5,6 +5,24 @@ import java.io.Serializable;
 /* loaded from: classes.dex */
 public class Hand implements Serializable {
     public static final long serialVersionUID = 1;
+
+    /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */
+    public static final Integer[] CARD_SCORE_OPTIONS;
+    static {
+        CARD_SCORE_OPTIONS = new Integer[22];
+        for (int i = 0; i < 21; i++) CARD_SCORE_OPTIONS[i] = i * 5;
+        CARD_SCORE_OPTIONS[21] = 200;
+    }
+
+    /** Returns the complementary card score for the other team (scores always sum to 100; double win yields 0). */
+    public static int otherCardScore(int score) {
+        return score == 200 ? 0 : 100 - score;
+    }
+
+    /** Returns the index of a card score in {@link #CARD_SCORE_OPTIONS}. */
+    public static int cardScoreIndex(int score) {
+        return score == 200 ? 21 : score / 5;
+    }
     private boolean addOnFailure;
     private int cardScore1;
     private int cardScore2;
