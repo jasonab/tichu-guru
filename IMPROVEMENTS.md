@@ -138,7 +138,7 @@ Do not implement unless explicitly requested.
 - [x] **#25 No repository layer — `TGApp` owns both global state and Room I/O**
   Introduced `TichuRepository` in `repository/` package. Owns all DB I/O:
   `loadPlayers`, `savePlayers`, `loadGames`, `saveGames`, `deleteGame`.
-  `TGApp` is now a thin Application subclass: initialises the repository in `onCreate()`,
+  `TGApp` is now a thin Application subclass: initializes the repository in `onCreate()`,
   holds in-memory state (`curGame`, `games`, `players`, `pendingGame`, `pendingHand`),
   and exposes `@JvmStatic` accessors + delegates `savePlayers`/`saveGames`/`deleteGame`
   to the repository. Unblocks async DB work (#16).

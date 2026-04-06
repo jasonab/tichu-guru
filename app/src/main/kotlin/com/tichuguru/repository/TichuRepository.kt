@@ -18,7 +18,7 @@ class TichuRepository(private val db: TichuDatabase) {
     fun savePlayers(players: List<Player>) {
         val entities = players.map { PlayerEntity.from(it) }
         val ids = db.playerDao().upsertAll(entities)
-        players.forEachIndexed { i, p -> p.dbId = ids[i] }
+        players.forEachIndexed { i, p -> if (ids[i] > 0) p.dbId = ids[i] }
     }
 
     fun loadGames(players: List<Player>): MutableList<Game> =
@@ -28,18 +28,19 @@ class TichuRepository(private val db: TichuDatabase) {
         db.runInTransaction {
             val entities = players.map { PlayerEntity.from(it) }
             val ids = db.playerDao().upsertAll(entities)
-            players.forEachIndexed { i, p -> p.dbId = ids[i] }
+            players.forEachIndexed { i, p -> if (ids[i] > 0) p.dbId = ids[i] }
             for (g in games) {
-                val gameId = db.gameDao().upsert(GameEntity.from(g))
-                g.dbId = gameId
+                val upsertedId = db.gameDao().upsert(GameEntity.from(g))
+                if (upsertedId > 0) g.dbId = upsertedId
+                val gid = g.dbId
                 val hands = g.hands
                 if (hands.isEmpty()) {
-                    db.handDao().deleteHandsForGame(gameId)
+                    db.handDao().deleteHandsForGame(gid)
                 } else {
-                    val handEntities = hands.mapIndexed { i, h -> HandEntity.from(h, gameId, i) }
+                    val handEntities = hands.mapIndexed { i, h -> HandEntity.from(h, gid, i) }
                     val handIds = db.handDao().upsertAll(handEntities)
-                    hands.forEachIndexed { i, h -> h.dbId = handIds[i] }
-                    db.handDao().deleteOrphanHands(gameId, handIds)
+                    hands.forEachIndexed { i, h -> if (handIds[i] > 0) h.dbId = handIds[i] }
+                    db.handDao().deleteOrphanHands(gid, hands.map { it.dbId })
                 }
             }
         }
@@ -49,7 +50,7 @@ class TichuRepository(private val db: TichuDatabase) {
         db.gameDao().deleteById(game.dbId)
     }
 
-    private fun buildGameFromEntity(ge: com.tichuguru.db.GameEntity, players: List<Player>): Game? {
+    private fun buildGameFromEntity(ge: GameEntity, players: List<Player>): Game? {
         fun findPlayer(id: Long): Player? {
             val p = players.find { it.dbId == id }
             if (p == null) Log.e(TGApp.TAG, "Player not found when loading game, id=$id")
