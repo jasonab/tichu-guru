@@ -4,7 +4,8 @@
         android:label="@string/app_name"
         android:icon="@drawable/icon"
         android:name=".TGApp"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".TGActivity"
             android:exported="true"

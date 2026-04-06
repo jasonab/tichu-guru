@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -23,6 +22,9 @@ android {
         versionName = "1.03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        compileOptions {
+            targetCompatibility = JavaVersion.VERSION_21
+        }
     }
 
     buildTypes {
@@ -44,6 +46,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     val roomVersion = "2.8.4"
     implementation("androidx.room:room-runtime:$roomVersion")

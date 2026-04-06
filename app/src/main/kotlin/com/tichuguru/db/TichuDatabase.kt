@@ -19,7 +19,6 @@ abstract class TichuDatabase : RoomDatabase() {
         fun getInstance(context: Context): TichuDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(context.applicationContext, TichuDatabase::class.java, "tichu.db")
-                    .allowMainThreadQueries()
                     .build()
                     .also { instance = it }
             }

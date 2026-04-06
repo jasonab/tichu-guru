@@ -118,9 +118,12 @@ No tests currently exist in this project. Add in priority order.
 
 Do not implement unless explicitly requested.
 
-- [ ] **#16 `allowMainThreadQueries()`** (`TichuDatabase.java:19`)
-  All DB I/O blocks the UI thread. Acceptable with small datasets; worth revisiting if the
-  app needs to handle large game histories. Requires #15 and ideally #25 to be done first.
+- [x] **#16 `allowMainThreadQueries()`** (`TichuDatabase.java:19`)
+  Removed `allowMainThreadQueries()` from `TichuDatabase`. `TGApp` now uses a serialized
+  `CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))` for all writes
+  (`savePlayers`, `saveGames`, `deleteGame` fire-and-forget via `dbScope.launch`). Startup
+  loads use `runBlocking { withContext(Dispatchers.IO) { } }` to keep `onCreate` blocking
+  until data is ready without touching the main-thread DB query path.
 
 - [x] **#18 Replace `kankan.wheel.widget` with `NumberPicker`**
   Replaced all three `WheelView` instances in `ScoreHandFragment` with `android.widget.NumberPicker`.
@@ -129,13 +132,17 @@ Do not implement unless explicitly requested.
   Score pickers use `setWrapSelectorWheel(false)`; player picker uses `true`.
   Deleted all 15 kankan source files and 2 drawables (`wheel_bg.xml`, `wheel_val.xml`).
 
-- [ ] **#19 Replace `SegmentedControlButton` with `MaterialButtonToggleGroup`**
-  `SegmentedControlButton` (`com.tichuguru.ui`) is a custom `RadioButton` subclass used
-  for Tichu/Grand Tichu call selection in `curhand.xml`.
-  `MaterialButtonToggleGroup` (Material Components) provides the same UX natively with
-  theming, accessibility, and state-management support built in.
+- [x] **#19 Replace `SegmentedControlButton` with `MaterialButtonToggleGroup`**
+  Replaced all 4 RadioGroups in `curhand.xml` with `MaterialButtonToggleGroup`
+  (`singleSelection=true`, `selectionRequired=true`). Buttons use a custom style
+  `Widget.TichuGuru.TichuToggleButton` (parent: `Widget.MaterialComponents.Button`,
+  `cornerRadius=0dp`, black stroke) with color state lists (`tichu_toggle_btn_bg.xml`,
+  `tichu_toggle_btn_text.xml`) that approximate the original dark/light gradient look.
+  `CurHandFragment` updated: `RadioGroup` → `MaterialButtonToggleGroup`,
+  `checkedRadioButtonId` → `checkedButtonId`. `SegmentedControlButton.java` deleted —
+  no Java files remain in the project.
 
-- [x] **#25 No repository layer — `TGApp` owns both global state and Room I/O**
+- [x] **#25 No repository layer — `TGApp` owns both global state and Room I/O**xit
   Introduced `TichuRepository` in `repository/` package. Owns all DB I/O:
   `loadPlayers`, `savePlayers`, `loadGames`, `saveGames`, `deleteGame`.
   `TGApp` is now a thin Application subclass: initializes the repository in `onCreate()`,

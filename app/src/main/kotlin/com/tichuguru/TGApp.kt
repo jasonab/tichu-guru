@@ -6,6 +6,12 @@ import com.tichuguru.model.Game
 import com.tichuguru.model.Hand
 import com.tichuguru.model.Player
 import com.tichuguru.repository.TichuRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class TGApp : Application() {
 
@@ -15,6 +21,7 @@ class TGApp : Application() {
     private var games: MutableList<Game> = mutableListOf()
     private var players: MutableList<Player> = mutableListOf()
     private lateinit var repository: TichuRepository
+    private val dbScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))
 
     companion object {
         const val TAG = "tichuguru"
@@ -36,14 +43,18 @@ class TGApp : Application() {
         super.onCreate()
         instance = this
         repository = TichuRepository(TichuDatabase.getInstance(this))
-        players = repository.loadPlayers()
-        games = repository.loadGames(players)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                players = repository.loadPlayers()
+                games = repository.loadGames(players)
+            }
+        }
         curGame = games.lastOrNull()
     }
 
-    fun savePlayers() = repository.savePlayers(players)
+    fun savePlayers() { dbScope.launch { repository.savePlayers(players) } }
 
-    fun saveGames() = repository.saveGames(players, games)
+    fun saveGames() { dbScope.launch { repository.saveGames(players, games) } }
 
-    fun deleteGame(game: Game) = repository.deleteGame(game)
+    fun deleteGame(game: Game) { dbScope.launch { repository.deleteGame(game) } }
 }
