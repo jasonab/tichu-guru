@@ -17,28 +17,27 @@ import com.tichuguru.model.Hand
     indices = [Index("gameId")]
 )
 data class HandEntity(
-    @JvmField @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    @JvmField var gameId: Long = 0,
-    @JvmField var handOrder: Int = 0,
-    @JvmField var addOnFailure: Boolean = false,
-    @JvmField var cardScore1: Int = 0,
-    @JvmField var cardScore2: Int = 0,
-    @JvmField var totalScore1: Int = 0,
-    @JvmField var totalScore2: Int = 0,
-    @JvmField var tichuScore1: Int = 0,
-    @JvmField var tichuScore2: Int = 0,
-    @JvmField var outFirst: Int = 0,
-    @JvmField var tichu0: Boolean = false,
-    @JvmField var tichu1: Boolean = false,
-    @JvmField var tichu2: Boolean = false,
-    @JvmField var tichu3: Boolean = false,
-    @JvmField var grandTichu0: Boolean = false,
-    @JvmField var grandTichu1: Boolean = false,
-    @JvmField var grandTichu2: Boolean = false,
-    @JvmField var grandTichu3: Boolean = false
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var gameId: Long = 0,
+    var handOrder: Int = 0,
+    var addOnFailure: Boolean = false,
+    var cardScore1: Int = 0,
+    var cardScore2: Int = 0,
+    var totalScore1: Int = 0,
+    var totalScore2: Int = 0,
+    var tichuScore1: Int = 0,
+    var tichuScore2: Int = 0,
+    var outFirst: Int = 0,
+    var tichu0: Boolean = false,
+    var tichu1: Boolean = false,
+    var tichu2: Boolean = false,
+    var tichu3: Boolean = false,
+    var grandTichu0: Boolean = false,
+    var grandTichu1: Boolean = false,
+    var grandTichu2: Boolean = false,
+    var grandTichu3: Boolean = false
 ) {
     companion object {
-        @JvmStatic
         fun from(h: Hand, gameId: Long, order: Int) = HandEntity(
             id = h.dbId,
             gameId = gameId,

@@ -22,9 +22,11 @@ android {
         versionName = "1.03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        compileOptions {
-            targetCompatibility = JavaVersion.VERSION_21
-        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildTypes {

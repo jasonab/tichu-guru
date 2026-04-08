@@ -6,17 +6,14 @@ class Hand : Serializable {
 
     companion object {
         /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */
-        @JvmField
         val CARD_SCORE_OPTIONS: IntArray = intArrayOf(
             0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 200
         )
 
         /** Returns the complementary card score for the other team (scores always sum to 100; double win yields 0). */
-        @JvmStatic
         fun otherCardScore(score: Int) = if (score == 200) 0 else 100 - score
 
         /** Returns the index of a card score in [CARD_SCORE_OPTIONS]. */
-        @JvmStatic
         fun cardScoreIndex(score: Int) = if (score == 200) 21 else score / 5
     }
 

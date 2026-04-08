@@ -24,12 +24,12 @@ class TGApp : Application() {
         const val TAG = "tichuguru"
         private lateinit var instance: TGApp
 
-        @JvmStatic fun getGame(): Game? = instance.curGame
-        @JvmStatic fun setGame(game: Game?) { instance.curGame = game }
-        @JvmStatic fun getGames(): List<Game> = instance.games
-        @JvmStatic fun getPlayers(): List<Player> = instance.players
-        @JvmStatic fun getPlayer(name: String): Player? = instance.players.find { it.name == name }
-        @JvmStatic fun getPlayerById(id: Long): Player? = instance.players.find { it.dbId == id }
+        fun getGame(): Game? = instance.curGame
+        fun setGame(game: Game?) { instance.curGame = game }
+        fun getGames(): List<Game> = instance.games
+        fun getPlayers(): List<Player> = instance.players
+        fun getPlayer(name: String): Player? = instance.players.find { it.name == name }
+        fun getPlayerById(id: Long): Player? = instance.players.find { it.dbId == id }
     }
 
     override fun onCreate() {

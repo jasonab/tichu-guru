@@ -17,22 +17,21 @@ import com.tichuguru.model.Game
     indices = [Index("player0"), Index("player1"), Index("player2"), Index("player3")]
 )
 data class GameEntity(
-    @JvmField @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    @JvmField var player0: Long = 0,
-    @JvmField var player1: Long = 0,
-    @JvmField var player2: Long = 0,
-    @JvmField var player3: Long = 0,
-    @JvmField var score1: Int = 0,
-    @JvmField var score2: Int = 0,
-    @JvmField var gameLimit: Int = 0,
-    @JvmField var gameOver: Boolean = false,
-    @JvmField var dateMs: Long = 0,
-    @JvmField var mercyRule: Boolean = false,
-    @JvmField var ignoreStats: Boolean = false,
-    @JvmField var addOnFailure: Boolean = false
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var player0: Long = 0,
+    var player1: Long = 0,
+    var player2: Long = 0,
+    var player3: Long = 0,
+    var score1: Int = 0,
+    var score2: Int = 0,
+    var gameLimit: Int = 0,
+    var gameOver: Boolean = false,
+    var dateMs: Long = 0,
+    var mercyRule: Boolean = false,
+    var ignoreStats: Boolean = false,
+    var addOnFailure: Boolean = false
 ) {
     companion object {
-        @JvmStatic
         fun from(g: Game) = GameEntity(
             id = g.dbId,
             player0 = g.players[0].dbId,

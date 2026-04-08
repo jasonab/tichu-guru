@@ -15,7 +15,6 @@ abstract class TichuDatabase : RoomDatabase() {
     companion object {
         @Volatile private var instance: TichuDatabase? = null
 
-        @JvmStatic
         fun getInstance(context: Context): TichuDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(context.applicationContext, TichuDatabase::class.java, "tichu.db")

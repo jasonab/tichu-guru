@@ -6,27 +6,26 @@ import com.tichuguru.model.Player
 
 @Entity(tableName = "players")
 data class PlayerEntity(
-    @JvmField @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    @JvmField var name: String = "",
-    @JvmField var numGames: Int = 0,
-    @JvmField var numWins: Int = 0,
-    @JvmField var numHands: Int = 0,
-    @JvmField var totalPoints: Int = 0,
-    @JvmField var cardPoints: Int = 0,
-    @JvmField var numDoubleWins: Int = 0,
-    @JvmField var numTichuCalled: Int = 0,
-    @JvmField var numTichuMade: Int = 0,
-    @JvmField var numGTCalled: Int = 0,
-    @JvmField var numGTMade: Int = 0,
-    @JvmField var tichuEfficiencyPoints: Int = 0,
-    @JvmField var tichuEfficiencyHands: Int = 0,
-    @JvmField var numTichusStopped: Int = 0,
-    @JvmField var numTichusCalledByOpps: Int = 0,
-    @JvmField var numTichusCalledByPartner: Int = 0,
-    @JvmField var numTichusMadeByPartner: Int = 0
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var name: String = "",
+    var numGames: Int = 0,
+    var numWins: Int = 0,
+    var numHands: Int = 0,
+    var totalPoints: Int = 0,
+    var cardPoints: Int = 0,
+    var numDoubleWins: Int = 0,
+    var numTichuCalled: Int = 0,
+    var numTichuMade: Int = 0,
+    var numGTCalled: Int = 0,
+    var numGTMade: Int = 0,
+    var tichuEfficiencyPoints: Int = 0,
+    var tichuEfficiencyHands: Int = 0,
+    var numTichusStopped: Int = 0,
+    var numTichusCalledByOpps: Int = 0,
+    var numTichusCalledByPartner: Int = 0,
+    var numTichusMadeByPartner: Int = 0
 ) {
     companion object {
-        @JvmStatic
         fun from(p: Player) = PlayerEntity(
             id = p.dbId,
             name = p.name,
