@@ -11,12 +11,13 @@ Open items only appear in the active sections below. All completed work is in th
   3 column `LinearLayout`s in `scorehand.xml`) from `layout_width="match_parent"` to
   `layout_width="0dp"` so weight distribution is correct on all screen sizes.
 
-- [ ] **#34 Hardcoded color literal in `scorecardrow.xml`**
-  The divider `View` uses `android:background="#ff909090"`. Should be a named color resource.
+- [x] **#34 Hardcoded color literal in `scorecardrow.xml`**
+  Created `res/values/colors.xml` with `scorecard_divider` (`#ff909090`). Both divider
+  `View`s in `scorecardrow.xml` updated to `@color/scorecard_divider`.
 
-- [ ] **#35 Text sizes use `dp` instead of `sp`** (`newgame.xml`, `statslistrow.xml`, `scorehand.xml`)
-  Several `TextView` elements specify `textSize` in `dp` rather than `sp`. `dp` ignores the
-  user's system font-size preference; all text sizes must use `sp`.
+- [x] **#35 Text sizes use `dp` instead of `sp`** (`newgame.xml`, `statslistrow.xml`, `scorehand.xml`)
+  Fixed 7 occurrences: 3× `18dp` → `18sp` in `newgame.xml`, 2× `18dp` → `18sp` in
+  `statslistrow.xml`, 2× `24dp` → `24sp` in `scorehand.xml`.
 
 - [ ] **#42 Duplicated "Are you sure?" AlertDialog pattern**
   The same `AlertDialog.Builder` block (message, Yes/No buttons, dismiss on No) appears in

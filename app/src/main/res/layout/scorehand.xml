@@ -75,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/wheel_bg"/>
                 <TextView
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/wheel_bg"/>
                 <TextView
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:layout_gravity="center_horizontal"
                     android:id="@+id/scoreHandTotal2"
                     android:layout_width="wrap_content"

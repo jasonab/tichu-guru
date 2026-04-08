@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:text="+50"/>
         <View
-            android:background="#ff909090"
+            android:background="@color/scorecard_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
         <TextView
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:text="+50"/>
         <View
-            android:background="#ff909090"
+            android:background="@color/scorecard_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
         <TextView
