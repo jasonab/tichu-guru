@@ -4,33 +4,32 @@ import java.io.Serializable
 import java.util.Date
 import kotlin.math.abs
 
-class Game : Serializable {
-
-    var players: MutableList<Player> = mutableListOf()
-    var hands: MutableList<Hand> = mutableListOf()
-    var score1: Int = 0
-    var score2: Int = 0
-    var gameLimit: Int = 0
-    var gameOver: Boolean = false
-    var mercyRule: Boolean = false
-    var ignoreStats: Boolean = false
-    var addOnFailure: Boolean = false
-    var date: Date = Date()
+class Game(
+    var players: MutableList<Player> = mutableListOf(),
+    var hands: MutableList<Hand> = mutableListOf(),
+    var score1: Int = 0,
+    var score2: Int = 0,
+    var gameLimit: Int = 0,
+    var gameOver: Boolean = false,
+    var mercyRule: Boolean = false,
+    var ignoreStats: Boolean = false,
+    var addOnFailure: Boolean = false,
+    var date: Date = Date(),
     var dbId: Long = 0
+) : Serializable {
 
-    constructor()
+    constructor(players: List<Player>) : this(
+        players = players.toMutableList(),
+        gameLimit = 1000,
+        mercyRule = true
+    )
 
-    constructor(players: List<Player>) {
-        this.players = players.toMutableList()
-        this.gameLimit = 1000
-        this.mercyRule = true
-        this.date = Date()
-    }
-
-    constructor(g: Game) : this(g.players) {
-        this.mercyRule = g.mercyRule
-        this.addOnFailure = g.addOnFailure
-    }
+    constructor(g: Game) : this(
+        players = g.players.toMutableList(),
+        gameLimit = 1000,
+        mercyRule = g.mercyRule,
+        addOnFailure = g.addOnFailure
+    )
 
     fun endGame() {
         gameOver = true

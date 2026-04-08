@@ -1,8 +1,7 @@
 package com.tichuguru.model
 
-class Player : Comparable<Player> {
+class Player(var name: String = "") : Comparable<Player> {
 
-    var name: String = ""
     var dbId: Long = 0
     var numGames: Int = 0
     var numWins: Int = 0
@@ -20,12 +19,6 @@ class Player : Comparable<Player> {
     var numTichusCalledByOpps: Int = 0
     var numTichusCalledByPartner: Int = 0
     var numTichusMadeByPartner: Int = 0
-
-    constructor()
-
-    constructor(name: String) {
-        this.name = name
-    }
 
     fun recordGame(game: Game, seat: Int) {
         numGames++

@@ -2,7 +2,7 @@ package com.tichuguru.model
 
 import java.io.Serializable
 
-class Hand : Serializable {
+class Hand(var isAddOnFailure: Boolean = false) : Serializable {
 
     companion object {
         /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */
@@ -18,7 +18,6 @@ class Hand : Serializable {
     }
 
     var dbId: Long = 0
-    var isAddOnFailure: Boolean = false
     private var tichu = BooleanArray(4)
     private var grandTichu = BooleanArray(4)
     private var _outFirst: Int = 0
@@ -32,12 +31,6 @@ class Hand : Serializable {
     val cardScore1: Int get() = _cardScore1
     val cardScore2: Int get() = _cardScore2
     fun outFirst(): Int = _outFirst
-
-    constructor()
-
-    constructor(game: Game) {
-        isAddOnFailure = game.addOnFailure
-    }
 
     fun setCardScore1(score: Int) {
         _cardScore1 = score

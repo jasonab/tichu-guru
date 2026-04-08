@@ -113,7 +113,7 @@ class CurHandFragment : Fragment(), MenuProvider {
     }
 
     private fun onScoreHand() {
-        val hand = Hand(TGApp.getGame()!!)
+        val hand = Hand(TGApp.getGame()!!.addOnFailure)
         if (grp1!!.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
         if (grp1!!.checkedRadioButtonId == R.id.curHandP1T)  hand.setTichuFor(0)
         if (grp2!!.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
