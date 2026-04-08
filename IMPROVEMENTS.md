@@ -50,9 +50,8 @@ Open items only appear in the active sections below. All completed work is in th
   `layout_alignParentBottom` and `layout_above` attributes. Also took the opportunity to
   remove the spurious `android:orientation` attribute from `scorecard.xml` (closes #40).
 
-- [ ] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
-  Both files wrap a single `RecyclerView` in a `LinearLayout` that contributes nothing.
-  The `RecyclerView` can be the root element directly.
+- [x] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
+  `LinearLayout` wrapper removed; `RecyclerView` is now the root element in both files.
 
 - [ ] **#38 `scorecardrow.xml`: six single-child `LinearLayout` wrappers**
   Each column is a `LinearLayout` containing exactly one `TextView`, existing only to carry
