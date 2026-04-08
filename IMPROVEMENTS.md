@@ -6,11 +6,10 @@ Open items only appear in the active sections below. All completed work is in th
 
 ## High
 
-- [ ] **#33 Weighted children use `match_parent` width instead of `0dp`** (`newgame.xml`, `scorehand.xml`)
-  Spinners and `EditText` inside horizontal `LinearLayout`s set both `layout_width="match_parent"`
-  and `layout_weight`. The correct pattern is `layout_width="0dp"` on weighted children; with
-  `match_parent`, one child can consume all available space before weights are applied, producing
-  unpredictable results on different screen sizes.
+- [x] **#33 Weighted children use `match_parent` width instead of `0dp`** (`newgame.xml`, `scorehand.xml`)
+  Changed all 9 weighted children (4 Spinners, 1 TextView, 1 EditText in `newgame.xml`;
+  3 column `LinearLayout`s in `scorehand.xml`) from `layout_width="match_parent"` to
+  `layout_width="0dp"` so weight distribution is correct on all screen sizes.
 
 - [ ] **#34 Hardcoded color literal in `scorecardrow.xml`**
   The divider `View` uses `android:background="#ff909090"`. Should be a named color resource.
