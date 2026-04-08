@@ -44,10 +44,11 @@ Open items only appear in the active sections below. All completed work is in th
 
 ## Medium
 
-- [ ] **#36 `RelativeLayout` root used only to pin a button at the bottom** (`scorecard.xml`, `newgame.xml`, `scorehand.xml`)
-  All three use `RelativeLayout` solely for `layout_alignParentBottom` on one button while a
-  `LinearLayout`/`ScrollView` fills the rest. A single vertical `LinearLayout` with
-  `layout_weight="1"` on the scrollable body achieves the same result with one fewer view level.
+- [x] **#36 `RelativeLayout` root used only to pin a button at the bottom** (`scorecard.xml`, `newgame.xml`, `scorehand.xml`)
+  Converted all three roots to vertical `LinearLayout`. Scrollable body gets
+  `layout_height="0dp"` + `layout_weight="1"`; button(s) placed after it. Removed all
+  `layout_alignParentBottom` and `layout_above` attributes. Also took the opportunity to
+  remove the spurious `android:orientation` attribute from `scorecard.xml` (closes #40).
 
 - [ ] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
   Both files wrap a single `RecyclerView` in a `LinearLayout` that contributes nothing.
@@ -113,8 +114,8 @@ No tests currently exist in this project. Add in priority order.
   RTL-unaware margin attributes. Replace all `marginLeft`/`marginRight` with
   `marginStart`/`marginEnd` throughout layout files.
 
-- [ ] **#40 `android:orientation` on `RelativeLayout`** (`scorecard.xml`)
-  `RelativeLayout` ignores the `orientation` attribute entirely — it's a no-op. Remove it.
+- [x] **#40 `android:orientation` on `RelativeLayout`** (`scorecard.xml`)
+  Resolved by #36 — `RelativeLayout` replaced with `LinearLayout`, so the attribute is now meaningful rather than a no-op.
 
 - [ ] **#41 `textAppearance` references framework style `textAppearanceMedium`** (`statsrow.xml`)
   `?android:attr/textAppearanceMedium` is a pre-Material framework style. Replace with a

@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
-    <Button
-        android:id="@+id/newGameStart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Game"
-        android:layout_alignParentBottom="true"/>
-    <Button
-        android:id="@+id/newGameRandomizeTeams"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Randomize Teams"
-        android:layout_above="@+id/newGameStart"/>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/newGameRandomizeTeams">
+        android:layout_height="0dp"
+        android:layout_weight="1">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -101,4 +90,14 @@
                 android:text="Mercy Rule"/>
         </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+    <Button
+        android:id="@+id/newGameRandomizeTeams"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Randomize Teams"/>
+    <Button
+        android:id="@+id/newGameStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Game"/>
+</LinearLayout>
