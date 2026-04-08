@@ -1,9 +1,10 @@
 package com.tichuguru.model
 
+import java.io.Serializable
 import java.util.Date
 import kotlin.math.abs
 
-class Game {
+class Game : Serializable {
 
     var players: MutableList<Player> = mutableListOf()
     var hands: MutableList<Hand> = mutableListOf()

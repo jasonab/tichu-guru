@@ -18,9 +18,12 @@ class ScoreHandFragment : Fragment() {
     private lateinit var total2: TextView
 
     companion object {
+        private const val ARG_HAND = "hand"
+
         fun newInstance(hand: Hand): ScoreHandFragment {
-            TGApp.setPendingHand(hand)
-            return ScoreHandFragment()
+            return ScoreHandFragment().apply {
+                arguments = Bundle().apply { putSerializable(ARG_HAND, hand) }
+            }
         }
     }
 
@@ -32,7 +35,7 @@ class ScoreHandFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "Score Hand"
 
-        hand   = TGApp.getPendingHand()!!
+        hand = androidx.core.os.BundleCompat.getSerializable(requireArguments(), ARG_HAND, Hand::class.java)!!
         total1 = view.findViewById(R.id.scoreHandTotal1)
         total2 = view.findViewById(R.id.scoreHandTotal2)
 

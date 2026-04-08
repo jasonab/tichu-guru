@@ -1,6 +1,8 @@
 package com.tichuguru.model
 
-class Hand {
+import java.io.Serializable
+
+class Hand : Serializable {
 
     companion object {
         /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */

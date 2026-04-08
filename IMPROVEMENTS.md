@@ -34,11 +34,11 @@ Open items only appear in the active sections below. All completed work is in th
   Sixteen sequential `if` statements handle players 0–3 with identical structure. Replace
   with a loop over `0..3` indexing into the `tichu` and `grandTichu` arrays.
 
-- [ ] **#45 `setPendingHand()` / `setPendingGame()` passed via static setters**
-  `ScoreHandFragment` and `NewGameFragment` store their input via `TGApp.setPending*()`
-  instead of Fragment `arguments`. On process death this state is lost and cannot be
-  restored. Use `newInstance(hand: Hand)` / `newInstance(game: Game)` that pack data into
-  `arguments` as `Serializable`.
+- [x] **#45 `setPendingHand()` / `setPendingGame()` passed via static setters**
+  `Game` and `Hand` given `Serializable` interface. `ScoreHandFragment.newInstance()` and
+  `NewGameFragment.newInstance()` now pack their argument into `Bundle` via `putSerializable`
+  and read it back in `onViewCreated` via `requireArguments()`. `pendingGame` / `pendingHand`
+  fields and all four accessors removed from `TGApp`.
 
 ---
 
@@ -96,6 +96,12 @@ No tests currently exist in this project. Add in priority order.
 ---
 
 ## Low
+
+- [ ] **#51 Replace bare `!!` with `requireNotNull` / `checkNotNull`**
+  Bare `!!` throws `NullPointerException` with no context. Replace all `!!` call sites with
+  `requireNotNull(x) { "descriptive message" }` (for precondition checks on incoming values)
+  or `checkNotNull(x) { "descriptive message" }` (for internal state assertions), so crashes
+  include actionable context. Going forward, `!!` is banned — use the named assertion instead.
 
 - [ ] **#49 Players sorted twice** (`NewGameFragment.kt`)
   `PlayerDao` already returns players `ORDER BY name`. `NewGameFragment` then calls

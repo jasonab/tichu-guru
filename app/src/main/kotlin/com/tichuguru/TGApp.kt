@@ -3,7 +3,6 @@ package com.tichuguru
 import android.app.Application
 import com.tichuguru.db.TichuDatabase
 import com.tichuguru.model.Game
-import com.tichuguru.model.Hand
 import com.tichuguru.model.Player
 import com.tichuguru.repository.TichuRepository
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +15,6 @@ import kotlinx.coroutines.withContext
 class TGApp : Application() {
 
     private var curGame: Game? = null
-    private var pendingGame: Game? = null
-    private var pendingHand: Hand? = null
     private var games: MutableList<Game> = mutableListOf()
     private var players: MutableList<Player> = mutableListOf()
     private lateinit var repository: TichuRepository
@@ -33,10 +30,6 @@ class TGApp : Application() {
         @JvmStatic fun getPlayers(): List<Player> = instance.players
         @JvmStatic fun getPlayer(name: String): Player? = instance.players.find { it.name == name }
         @JvmStatic fun getPlayerById(id: Long): Player? = instance.players.find { it.dbId == id }
-        @JvmStatic fun getPendingGame(): Game? = instance.pendingGame
-        @JvmStatic fun setPendingGame(game: Game?) { instance.pendingGame = game }
-        @JvmStatic fun getPendingHand(): Hand? = instance.pendingHand
-        @JvmStatic fun setPendingHand(hand: Hand?) { instance.pendingHand = hand }
     }
 
     override fun onCreate() {

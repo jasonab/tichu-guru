@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
+import androidx.core.os.BundleCompat
 import com.tichuguru.model.Game
 import com.tichuguru.model.Player
 import java.util.Collections
@@ -26,9 +27,12 @@ class NewGameFragment : Fragment() {
     private lateinit var spinAdapter: ArrayAdapter<String>
 
     companion object {
+        private const val ARG_GAME = "game"
+
         fun newInstance(game: Game): NewGameFragment {
-            TGApp.setPendingGame(game)
-            return NewGameFragment()
+            return NewGameFragment().apply {
+                arguments = Bundle().apply { putSerializable(ARG_GAME, game) }
+            }
         }
     }
 
@@ -40,7 +44,7 @@ class NewGameFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "New Game"
 
-        game = TGApp.getPendingGame()!!
+        game = BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)!!
         gameLimit          = view.findViewById(R.id.newGameGameLimit)
         addOnFailedTichuCB = view.findViewById(R.id.newGameAddOnFailedTichu)
         affectStatsCB      = view.findViewById(R.id.newGameAffectsStats)
@@ -163,7 +167,7 @@ class NewGameFragment : Fragment() {
                         spinAdapter.insert(newPlayer.name, allPlayers.indexOf(newPlayer))
                         (requireActivity().application as TGApp).savePlayers()
                     }
-                    game.setPlayer(playerNum, newPlayer!!)
+                    game.setPlayer(playerNum, newPlayer)
                     addingPlayer = false
                     requireActivity().runOnUiThread { updateNameSpinners() }
                 }

@@ -58,6 +58,7 @@ kankan/wheel/widget/         # Embedded scroll-wheel library (not a Gradle dep)
 - **Rule logic** belongs in `model/` classes, not Activities or Fragments.
 - **DB schema changes:** increment `version` in `@Database` and add `Migration(n, n+1)` in `TichuDatabase`. Do NOT use `fallbackToDestructiveMigration()` for new versions.
 - **Game/Hand inter-screen passing:** `Bundle.putSerializable()` — both implement `Serializable`.
+- **Null assertions:** Use `requireNotNull(x) { "message" }` or `checkNotNull(x) { "message" }` instead of `x!!`. Never use bare `!!`.
 - **Colors:** `Color.YELLOW` / `Color.GRAY` — never raw integer literals.
 - **Game rule constants** (bonus scores, thresholds): `static final` on the relevant model class.
 
