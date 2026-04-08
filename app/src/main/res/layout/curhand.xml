@@ -34,22 +34,28 @@
                 android:orientation="horizontal"
                 android:id="@+id/curHandP1RG"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="48dp">
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1GT"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="GT"
-                    android:layout_weight="1"/>
+                    android:text="GT"/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1None"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="true"
-                    android:text=" "
-                    android:layout_weight="1"/>
+                    android:text=" "/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP1T"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="T"
-                    android:layout_weight="1"/>
+                    android:text="T"/>
             </RadioGroup>
             <TextView
                 android:textSize="24dp"
@@ -65,22 +71,28 @@
                 android:orientation="horizontal"
                 android:id="@+id/curHandP3RG"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="48dp">
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3GT"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="GT"
-                    android:layout_weight="1"/>
+                    android:text="GT"/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3None"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="true"
-                    android:text=" "
-                    android:layout_weight="1"/>
+                    android:text=" "/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP3T"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="T"
-                    android:layout_weight="1"/>
+                    android:text="T"/>
             </RadioGroup>
         </LinearLayout>
         <LinearLayout
@@ -109,22 +121,28 @@
                 android:orientation="horizontal"
                 android:id="@+id/curHandP2RG"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="48dp">
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2GT"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="GT"
-                    android:layout_weight="1"/>
+                    android:text="GT"/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2None"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="true"
-                    android:text=" "
-                    android:layout_weight="1"/>
+                    android:text=" "/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP2T"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="T"
-                    android:layout_weight="1"/>
+                    android:text="T"/>
             </RadioGroup>
             <TextView
                 android:textSize="24dp"
@@ -140,22 +158,28 @@
                 android:orientation="horizontal"
                 android:id="@+id/curHandP4RG"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="48dp">
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4GT"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="GT"
-                    android:layout_weight="1"/>
+                    android:text="GT"/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4None"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="true"
-                    android:text=" "
-                    android:layout_weight="1"/>
+                    android:text=" "/>
                 <com.tichuguru.ui.SegmentedControlButton
                     android:id="@+id/curHandP4T"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:checked="false"
-                    android:text="T"
-                    android:layout_weight="1"/>
+                    android:text="T"/>
             </RadioGroup>
         </LinearLayout>
     </LinearLayout>
