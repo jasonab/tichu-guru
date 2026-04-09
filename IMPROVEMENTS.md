@@ -53,10 +53,11 @@ Open items only appear in the active sections below. All completed work is in th
 - [x] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
   `LinearLayout` wrapper removed; `RecyclerView` is now the root element in both files.
 
-- [ ] **#38 `scorecardrow.xml`: six single-child `LinearLayout` wrappers**
-  Each column is a `LinearLayout` containing exactly one `TextView`, existing only to carry
-  `layout_weight`. Replace with a single horizontal `LinearLayout` holding six `TextView`s
-  each using `layout_width="0dp"` + `layout_weight="1"`, halving the view count.
+- [x] **#38 `scorecardrow.xml`: six single-child `LinearLayout` wrappers**
+  Removed the four single-child wrappers (tichu columns); their `TextView`s now sit directly
+  in the root with `layout_width="0dp"` + `layout_weight="1"`. The two score/total columns
+  keep their inner `LinearLayout` (needed for the divider) but are also fixed to `0dp` width.
+  View count reduced from 16 to 12.
 
 - [ ] **#46 Magic seat index numbers with no named constant** (`Player.kt`)
   The condition `seat == 0 || seat == 2` (team 1) appears 12+ times with no explanation.

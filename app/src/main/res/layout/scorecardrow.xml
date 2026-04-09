@@ -4,35 +4,25 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    <TextView
+        android:textSize="18sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/scorecardTichu1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <TextView
-            android:textSize="18sp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/scorecardTichu1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T"/>
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:text="T"/>
+    <TextView
+        android:textSize="18sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/scorecardTichu3"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <TextView
-            android:textSize="18sp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/scorecardTichu3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="GT"/>
-    </LinearLayout>
+        android:layout_weight="1"
+        android:text="GT"/>
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
@@ -57,7 +47,7 @@
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <TextView
@@ -80,30 +70,20 @@
             android:layout_height="wrap_content"
             android:text="350"/>
     </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    <TextView
+        android:textSize="18sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/scorecardTichu2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <TextView
-            android:textSize="18sp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/scorecardTichu2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T"/>
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:text="T"/>
+    <TextView
+        android:textSize="18sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/scorecardTichu4"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <TextView
-            android:textSize="18sp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/scorecardTichu4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="GT"/>
-    </LinearLayout>
+        android:layout_weight="1"
+        android:text="GT"/>
 </LinearLayout>
