@@ -116,16 +116,14 @@ No tests currently exist in this project. Add in priority order.
   calls from `CurHandFragment` fragment result listeners. `TGActivity.createFirstGame()`
   now reads state through LiveData instead of the former public fields.
 
-- [ ] **#39 `layout_marginLeft/Right` instead of `layout_marginStart/End`** (`allgamesrow.xml`)
-  RTL-unaware margin attributes. Replace all `marginLeft`/`marginRight` with
-  `marginStart`/`marginEnd` throughout layout files.
+- [x] **#39 `layout_marginLeft/Right` instead of `layout_marginStart/End`** (`allgamesrow.xml`)
+  Replaced all 5 occurrences across `allgamesrow.xml`, `statslistrow.xml`, and `statsrow.xml`.
 
 - [x] **#40 `android:orientation` on `RelativeLayout`** (`scorecard.xml`)
   Resolved by #36 — `RelativeLayout` replaced with `LinearLayout`, so the attribute is now meaningful rather than a no-op.
 
-- [ ] **#41 `textAppearance` references framework style `textAppearanceMedium`** (`statsrow.xml`)
-  `?android:attr/textAppearanceMedium` is a pre-Material framework style. Replace with a
-  Material text appearance such as `?attr/textAppearanceBody1` for consistency with the app theme.
+- [x] **#41 `textAppearance` references framework style `textAppearanceMedium`** (`statsrow.xml`)
+  Replaced `?android:attr/textAppearanceMedium` with `?attr/textAppearanceBody1`.
 
 ---
 
