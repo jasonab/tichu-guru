@@ -15,6 +15,16 @@ class SegmentedControlButton @JvmOverloads constructor(
 
     private var mX = 0f
 
+    init {
+        isClickable = true
+        isFocusable = true
+    }
+
+    override fun setChecked(checked: Boolean) {
+        super.setChecked(checked)
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas) {
         val text = getText().toString()
         val textPaint = Paint()

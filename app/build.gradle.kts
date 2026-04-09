@@ -50,6 +50,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
 
     val roomVersion = "2.8.4"
     implementation("androidx.room:room-runtime:$roomVersion")

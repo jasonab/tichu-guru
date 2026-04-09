@@ -53,7 +53,9 @@ class TGActivity : AppCompatActivity() {
         activeFragment = curHandFragment
 
         viewModel = ViewModelProvider(this)[TGViewModel::class.java]
-        viewModel.sync()
+        viewModel.getInitialized().observe(this) { initialized ->
+            if (initialized && viewModel.getCurrentGame().value == null) createFirstGame()
+        }
 
         bottomNav = findViewById(R.id.bottom_nav)
         fragmentContainer = findViewById(R.id.fragment_container)
@@ -125,14 +127,16 @@ class TGActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.sync()
-        if (TGApp.getGame() == null) createFirstGame()
+        if (viewModel.isInitialized) {
+            viewModel.sync()
+            if (viewModel.getCurrentGame().value == null) createFirstGame()
+        }
     }
 
     fun createFirstGame() {
-        val allPlayers = TGApp.getPlayers()
+        val allPlayers = viewModel.players
         val players = List(4) { i -> if (i < allPlayers.size) allPlayers[i] else Player("New Player") }
-        val curGame = TGApp.getGame()
-        pushFragment(NewGameFragment.newInstance(if (curGame == null) Game(players) else Game(curGame)))
+        val curGame = viewModel.curGame
+        pushFragment(NewGameFragment.newInstance(if (curGame == null) Game(players) else Game(curGame), allPlayers))
     }
 }

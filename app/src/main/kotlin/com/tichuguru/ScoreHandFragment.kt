@@ -1,12 +1,14 @@
 package com.tichuguru
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import android.widget.TextView
+import androidx.core.os.BundleCompat
 import com.tichuguru.model.Hand
 
 class ScoreHandFragment : Fragment() {
@@ -18,11 +20,15 @@ class ScoreHandFragment : Fragment() {
     private lateinit var total2: TextView
 
     companion object {
-        private const val ARG_HAND = "hand"
+        private const val ARG_HAND         = "hand"
+        private const val ARG_PLAYER_NAMES = "playerNames"
 
-        fun newInstance(hand: Hand): ScoreHandFragment {
+        fun newInstance(hand: Hand, playerNames: Array<String>): ScoreHandFragment {
             return ScoreHandFragment().apply {
-                arguments = Bundle().apply { putSerializable(ARG_HAND, hand) }
+                arguments = Bundle().apply {
+                    putSerializable(ARG_HAND, hand)
+                    putStringArray(ARG_PLAYER_NAMES, playerNames)
+                }
             }
         }
     }
@@ -35,7 +41,9 @@ class ScoreHandFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "Score Hand"
 
-        hand = androidx.core.os.BundleCompat.getSerializable(requireArguments(), ARG_HAND, Hand::class.java)!!
+        hand = BundleCompat.getSerializable(requireArguments(), ARG_HAND, Hand::class.java)!!
+        val playerNames = requireArguments().getStringArray(ARG_PLAYER_NAMES)!!
+
         total1 = view.findViewById(R.id.scoreHandTotal1)
         total2 = view.findViewById(R.id.scoreHandTotal2)
 
@@ -67,22 +75,19 @@ class ScoreHandFragment : Fragment() {
         score2.wrapSelectorWheel = false
         score2.setOnValueChangedListener(changeListener)
 
-        val players = TGApp.getGame()!!.players
-        val names = Array(4) { players[it].name }
-
         outFirst = view.findViewById(R.id.scoreHandOutFirst)
         outFirst.minValue = 0
         outFirst.maxValue = 3
-        outFirst.displayedValues = names
+        outFirst.displayedValues = playerNames
         outFirst.wrapSelectorWheel = true
         outFirst.setOnValueChangedListener(changeListener)
 
         view.findViewById<View>(R.id.scoreHandSave).setOnClickListener { onSave() }
 
-        view.findViewById<TextView>(R.id.scoreHandName1).text = players[0].name
-        view.findViewById<TextView>(R.id.scoreHandName2).text = players[1].name
-        view.findViewById<TextView>(R.id.scoreHandName3).text = players[2].name
-        view.findViewById<TextView>(R.id.scoreHandName4).text = players[3].name
+        view.findViewById<TextView>(R.id.scoreHandName1).text = playerNames[0]
+        view.findViewById<TextView>(R.id.scoreHandName2).text = playerNames[1]
+        view.findViewById<TextView>(R.id.scoreHandName3).text = playerNames[2]
+        view.findViewById<TextView>(R.id.scoreHandName4).text = playerNames[3]
 
         score1.value = Hand.cardScoreIndex(50)
         score2.value = Hand.cardScoreIndex(50)
@@ -104,10 +109,7 @@ class ScoreHandFragment : Fragment() {
     }
 
     private fun onSave() {
-        val app = requireActivity().application as TGApp
-        TGApp.getGame()!!.scoreHand(hand)
-        app.saveGames()
-        app.savePlayers()
+        ViewModelProvider(requireActivity())[TGViewModel::class.java].scoreHand(hand)
         parentFragmentManager.setFragmentResult("score_hand", Bundle())
         parentFragmentManager.popBackStack()
     }

@@ -2,6 +2,7 @@ package com.tichuguru
 
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +21,24 @@ class NewGameFragment : Fragment() {
     private var addingPlayer = false
     private lateinit var addOnFailedTichuCB: CheckBox
     private lateinit var affectStatsCB: CheckBox
+    private lateinit var allPlayers: MutableList<Player>
     private lateinit var game: Game
     private lateinit var gameLimit: EditText
     private lateinit var mercyRuleCB: CheckBox
     private lateinit var nameSpinners: List<Spinner>
     private lateinit var spinAdapter: ArrayAdapter<String>
+    private lateinit var viewModel: TGViewModel
 
     companion object {
-        private const val ARG_GAME = "game"
+        private const val ARG_GAME    = "game"
+        private const val ARG_PLAYERS = "players"
 
-        fun newInstance(game: Game): NewGameFragment {
+        fun newInstance(game: Game, players: List<Player>): NewGameFragment {
             return NewGameFragment().apply {
-                arguments = Bundle().apply { putSerializable(ARG_GAME, game) }
+                arguments = Bundle().apply {
+                    putSerializable(ARG_GAME, game)
+                    putSerializable(ARG_PLAYERS, ArrayList(players))
+                }
             }
         }
     }
@@ -43,8 +50,12 @@ class NewGameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "New Game"
+        viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
 
         game = BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)!!
+        @Suppress("UNCHECKED_CAST")
+        allPlayers = (BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)!! as ArrayList<Player>).toMutableList()
+
         gameLimit          = view.findViewById(R.id.newGameGameLimit)
         addOnFailedTichuCB = view.findViewById(R.id.newGameAddOnFailedTichu)
         affectStatsCB      = view.findViewById(R.id.newGameAffectsStats)
@@ -59,12 +70,11 @@ class NewGameFragment : Fragment() {
             view.findViewById(R.id.newGameName4)
         )
 
-        val allPlayers = TGApp.getPlayers()
-        val choices = allPlayers.map { it.name }.toMutableList<String>()
+        val choices = allPlayers.map { it.name }.toMutableList()
         choices.add("New Player")
         spinAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, choices)
         for (i in 0..3) {
-            nameSpinners[i].setOnItemSelectedListener(PlayerSelectedListener(i))
+            nameSpinners[i].onItemSelectedListener = PlayerSelectedListener(i)
             nameSpinners[i].adapter = spinAdapter
         }
         updateNameSpinners()
@@ -111,9 +121,7 @@ class NewGameFragment : Fragment() {
         game.addOnFailure = addOnFailedTichuCB.isChecked
         game.ignoreStats  = !affectStatsCB.isChecked
         game.mercyRule    = mercyRuleCB.isChecked
-        (TGApp.getGames() as MutableList<Game>).add(game)
-        TGApp.setGame(game)
-        (requireActivity().application as TGApp).saveGames()
+        viewModel.addGame(game)
         parentFragmentManager.setFragmentResult("new_game", Bundle())
         parentFragmentManager.popBackStack()
     }
@@ -134,7 +142,6 @@ class NewGameFragment : Fragment() {
     private inner class PlayerSelectedListener(private val playerNum: Int) : AdapterView.OnItemSelectedListener {
 
         override fun onItemSelected(parent: AdapterView<*>, view: View?, index: Int, id: Long) {
-            val allPlayers = TGApp.getPlayers()
             if (index < allPlayers.size) {
                 game.setPlayer(playerNum, allPlayers[index])
             } else if (!addingPlayer) {
@@ -156,7 +163,6 @@ class NewGameFragment : Fragment() {
                         requireActivity().runOnUiThread { getNewPlayerName() }
                         return@setPositiveButton
                     }
-                    val allPlayers = TGApp.getPlayers() as MutableList<Player>
                     var newPlayer = allPlayers.find { it.name == name }
                     if (newPlayer != null) {
                         AlertDialog.Builder(requireContext()).setMessage("That player already exists!").show()
@@ -165,7 +171,7 @@ class NewGameFragment : Fragment() {
                         allPlayers.add(newPlayer)
                         Collections.sort(allPlayers)
                         spinAdapter.insert(newPlayer.name, allPlayers.indexOf(newPlayer))
-                        (requireActivity().application as TGApp).savePlayers()
+                        viewModel.addPlayer(newPlayer)
                     }
                     game.setPlayer(playerNum, newPlayer)
                     addingPlayer = false

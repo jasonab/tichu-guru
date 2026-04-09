@@ -49,6 +49,7 @@ class CurHandFragment : Fragment(), MenuProvider {
         grp3 = view.findViewById(R.id.curHandP3RG)
         grp4 = view.findViewById(R.id.curHandP4RG)
         scoreHandButton = view.findViewById(R.id.curHandScoreHand)
+        scoreHandButton.isEnabled = false
         scoreHandButton.setOnClickListener { onScoreHand() }
         view.findViewById<View>(R.id.curHandNewGame).setOnClickListener { onNewGame() }
 
@@ -88,13 +89,14 @@ class CurHandFragment : Fragment(), MenuProvider {
     }
 
     private fun onNewGame() {
+        val game = viewModel.getCurrentGame().value ?: return
         (requireActivity() as TGActivity).pushFragment(
-            NewGameFragment.newInstance(Game(TGApp.getGame()!!))
+            NewGameFragment.newInstance(Game(game), viewModel.getAllPlayers().value ?: emptyList())
         )
     }
 
     private fun onEndGame() {
-        val game = TGApp.getGame()!!
+        val game = viewModel.getCurrentGame().value ?: return
         if (game.score1 == game.score2) {
             AlertDialog.Builder(requireContext()).setMessage("You can't end the game when the score is tied.").show()
             return
@@ -102,10 +104,7 @@ class CurHandFragment : Fragment(), MenuProvider {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                TGApp.getGame()!!.endGame()
-                val app = requireActivity().application as TGApp
-                app.saveGames()
-                app.savePlayers()
+                viewModel.endGame()
                 updateDisplay()
             }
             .setNegativeButton("No", null)
@@ -113,7 +112,8 @@ class CurHandFragment : Fragment(), MenuProvider {
     }
 
     private fun onScoreHand() {
-        val hand = Hand(TGApp.getGame()!!.addOnFailure)
+        val game = viewModel.getCurrentGame().value ?: return
+        val hand = Hand(game.addOnFailure)
         if (grp1!!.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
         if (grp1!!.checkedRadioButtonId == R.id.curHandP1T)  hand.setTichuFor(0)
         if (grp2!!.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
@@ -122,7 +122,8 @@ class CurHandFragment : Fragment(), MenuProvider {
         if (grp3!!.checkedRadioButtonId == R.id.curHandP3T)  hand.setTichuFor(2)
         if (grp4!!.checkedRadioButtonId == R.id.curHandP4GT) hand.setGrandTichuFor(3)
         if (grp4!!.checkedRadioButtonId == R.id.curHandP4T)  hand.setTichuFor(3)
-        (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand))
+        val playerNames = Array(4) { game.players[it].name }
+        (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand, playerNames))
     }
 
     private fun clearTichuButtons() {
@@ -133,7 +134,11 @@ class CurHandFragment : Fragment(), MenuProvider {
     }
 
     private fun updateDisplay() {
-        val game = TGApp.getGame() ?: return
+        val game = viewModel.getCurrentGame().value
+        if (game == null) {
+            scoreHandButton.isEnabled = false
+            return
+        }
         score1.text = game.score1.toString()
         score2.text = game.score2.toString()
         val players = game.players

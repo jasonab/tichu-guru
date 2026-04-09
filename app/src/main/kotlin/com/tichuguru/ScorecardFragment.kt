@@ -11,10 +11,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.tichuguru.model.Game
 
 class ScorecardFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
-    private lateinit var adapter: ScorecardAdapter
+    private lateinit var scorecardList: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.scorecard, container, false)
@@ -22,10 +23,8 @@ class ScorecardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val scorecardList = view.findViewById<RecyclerView>(R.id.scorecardList)
+        scorecardList = view.findViewById(R.id.scorecardList)
         scorecardList.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ScorecardAdapter()
-        scorecardList.adapter = adapter
         view.findViewById<View>(R.id.scorecardDelete).setOnClickListener { onDeleteHand() }
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getCurrentGame().observe(viewLifecycleOwner) { refreshDisplay() }
@@ -37,32 +36,25 @@ class ScorecardFragment : Fragment() {
     }
 
     private fun refreshDisplay() {
-        val game = TGApp.getGame() ?: return
+        val game = viewModel.getCurrentGame().value ?: return
         val view = requireView()
         val players = game.players
         view.findViewById<TextView>(R.id.scorecardName1).text = players[0].name
         view.findViewById<TextView>(R.id.scorecardName2).text = players[1].name
         view.findViewById<TextView>(R.id.scorecardName3).text = players[2].name
         view.findViewById<TextView>(R.id.scorecardName4).text = players[3].name
-        adapter.notifyDataSetChanged()
+        scorecardList.adapter = ScorecardAdapter(game)
     }
 
     private fun onDeleteHand() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                val game = TGApp.getGame()!!
-                game.removeHand(game.hands.size - 1)
-                val app = requireActivity().application as TGApp
-                app.saveGames()
-                app.savePlayers()
-                viewModel.notifyGameChanged()
-            }
+            .setPositiveButton("Yes") { _, _ -> viewModel.deleteLastHand() }
             .setNegativeButton("No", null)
             .show()
     }
 
-    private class ScorecardAdapter : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
+    private class ScorecardAdapter(private val game: Game) : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
 
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val score1: TextView = v.findViewById(R.id.scorecardHandScore1)
@@ -81,7 +73,6 @@ class ScorecardFragment : Fragment() {
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.scorecardrow, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val game = TGApp.getGame()!!
             val hand = game.hands[position]
             val s1 = hand.totalScore1
             holder.score1.text = "${if (s1 >= 0) "+" else ""}$s1"
@@ -107,6 +98,6 @@ class ScorecardFragment : Fragment() {
             holder.total2.text = t2.toString()
         }
 
-        override fun getItemCount() = TGApp.getGame()?.hands?.size ?: 0
+        override fun getItemCount() = game.hands.size
     }
 }

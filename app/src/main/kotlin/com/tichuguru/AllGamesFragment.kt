@@ -29,15 +29,11 @@ class AllGamesFragment : Fragment() {
         gamesList = view.findViewById(R.id.gamesList)
         gamesList.layoutManager = LinearLayoutManager(requireContext())
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
-        viewModel.getAllGames().observe(viewLifecycleOwner) { refreshList() }
-    }
-
-    private fun refreshList() {
-        gamesList.adapter = GamesAdapter()
+        viewModel.getAllGames().observe(viewLifecycleOwner) { games -> gamesList.adapter = GamesAdapter(games) }
     }
 
     @SuppressLint("SimpleDateFormat")
-    private inner class GamesAdapter : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
+    private inner class GamesAdapter(private val games: List<Game>) : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
         private val df = SimpleDateFormat("M/d")
 
         inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -53,7 +49,6 @@ class AllGamesFragment : Fragment() {
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.allgamesrow, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val games = TGApp.getGames()
             val idx = games.size - position - 1
             val game = games[idx]
             val players = game.players
@@ -77,31 +72,24 @@ class AllGamesFragment : Fragment() {
                 holder.score2.setTextColor(Color.GRAY)
             }
 
-            holder.deleteBtn.setOnClickListener { onDeleteGame(idx) }
+            holder.deleteBtn.setOnClickListener { onDeleteGame(games[idx]) }
             holder.itemView.setOnClickListener {
                 viewModel.requestClearTichuButtons()
-                viewModel.setGame(TGApp.getGames()[idx])
+                viewModel.setGame(games[idx])
                 (requireActivity() as TGActivity).navigateToTab(0)
             }
         }
 
-        override fun getItemCount() = TGApp.getGames().size
+        override fun getItemCount() = games.size
     }
 
-    private fun onDeleteGame(gameNum: Int) {
+    private fun onDeleteGame(game: Game) {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                val games = TGApp.getGames() as MutableList<Game>
-                val game = games[gameNum]
-                (requireActivity().application as TGApp).deleteGame(game)
-                games.removeAt(gameNum)
-                if (TGApp.getGame() === game) {
-                    viewModel.requestClearTichuButtons()
-                    TGApp.setGame(if (games.isEmpty()) null else games.last())
-                }
-                viewModel.notifyGamesChanged()
-                if (TGApp.getGames().isEmpty()) {
+                viewModel.requestClearTichuButtons()
+                viewModel.deleteGame(game)
+                if (viewModel.getAllGames().value.isNullOrEmpty()) {
                     (requireActivity() as TGActivity).createFirstGame()
                 }
             }

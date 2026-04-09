@@ -13,13 +13,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.tichuguru.model.Player
-import java.util.Collections
 import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.sign
 
 class StatsFragment : Fragment() {
     private var adapter: StatsAdapter? = null
+    private lateinit var viewModel: TGViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.stats, container, false)
@@ -30,10 +30,10 @@ class StatsFragment : Fragment() {
         val statsList = view.findViewById<RecyclerView>(R.id.statsList)
         statsList.layoutManager = LinearLayoutManager(requireContext())
         view.findViewById<View>(R.id.statsClearAll).setOnClickListener { onClearStats() }
-        val viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllPlayers().observe(viewLifecycleOwner) { players ->
             if (adapter == null || adapter!!.itemCount != players.size + 11) {
-                adapter = StatsAdapter()
+                adapter = StatsAdapter(players)
                 statsList.adapter = adapter
             }
         }
@@ -43,17 +43,16 @@ class StatsFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                for (p in TGApp.getPlayers()) p.clearStats()
-                (requireActivity().application as TGApp).savePlayers()
+                viewModel.clearAllPlayerStats()
                 adapter?.notifyDataSetChanged()
             }
             .setNegativeButton("No", null)
             .show()
     }
 
-    private class StatsAdapter : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+    private inner class StatsAdapter(private val players: List<Player>) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
-        class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val name: TextView        = v.findViewById(R.id.statsName)
             val expandButton: Button  = v.findViewById(R.id.statsExpandButton)
         }
@@ -62,7 +61,6 @@ class StatsFragment : Fragment() {
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.statsrow, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val players = TGApp.getPlayers()
             val statLabels = arrayOf("Win %", "Pts / Hand", "Card Pts / Hand",
                 "Hands / Double Win", "Tichu %", "Grand Tichu %",
                 "Tichu Efficiency", "Tichu Stop %", "Partner Tichu %")
@@ -105,9 +103,9 @@ class StatsFragment : Fragment() {
             }
         }
 
-        override fun getItemCount() = TGApp.getPlayers().size + 11
+        override fun getItemCount() = players.size + 11
 
-        class PlayerExpandListener(private val player: Player) : View.OnClickListener {
+        inner class PlayerExpandListener(private val player: Player) : View.OnClickListener {
             override fun onClick(v: View) {
                 val labels = arrayOf("Games", "# Played", "Win %", "Hands", "# Played",
                     "Average Pts / Hand", "Average Card Pts / Hand", "# Double Wins",
@@ -134,12 +132,12 @@ class StatsFragment : Fragment() {
                 values[18] = "%.2f".format(player.getPartnerTichuPct())
 
                 (v.context as TGActivity).pushFragment(
-                    StatsListFragment.newInstance("Stats for ${player.name}", labels, values, player.name)
+                    StatsListFragment.newInstance("Stats for ${player.name}", labels, values, player)
                 )
             }
         }
 
-        class RankExpandListener(
+        inner class RankExpandListener(
             private val title: String,
             private val sortDescending: Boolean,
             private val rankValueGetter: (Player) -> Double,
@@ -148,14 +146,14 @@ class StatsFragment : Fragment() {
         ) : View.OnClickListener {
 
             override fun onClick(v: View) {
-                val players = TGApp.getPlayers().toMutableList()
-                players.sortWith { p1, p2 ->
+                val sorted = players.toMutableList()
+                sorted.sortWith { p1, p2 ->
                     val diff = rankValueGetter(p1) - rankValueGetter(p2)
                     (if (sortDescending) -diff else diff).sign.toInt()
                 }
 
                 var digits = 1
-                for (p in players) {
+                for (p in sorted) {
                     val g = extraGetter2 ?: extraGetter1
                     val log = log10(g(p).toDouble()) + 1.0
                     if (!log.isNaN()) digits = max(digits, log.toInt())
@@ -165,9 +163,9 @@ class StatsFragment : Fragment() {
                 else
                     String.format("%%.2f (%%0%dd)", digits)
 
-                val names  = Array(players.size) { players[it].name }
-                val values = Array<String?>(players.size) { i ->
-                    val p = players[i]
+                val names  = Array(sorted.size) { sorted[it].name }
+                val values = Array<String?>(sorted.size) { i ->
+                    val p = sorted[i]
                     if (extraGetter2 != null)
                         String.format(fmt, rankValueGetter(p), extraGetter1(p), extraGetter2(p))
                     else

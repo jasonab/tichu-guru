@@ -11,29 +11,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.tichuguru.model.Game
 import com.tichuguru.model.Player
 
 class StatsListFragment : Fragment() {
     private var player: Player? = null
+    private lateinit var viewModel: TGViewModel
 
     companion object {
-        fun newInstance(title: String, labels: Array<String>, values: Array<String?>, playerName: String?): StatsListFragment {
+        private const val ARG_PLAYER_NAME = "playerName"
+
+        fun newInstance(title: String, labels: Array<String>, values: Array<String?>, player: Player?): StatsListFragment {
             return StatsListFragment().apply {
                 arguments = Bundle().apply {
                     putString("title", title)
                     putStringArray("labels", labels)
                     @Suppress("UNCHECKED_CAST")
                     putStringArray("values", values as Array<String>)
-                    if (playerName != null) putString("playerName", playerName)
+                    if (player != null) putString(ARG_PLAYER_NAME, player.name)
                 }
             }
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val playerName = requireArguments().getString("playerName")
-        player = if (playerName != null) TGApp.getPlayer(playerName) else null
+        viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
+        val playerName = requireArguments().getString(ARG_PLAYER_NAME)
+        player = if (playerName != null) viewModel.getPlayer(playerName) else null
         return inflater.inflate(if (player == null) R.layout.rankinglist else R.layout.statslist, container, false)
     }
 
@@ -60,9 +63,7 @@ class StatsListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                player!!.clearStats()
-                (requireActivity().application as TGApp).savePlayers()
-                ViewModelProvider(requireActivity())[TGViewModel::class.java].notifyPlayersChanged()
+                viewModel.clearPlayerStats(player!!)
                 parentFragmentManager.popBackStack()
             }
             .setNegativeButton("No", null)
@@ -73,26 +74,7 @@ class StatsListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                val p = player!!
-                var updateSharedGame = false
-                val games = TGApp.getGames() as MutableList<Game>
-                for (i in games.indices.reversed()) {
-                    val game = games[i]
-                    if (game.containsPlayer(p)) {
-                        games.removeAt(i)
-                        if (game === TGApp.getGame()) updateSharedGame = true
-                    }
-                }
-                if (updateSharedGame) {
-                    TGApp.setGame(if (games.isEmpty()) null else games.last())
-                }
-                (TGApp.getPlayers() as MutableList<Player>).remove(p)
-                val app = requireActivity().application as TGApp
-                app.saveGames()
-                app.savePlayers()
-                val vm = ViewModelProvider(requireActivity())[TGViewModel::class.java]
-                vm.notifyGamesChanged()
-                vm.notifyPlayersChanged()
+                viewModel.deletePlayer(player!!)
                 parentFragmentManager.popBackStack()
             }
             .setNegativeButton("No", null)
