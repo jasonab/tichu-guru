@@ -127,16 +127,13 @@ class TGActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (viewModel.isInitialized) {
-            viewModel.sync()
-            if (viewModel.getCurrentGame().value == null) createFirstGame()
-        }
+        if (viewModel.isInitialized && viewModel.getCurrentGame().value == null) createFirstGame()
     }
 
     fun createFirstGame() {
-        val allPlayers = viewModel.players
+        val allPlayers = viewModel.getAllPlayers().value ?: emptyList()
         val players = List(4) { i -> if (i < allPlayers.size) allPlayers[i] else Player("New Player") }
-        val curGame = viewModel.curGame
+        val curGame = viewModel.getCurrentGame().value
         pushFragment(NewGameFragment.newInstance(if (curGame == null) Game(players) else Game(curGame), allPlayers))
     }
 }

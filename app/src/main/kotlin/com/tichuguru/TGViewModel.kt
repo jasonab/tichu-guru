@@ -20,9 +20,9 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = TichuRepository(TichuDatabase.getInstance(application))
     private val dbScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))
 
-    val players: MutableList<Player> = mutableListOf()
-    val games: MutableList<Game> = mutableListOf()
-    var curGame: Game? = null
+    private val players: MutableList<Player> = mutableListOf()
+    private val games: MutableList<Game> = mutableListOf()
+    private var curGame: Game? = null
 
     private val _currentGame = MutableLiveData<Game?>()
     private val _allGames = MutableLiveData<List<Game>>()
@@ -40,7 +40,9 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
             curGame = games.lastOrNull()
             withContext(Dispatchers.Main) {
                 isInitialized = true
-                sync()
+                _currentGame.value = curGame
+                _allGames.value = games
+                _allPlayers.value = players
                 _initialized.value = true
             }
         }
@@ -52,12 +54,7 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
     fun getClearTichuButtons(): LiveData<Boolean> = _clearTichuButtons
     fun getInitialized(): LiveData<Boolean> = _initialized
     fun requestClearTichuButtons() { _clearTichuButtons.value = true }
-
-    fun sync() {
-        _currentGame.value = curGame
-        _allGames.value = games
-        _allPlayers.value = players
-    }
+    fun getPlayer(name: String): Player? = players.find { it.name == name }
 
     fun setGame(game: Game) {
         curGame = game
@@ -65,25 +62,12 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         _allGames.value = games
     }
 
-    fun notifyGameChanged() {
-        _currentGame.value = curGame
-        _allGames.value = games
-    }
-
-    fun notifyGamesChanged() {
-        _allGames.value = games
-        _currentGame.value = curGame
-    }
-
-    fun notifyPlayersChanged() {
-        _allPlayers.value = players
-    }
-
     fun endGame() {
         curGame?.endGame()
         saveGames()
         savePlayers()
-        notifyGameChanged()
+        _currentGame.value = curGame
+        _allGames.value = games
     }
 
     fun deleteLastHand() {
@@ -91,21 +75,24 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         game.removeHand(game.hands.size - 1)
         saveGames()
         savePlayers()
-        notifyGameChanged()
+        _currentGame.value = curGame
+        _allGames.value = games
     }
 
     fun scoreHand(hand: Hand) {
         curGame?.scoreHand(hand)
         saveGames()
         savePlayers()
-        notifyGameChanged()
+        _currentGame.value = curGame
+        _allGames.value = games
     }
 
     fun addGame(game: Game) {
         games.add(game)
         curGame = game
         saveGames()
-        notifyGamesChanged()
+        _allGames.value = games
+        _currentGame.value = curGame
     }
 
     fun deleteGame(game: Game) {
@@ -114,29 +101,28 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         if (curGame === game) {
             curGame = if (games.isEmpty()) null else games.last()
         }
-        notifyGamesChanged()
+        _allGames.value = games
+        _currentGame.value = curGame
     }
 
     fun addPlayer(player: Player) {
         players.add(player)
         players.sort()
         savePlayers()
-        notifyPlayersChanged()
+        _allPlayers.value = players
     }
 
     fun clearPlayerStats(player: Player) {
         player.clearStats()
         savePlayers()
-        notifyPlayersChanged()
+        _allPlayers.value = players
     }
 
     fun clearAllPlayerStats() {
         for (p in players) p.clearStats()
         savePlayers()
-        notifyPlayersChanged()
+        _allPlayers.value = players
     }
-
-    fun getPlayer(name: String): Player? = players.find { it.name == name }
 
     fun deletePlayer(player: Player) {
         for (i in games.indices.reversed()) {
@@ -151,8 +137,9 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         players.remove(player)
         saveGames()
         savePlayers()
-        notifyGamesChanged()
-        notifyPlayersChanged()
+        _allGames.value = games
+        _currentGame.value = curGame
+        _allPlayers.value = players
     }
 
     private fun savePlayers() { dbScope.launch { repository.savePlayers(players) } }

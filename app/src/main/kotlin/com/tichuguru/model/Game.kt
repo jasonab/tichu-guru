@@ -21,7 +21,7 @@ class Game(
     constructor(players: List<Player>) : this(
         players = players.toMutableList(),
         gameLimit = 1000,
-        mercyRule = true
+        mercyRule = false
     )
 
     constructor(g: Game) : this(

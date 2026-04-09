@@ -68,11 +68,9 @@ class CurHandFragment : Fragment(), MenuProvider {
 
         parentFragmentManager.setFragmentResultListener("score_hand", viewLifecycleOwner) { _, _ ->
             clearTichuButtons()
-            viewModel.notifyGameChanged()
         }
         parentFragmentManager.setFragmentResultListener("new_game", viewLifecycleOwner) { _, _ ->
             clearTichuButtons()
-            viewModel.notifyGameChanged()
         }
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner)

@@ -109,12 +109,12 @@ No tests currently exist in this project. Add in priority order.
   `Collections.sort(allPlayers)` on the same list. The sort in the fragment is redundant
   and should be removed.
 
-- [ ] **#50 `TGViewModel.notify*()` methods are manual sync between two state stores**
-  `notifyGameChanged()`, `notifyGamesChanged()`, etc. exist only because `TGApp` and
-  `TGViewModel` hold duplicated copies of the same data. Each fragment must remember to call
-  the right notify method after every mutation or observers see stale data. Long-term fix:
-  LiveData in `TGViewModel` becomes the single source of truth and `TGApp` stops holding
-  its own copies.
+- [x] **#50 `TGViewModel.notify*()` methods are manual sync between two state stores**
+  Made `games`, `players`, and `curGame` private. Removed all public `notify*()` and `sync()`
+  methods — each mutation now updates LiveData directly. Removed redundant external callers:
+  `viewModel.sync()` from `TGActivity.onResume()` and both `viewModel.notifyGameChanged()`
+  calls from `CurHandFragment` fragment result listeners. `TGActivity.createFirstGame()`
+  now reads state through LiveData instead of the former public fields.
 
 - [ ] **#39 `layout_marginLeft/Right` instead of `layout_marginStart/End`** (`allgamesrow.xml`)
   RTL-unaware margin attributes. Replace all `marginLeft`/`marginRight` with
