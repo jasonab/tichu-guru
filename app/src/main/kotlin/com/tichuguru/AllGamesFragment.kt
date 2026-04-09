@@ -14,7 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.tichuguru.model.Game
-import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class AllGamesFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
@@ -24,17 +25,25 @@ class AllGamesFragment : Fragment() {
         return inflater.inflate(R.layout.allgames, container, false)
     }
 
+    private lateinit var adapter: GamesAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         gamesList = view.findViewById(R.id.gamesList)
         gamesList.layoutManager = LinearLayoutManager(requireContext())
+        adapter = GamesAdapter()
+        gamesList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
-        viewModel.getAllGames().observe(viewLifecycleOwner) { games -> gamesList.adapter = GamesAdapter(games) }
+        viewModel.getAllGames().observe(viewLifecycleOwner) { games ->
+            adapter.games = games
+            adapter.notifyDataSetChanged()
+        }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private inner class GamesAdapter(private val games: List<Game>) : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
-        private val df = SimpleDateFormat("M/d")
+    @SuppressLint("NotifyDataSetChanged")
+    private inner class GamesAdapter : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
+        var games: List<Game> = emptyList()
+        private val df = DateTimeFormatter.ofPattern("M/d").withZone(ZoneId.systemDefault())
 
         inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val date: TextView    = v.findViewById(R.id.gamesDate)

@@ -1,7 +1,7 @@
 package com.tichuguru.model
 
 import java.io.Serializable
-import java.util.Date
+import java.time.Instant
 import kotlin.math.abs
 
 class Game(
@@ -14,7 +14,7 @@ class Game(
     var mercyRule: Boolean = false,
     var ignoreStats: Boolean = false,
     var addOnFailure: Boolean = false,
-    var date: Date = Date(),
+    var date: Instant = Instant.now(),
     var dbId: Long = 0
 ) : Serializable {
 

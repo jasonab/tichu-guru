@@ -69,10 +69,10 @@ Open items only appear in the active sections below. All completed work is in th
   `AllGamesFragment`, and `ScorecardFragment`. Extract to a single extension or top-level
   function, e.g. `fun winColor(team1wins: Boolean): Int`.
 
-- [ ] **#48 `GamesAdapter` recreated on every list refresh** (`AllGamesFragment.kt`)
-  `refreshList()` reassigns `gamesList.adapter = GamesAdapter()` on every call, discarding
-  the previous adapter and its view pool. Create the adapter once in `onViewCreated` and
-  call `notifyDataSetChanged()` (or switch to `ListAdapter` with `DiffUtil`) on refresh.
+- [x] **#48 `GamesAdapter` recreated on every list refresh** (`AllGamesFragment.kt`)
+  Adapter created once in `onViewCreated` with a mutable `games` property. The LiveData
+  observer now updates `adapter.games` and calls `notifyDataSetChanged()` instead of
+  replacing the adapter.
 
 ---
 

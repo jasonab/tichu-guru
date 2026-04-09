@@ -8,7 +8,7 @@ import com.tichuguru.db.PlayerEntity
 import com.tichuguru.db.TichuDatabase
 import com.tichuguru.model.Game
 import com.tichuguru.model.Player
-import java.util.Date
+import java.time.Instant
 
 class TichuRepository(private val db: TichuDatabase) {
 
@@ -64,7 +64,7 @@ class TichuRepository(private val db: TichuDatabase) {
             score2      = ge.score2
             gameLimit   = ge.gameLimit
             gameOver    = ge.gameOver
-            date        = Date(ge.dateMs)
+            date        = Instant.ofEpochMilli(ge.dateMs)
             mercyRule   = ge.mercyRule
             ignoreStats = ge.ignoreStats
             addOnFailure = ge.addOnFailure

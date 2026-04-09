@@ -42,7 +42,7 @@ data class GameEntity(
             score2 = g.score2,
             gameLimit = g.gameLimit,
             gameOver = g.gameOver,
-            dateMs = g.date.time,
+            dateMs = g.date.toEpochMilli(),
             mercyRule = g.mercyRule,
             ignoreStats = g.ignoreStats,
             addOnFailure = g.addOnFailure
