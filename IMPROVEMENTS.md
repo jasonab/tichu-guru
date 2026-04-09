@@ -98,16 +98,19 @@ No tests currently exist in this project. Add in priority order.
 
 ## Low
 
-- [ ] **#51 Replace bare `!!` with `requireNotNull` / `checkNotNull`**
-  Bare `!!` throws `NullPointerException` with no context. Replace all `!!` call sites with
-  `requireNotNull(x) { "descriptive message" }` (for precondition checks on incoming values)
-  or `checkNotNull(x) { "descriptive message" }` (for internal state assertions), so crashes
-  include actionable context. Going forward, `!!` is banned — use the named assertion instead.
+- [x] **#51 Replace bare `!!` with `requireNotNull` / `checkNotNull`**
+  Replaced all `!!` usages across 5 files: `NewGameFragment` (2), `ScoreHandFragment` (2),
+  `StatsListFragment` (3), `StatsFragment` (1), `CurHandFragment` (12). Fragment bundle args
+  use `requireNotNull(x) { "x arg missing" }`; internal-state assertions use `checkNotNull(x)
+  { "x not bound" }`. `StatsFragment` `adapter == null || adapter!!.itemCount` simplified to
+  `adapter?.itemCount`. `CurHandFragment.onScoreHand` captures local `g1–g4` vals to avoid
+  repeated assertions. `onSaveInstanceState` uses `it` (the let receiver) for grp1.
 
-- [ ] **#49 Players sorted twice** (`NewGameFragment.kt`)
-  `PlayerDao` already returns players `ORDER BY name`. `NewGameFragment` then calls
-  `Collections.sort(allPlayers)` on the same list. The sort in the fragment is redundant
-  and should be removed.
+- [x] **#49 Players sorted twice** (`NewGameFragment.kt`)
+  Replaced `allPlayers.add()` + `Collections.sort()` + `indexOf()` with a single
+  `indexOfFirst { it.name > newPlayer.name }` to find the insertion point, then
+  `allPlayers.add(insertIndex, newPlayer)` and `spinAdapter.insert(name, insertIndex)`.
+  Removed unused `java.util.Collections` import.
 
 - [x] **#50 `TGViewModel.notify*()` methods are manual sync between two state stores**
   Made `games`, `players`, and `curGame` private. Removed all public `notify*()` and `sync()`

@@ -9,25 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.Spinner
 import androidx.core.os.BundleCompat
+import com.tichuguru.databinding.NewgameBinding
 import com.tichuguru.model.Game
 import com.tichuguru.model.Player
-import java.util.Collections
 
 class NewGameFragment : Fragment() {
     private var addingPlayer = false
-    private lateinit var addOnFailedTichuCB: CheckBox
-    private lateinit var affectStatsCB: CheckBox
     private lateinit var allPlayers: MutableList<Player>
     private lateinit var game: Game
-    private lateinit var gameLimit: EditText
-    private lateinit var mercyRuleCB: CheckBox
     private lateinit var nameSpinners: List<Spinner>
     private lateinit var spinAdapter: ArrayAdapter<String>
     private lateinit var viewModel: TGViewModel
+    private lateinit var binding: NewgameBinding
 
     companion object {
         private const val ARG_GAME    = "game"
@@ -44,7 +39,8 @@ class NewGameFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.newgame, container, false)
+        binding = NewgameBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,22 +48,18 @@ class NewGameFragment : Fragment() {
         requireActivity().title = "New Game"
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
 
-        game = BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)!!
+        game = requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)) { "game arg missing" }
         @Suppress("UNCHECKED_CAST")
-        allPlayers = (BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)!! as ArrayList<Player>).toMutableList()
+        allPlayers = (requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)) { "players arg missing" } as ArrayList<Player>).toMutableList()
 
-        gameLimit          = view.findViewById(R.id.newGameGameLimit)
-        addOnFailedTichuCB = view.findViewById(R.id.newGameAddOnFailedTichu)
-        affectStatsCB      = view.findViewById(R.id.newGameAffectsStats)
-        mercyRuleCB        = view.findViewById(R.id.newGameMercyRule)
-        view.findViewById<View>(R.id.newGameRandomizeTeams).setOnClickListener { onRandomizeTeams() }
-        view.findViewById<View>(R.id.newGameStart).setOnClickListener { onStartGame() }
+        binding.newGameRandomizeTeams.setOnClickListener { onRandomizeTeams() }
+        binding.newGameStart.setOnClickListener { onStartGame() }
 
         nameSpinners = listOf(
-            view.findViewById(R.id.newGameName1),
-            view.findViewById(R.id.newGameName2),
-            view.findViewById(R.id.newGameName3),
-            view.findViewById(R.id.newGameName4)
+            binding.newGameName1,
+            binding.newGameName2,
+            binding.newGameName3,
+            binding.newGameName4
         )
 
         val choices = allPlayers.map { it.name }.toMutableList()
@@ -78,9 +70,9 @@ class NewGameFragment : Fragment() {
             nameSpinners[i].adapter = spinAdapter
         }
         updateNameSpinners()
-        affectStatsCB.isChecked      = true
-        addOnFailedTichuCB.isChecked = game.addOnFailure
-        mercyRuleCB.isChecked        = game.mercyRule
+        binding.newGameAffectsStats.isChecked      = true
+        binding.newGameAddOnFailedTichu.isChecked  = game.addOnFailure
+        binding.newGameMercyRule.isChecked         = game.mercyRule
     }
 
     private fun onRandomizeTeams() {
@@ -108,7 +100,7 @@ class NewGameFragment : Fragment() {
         }
         val limit: Int
         try {
-            limit = Integer.parseInt(gameLimit.text.toString())
+            limit = Integer.parseInt(binding.newGameGameLimit.text.toString())
         } catch (e: Exception) {
             AlertDialog.Builder(requireContext()).setMessage("Enter a valid game limit").show()
             return
@@ -118,9 +110,9 @@ class NewGameFragment : Fragment() {
             return
         }
         game.gameLimit    = limit
-        game.addOnFailure = addOnFailedTichuCB.isChecked
-        game.ignoreStats  = !affectStatsCB.isChecked
-        game.mercyRule    = mercyRuleCB.isChecked
+        game.addOnFailure = binding.newGameAddOnFailedTichu.isChecked
+        game.ignoreStats  = !binding.newGameAffectsStats.isChecked
+        game.mercyRule    = binding.newGameMercyRule.isChecked
         viewModel.addGame(game)
         parentFragmentManager.setFragmentResult("new_game", Bundle())
         parentFragmentManager.popBackStack()
@@ -151,7 +143,7 @@ class NewGameFragment : Fragment() {
         }
 
         private fun getNewPlayerName() {
-            val input = EditText(requireContext())
+            val input = android.widget.EditText(requireContext())
             AlertDialog.Builder(requireContext())
                 .setTitle("New Player")
                 .setMessage("Enter the new player's name")
@@ -168,9 +160,9 @@ class NewGameFragment : Fragment() {
                         AlertDialog.Builder(requireContext()).setMessage("That player already exists!").show()
                     } else {
                         newPlayer = Player(name)
-                        allPlayers.add(newPlayer)
-                        Collections.sort(allPlayers)
-                        spinAdapter.insert(newPlayer.name, allPlayers.indexOf(newPlayer))
+                        val insertIndex = allPlayers.indexOfFirst { it.name > newPlayer.name }.takeIf { it >= 0 } ?: allPlayers.size
+                        allPlayers.add(insertIndex, newPlayer)
+                        spinAdapter.insert(newPlayer.name, insertIndex)
                         viewModel.addPlayer(newPlayer)
                     }
                     game.setPlayer(playerNum, newPlayer)

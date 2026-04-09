@@ -10,8 +10,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import com.tichuguru.databinding.StatsBinding
+import com.tichuguru.databinding.StatsrowBinding
 import com.tichuguru.model.Player
 import kotlin.math.log10
 import kotlin.math.max
@@ -20,21 +20,22 @@ import kotlin.math.sign
 class StatsFragment : Fragment() {
     private var adapter: StatsAdapter? = null
     private lateinit var viewModel: TGViewModel
+    private lateinit var binding: StatsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.stats, container, false)
+        binding = StatsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val statsList = view.findViewById<RecyclerView>(R.id.statsList)
-        statsList.layoutManager = LinearLayoutManager(requireContext())
-        view.findViewById<View>(R.id.statsClearAll).setOnClickListener { onClearStats() }
+        binding.statsList.layoutManager = LinearLayoutManager(requireContext())
+        binding.statsClearAll.setOnClickListener { onClearStats() }
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllPlayers().observe(viewLifecycleOwner) { players ->
-            if (adapter == null || adapter!!.itemCount != players.size + 11) {
+            if (adapter?.itemCount != players.size + 11) {
                 adapter = StatsAdapter(players)
-                statsList.adapter = adapter
+                binding.statsList.adapter = adapter
             }
         }
     }
@@ -52,13 +53,10 @@ class StatsFragment : Fragment() {
 
     private inner class StatsAdapter(private val players: List<Player>) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
-        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            val name: TextView        = v.findViewById(R.id.statsName)
-            val expandButton: Button  = v.findViewById(R.id.statsExpandButton)
-        }
+        inner class ViewHolder(val binding: StatsrowBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.statsrow, parent, false))
+            ViewHolder(StatsrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val statLabels = arrayOf("Win %", "Pts / Hand", "Card Pts / Hand",
@@ -71,23 +69,23 @@ class StatsFragment : Fragment() {
                 position == players.size + 1 -> "Rankings"
                 else                         -> statLabels[position - players.size - 2]
             }
-            holder.name.text = label
+            holder.binding.statsName.text = label
 
             when {
                 position == 0 || position == players.size + 1 -> {
-                    holder.name.setTypeface(null, Typeface.BOLD)
-                    holder.expandButton.visibility = View.INVISIBLE
+                    holder.binding.statsName.setTypeface(null, Typeface.BOLD)
+                    holder.binding.statsExpandButton.visibility = View.INVISIBLE
                 }
                 position <= players.size -> {
-                    holder.name.setTypeface(null, Typeface.NORMAL)
-                    holder.expandButton.visibility = View.VISIBLE
-                    holder.expandButton.setOnClickListener(PlayerExpandListener(players[position - 1]))
+                    holder.binding.statsName.setTypeface(null, Typeface.NORMAL)
+                    holder.binding.statsExpandButton.visibility = View.VISIBLE
+                    holder.binding.statsExpandButton.setOnClickListener(PlayerExpandListener(players[position - 1]))
                 }
                 else -> {
-                    holder.name.setTypeface(null, Typeface.NORMAL)
-                    holder.expandButton.visibility = View.VISIBLE
+                    holder.binding.statsName.setTypeface(null, Typeface.NORMAL)
+                    holder.binding.statsExpandButton.visibility = View.VISIBLE
                     val num = (position - players.size) - 2
-                    holder.expandButton.setOnClickListener(when (num) {
+                    holder.binding.statsExpandButton.setOnClickListener(when (num) {
                         0 -> RankExpandListener("Win %",              true,  Player::getWinPct,         Player::numWins,                   Player::numGames)
                         1 -> RankExpandListener("Pts / Hand",         true,  Player::getPtsPerHand,     Player::numHands,                  null)
                         2 -> RankExpandListener("Card Pts / Hand",    true,  Player::getCardPtsPerHand, Player::numHands,                  null)

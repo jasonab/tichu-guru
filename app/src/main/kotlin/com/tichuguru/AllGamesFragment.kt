@@ -11,28 +11,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import com.tichuguru.databinding.AllgamesBinding
+import com.tichuguru.databinding.AllgamesrowBinding
 import com.tichuguru.model.Game
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class AllGamesFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
-    private lateinit var gamesList: RecyclerView
+    private lateinit var binding: AllgamesBinding
+    private lateinit var adapter: GamesAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.allgames, container, false)
+        binding = AllgamesBinding.inflate(inflater, container, false)
+        return binding.root
     }
-
-    private lateinit var adapter: GamesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        gamesList = view.findViewById(R.id.gamesList)
-        gamesList.layoutManager = LinearLayoutManager(requireContext())
+        binding.gamesList.layoutManager = LinearLayoutManager(requireContext())
         adapter = GamesAdapter()
-        gamesList.adapter = adapter
+        binding.gamesList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllGames().observe(viewLifecycleOwner) { games ->
             adapter.games = games
@@ -45,44 +44,37 @@ class AllGamesFragment : Fragment() {
         var games: List<Game> = emptyList()
         private val df = DateTimeFormatter.ofPattern("M/d").withZone(ZoneId.systemDefault())
 
-        inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            val date: TextView    = v.findViewById(R.id.gamesDate)
-            val team1: TextView   = v.findViewById(R.id.gamesTeam1)
-            val team2: TextView   = v.findViewById(R.id.gamesTeam2)
-            val score1: TextView  = v.findViewById(R.id.gamesScore1)
-            val score2: TextView  = v.findViewById(R.id.gamesScore2)
-            val deleteBtn: Button = v.findViewById(R.id.gamesDeleteOne)
-        }
+        inner class ViewHolder(val binding: AllgamesrowBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.allgamesrow, parent, false))
+            ViewHolder(AllgamesrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val idx = games.size - position - 1
             val game = games[idx]
             val players = game.players
 
-            holder.date.text   = df.format(game.date)
-            holder.team1.text  = "${players[0].name} and ${players[2].name}"
-            holder.team2.text  = "${players[1].name} and ${players[3].name}"
-            holder.score1.text = game.score1.toString()
-            holder.score2.text = game.score2.toString()
+            holder.binding.gamesDate.text   = df.format(game.date)
+            holder.binding.gamesTeam1.text  = "${players[0].name} and ${players[2].name}"
+            holder.binding.gamesTeam2.text  = "${players[1].name} and ${players[3].name}"
+            holder.binding.gamesScore1.text = game.score1.toString()
+            holder.binding.gamesScore2.text = game.score2.toString()
 
             if (game.gameOver) {
                 val team1wins = game.score1 > game.score2
-                holder.team1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
-                holder.score1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
-                holder.team2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
-                holder.score2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
+                holder.binding.gamesTeam1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
+                holder.binding.gamesScore1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
+                holder.binding.gamesTeam2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
+                holder.binding.gamesScore2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
             } else {
-                holder.team1.setTextColor(Color.GRAY)
-                holder.score1.setTextColor(Color.GRAY)
-                holder.team2.setTextColor(Color.GRAY)
-                holder.score2.setTextColor(Color.GRAY)
+                holder.binding.gamesTeam1.setTextColor(Color.GRAY)
+                holder.binding.gamesScore1.setTextColor(Color.GRAY)
+                holder.binding.gamesTeam2.setTextColor(Color.GRAY)
+                holder.binding.gamesScore2.setTextColor(Color.GRAY)
             }
 
-            holder.deleteBtn.setOnClickListener { onDeleteGame(games[idx]) }
-            holder.itemView.setOnClickListener {
+            holder.binding.gamesDeleteOne.setOnClickListener { onDeleteGame(games[idx]) }
+            holder.binding.root.setOnClickListener {
                 viewModel.requestClearTichuButtons()
                 viewModel.setGame(games[idx])
                 (requireActivity() as TGActivity).navigateToTab(0)

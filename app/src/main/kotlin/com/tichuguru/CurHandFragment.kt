@@ -12,52 +12,30 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.RadioGroup
-import android.widget.TextView
+import com.tichuguru.databinding.CurhandBinding
 import com.tichuguru.model.Game
 import com.tichuguru.model.Hand
 
 class CurHandFragment : Fragment(), MenuProvider {
     private lateinit var viewModel: TGViewModel
-    private var grp1: RadioGroup? = null
-    private var grp2: RadioGroup? = null
-    private var grp3: RadioGroup? = null
-    private var grp4: RadioGroup? = null
-    private lateinit var name1: TextView
-    private lateinit var name2: TextView
-    private lateinit var name3: TextView
-    private lateinit var name4: TextView
-    private lateinit var score1: TextView
-    private lateinit var score2: TextView
-    private lateinit var scoreHandButton: Button
+    private lateinit var binding: CurhandBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.curhand, container, false)
+        binding = CurhandBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        score1 = view.findViewById(R.id.curHandScore1)
-        score2 = view.findViewById(R.id.curHandScore2)
-        name1 = view.findViewById(R.id.curHandP1)
-        name2 = view.findViewById(R.id.curHandP2)
-        name3 = view.findViewById(R.id.curHandP3)
-        name4 = view.findViewById(R.id.curHandP4)
-        grp1 = view.findViewById(R.id.curHandP1RG)
-        grp2 = view.findViewById(R.id.curHandP2RG)
-        grp3 = view.findViewById(R.id.curHandP3RG)
-        grp4 = view.findViewById(R.id.curHandP4RG)
-        scoreHandButton = view.findViewById(R.id.curHandScoreHand)
-        scoreHandButton.isEnabled = false
-        scoreHandButton.setOnClickListener { onScoreHand() }
-        view.findViewById<View>(R.id.curHandNewGame).setOnClickListener { onNewGame() }
+        binding.curHandScoreHand.isEnabled = false
+        binding.curHandScoreHand.setOnClickListener { onScoreHand() }
+        binding.curHandNewGame.setOnClickListener { onNewGame() }
 
         if (savedInstanceState != null) {
-            grp1!!.check(savedInstanceState.getInt("tichu1", R.id.curHandP1None))
-            grp2!!.check(savedInstanceState.getInt("tichu2", R.id.curHandP2None))
-            grp3!!.check(savedInstanceState.getInt("tichu3", R.id.curHandP3None))
-            grp4!!.check(savedInstanceState.getInt("tichu4", R.id.curHandP4None))
+            binding.curHandP1RG.check(savedInstanceState.getInt("tichu1", R.id.curHandP1None))
+            binding.curHandP2RG.check(savedInstanceState.getInt("tichu2", R.id.curHandP2None))
+            binding.curHandP3RG.check(savedInstanceState.getInt("tichu3", R.id.curHandP3None))
+            binding.curHandP4RG.check(savedInstanceState.getInt("tichu4", R.id.curHandP4None))
         }
 
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
@@ -77,11 +55,11 @@ class CurHandFragment : Fragment(), MenuProvider {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        grp1?.let {
-            outState.putInt("tichu1", grp1!!.checkedRadioButtonId)
-            outState.putInt("tichu2", grp2!!.checkedRadioButtonId)
-            outState.putInt("tichu3", grp3!!.checkedRadioButtonId)
-            outState.putInt("tichu4", grp4!!.checkedRadioButtonId)
+        if (::binding.isInitialized) {
+            outState.putInt("tichu1", binding.curHandP1RG.checkedRadioButtonId)
+            outState.putInt("tichu2", binding.curHandP2RG.checkedRadioButtonId)
+            outState.putInt("tichu3", binding.curHandP3RG.checkedRadioButtonId)
+            outState.putInt("tichu4", binding.curHandP4RG.checkedRadioButtonId)
         }
         super.onSaveInstanceState(outState)
     }
@@ -112,58 +90,58 @@ class CurHandFragment : Fragment(), MenuProvider {
     private fun onScoreHand() {
         val game = viewModel.getCurrentGame().value ?: return
         val hand = Hand(game.addOnFailure)
-        if (grp1!!.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
-        if (grp1!!.checkedRadioButtonId == R.id.curHandP1T)  hand.setTichuFor(0)
-        if (grp2!!.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
-        if (grp2!!.checkedRadioButtonId == R.id.curHandP2T)  hand.setTichuFor(1)
-        if (grp3!!.checkedRadioButtonId == R.id.curHandP3GT) hand.setGrandTichuFor(2)
-        if (grp3!!.checkedRadioButtonId == R.id.curHandP3T)  hand.setTichuFor(2)
-        if (grp4!!.checkedRadioButtonId == R.id.curHandP4GT) hand.setGrandTichuFor(3)
-        if (grp4!!.checkedRadioButtonId == R.id.curHandP4T)  hand.setTichuFor(3)
+        if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
+        if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1T)  hand.setTichuFor(0)
+        if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
+        if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2T)  hand.setTichuFor(1)
+        if (binding.curHandP3RG.checkedRadioButtonId == R.id.curHandP3GT) hand.setGrandTichuFor(2)
+        if (binding.curHandP3RG.checkedRadioButtonId == R.id.curHandP3T)  hand.setTichuFor(2)
+        if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4GT) hand.setGrandTichuFor(3)
+        if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4T)  hand.setTichuFor(3)
         val playerNames = Array(4) { game.players[it].name }
         (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand, playerNames))
     }
 
     private fun clearTichuButtons() {
-        grp1?.check(R.id.curHandP1None)
-        grp2?.check(R.id.curHandP2None)
-        grp3?.check(R.id.curHandP3None)
-        grp4?.check(R.id.curHandP4None)
+        binding.curHandP1RG.check(R.id.curHandP1None)
+        binding.curHandP2RG.check(R.id.curHandP2None)
+        binding.curHandP3RG.check(R.id.curHandP3None)
+        binding.curHandP4RG.check(R.id.curHandP4None)
     }
 
     private fun updateDisplay() {
         val game = viewModel.getCurrentGame().value
         if (game == null) {
-            scoreHandButton.isEnabled = false
+            binding.curHandScoreHand.isEnabled = false
             return
         }
-        score1.text = game.score1.toString()
-        score2.text = game.score2.toString()
+        binding.curHandScore1.text = game.score1.toString()
+        binding.curHandScore2.text = game.score2.toString()
         val players = game.players
-        name1.text = players[0].name
-        name2.text = players[1].name
-        name3.text = players[2].name
-        name4.text = players[3].name
+        binding.curHandP1.text = players[0].name
+        binding.curHandP2.text = players[1].name
+        binding.curHandP3.text = players[2].name
+        binding.curHandP4.text = players[3].name
         if (game.gameOver) {
             val team1wins = game.score1 > game.score2
-            val winColor = Color.YELLOW
+            val winColor  = Color.YELLOW
             val loseColor = Color.GRAY
-            score1.setTextColor(if (team1wins) winColor else loseColor)
-            name1.setTextColor(if (team1wins) winColor else loseColor)
-            name3.setTextColor(if (team1wins) winColor else loseColor)
-            score2.setTextColor(if (team1wins) loseColor else winColor)
-            name2.setTextColor(if (team1wins) loseColor else winColor)
-            name4.setTextColor(if (team1wins) loseColor else winColor)
-            scoreHandButton.isEnabled = false
+            binding.curHandScore1.setTextColor(if (team1wins) winColor else loseColor)
+            binding.curHandP1.setTextColor(if (team1wins) winColor else loseColor)
+            binding.curHandP3.setTextColor(if (team1wins) winColor else loseColor)
+            binding.curHandScore2.setTextColor(if (team1wins) loseColor else winColor)
+            binding.curHandP2.setTextColor(if (team1wins) loseColor else winColor)
+            binding.curHandP4.setTextColor(if (team1wins) loseColor else winColor)
+            binding.curHandScoreHand.isEnabled = false
         } else {
             val color = Color.GRAY
-            score1.setTextColor(color)
-            name1.setTextColor(color)
-            name3.setTextColor(color)
-            score2.setTextColor(color)
-            name2.setTextColor(color)
-            name4.setTextColor(color)
-            scoreHandButton.isEnabled = true
+            binding.curHandScore1.setTextColor(color)
+            binding.curHandP1.setTextColor(color)
+            binding.curHandP3.setTextColor(color)
+            binding.curHandScore2.setTextColor(color)
+            binding.curHandP2.setTextColor(color)
+            binding.curHandP4.setTextColor(color)
+            binding.curHandScoreHand.isEnabled = true
         }
     }
 

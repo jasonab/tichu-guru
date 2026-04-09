@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import com.tichuguru.databinding.StatslistrowBinding
 import com.tichuguru.model.Player
 
 class StatsListFragment : Fragment() {
@@ -45,7 +45,7 @@ class StatsListFragment : Fragment() {
         val args = requireArguments()
         requireActivity().title = args.getString("title")
 
-        val labels = args.getStringArray("labels")!!
+        val labels = requireNotNull(args.getStringArray("labels")) { "labels arg missing" }
         @Suppress("UNCHECKED_CAST")
         val values = args.getStringArray("values") as Array<String?>
 
@@ -63,7 +63,7 @@ class StatsListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                viewModel.clearPlayerStats(player!!)
+                viewModel.clearPlayerStats(checkNotNull(player) { "player not set" })
                 parentFragmentManager.popBackStack()
             }
             .setNegativeButton("No", null)
@@ -74,7 +74,7 @@ class StatsListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
-                viewModel.deletePlayer(player!!)
+                viewModel.deletePlayer(checkNotNull(player) { "player not set" })
                 parentFragmentManager.popBackStack()
             }
             .setNegativeButton("No", null)
@@ -86,25 +86,22 @@ class StatsListFragment : Fragment() {
         private val values: Array<String?>
     ) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
-        class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            val label: TextView = v.findViewById(R.id.statsLabel)
-            val value: TextView = v.findViewById(R.id.statsValue)
-        }
+        class ViewHolder(val binding: StatslistrowBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.statslistrow, parent, false))
+            ViewHolder(StatslistrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.label.text = labels[position]
+            holder.binding.statsLabel.text = labels[position]
             val v = values[position]
             if (v != null) {
-                holder.label.setTypeface(null, Typeface.NORMAL)
-                holder.label.textSize = 18f
-                holder.value.text = v
+                holder.binding.statsLabel.setTypeface(null, Typeface.NORMAL)
+                holder.binding.statsLabel.textSize = 18f
+                holder.binding.statsValue.text = v
             } else {
-                holder.label.setTypeface(null, Typeface.BOLD)
-                holder.label.textSize = 24f
-                holder.value.text = ""
+                holder.binding.statsLabel.setTypeface(null, Typeface.BOLD)
+                holder.binding.statsLabel.textSize = 24f
+                holder.binding.statsValue.text = ""
             }
         }
 
