@@ -49,6 +49,7 @@ app/src/main/kotlin/com/tichuguru/
     ├── GameEntity/Dao
     ├── HandEntity/Dao
     └── PlayerEntity/Dao
+app/proguard-rules.pro       # R8 keep rules for release builds
 ```
 
 ## Key Patterns
@@ -61,6 +62,11 @@ app/src/main/kotlin/com/tichuguru/
 - **Null assertions:** Use `requireNotNull(x) { "message" }` or `checkNotNull(x) { "message" }`. Never use bare `!!`.
 - **Colors:** `Color.YELLOW` / `Color.GRAY` — never raw integer literals.
 - **Game rule constants** (bonus scores, thresholds): `const val` in the relevant model class `companion object`.
+
+## Repo Etiquette
+
+- Commit directly to `main` — no PR workflow.
+- Tag releases as `vN` (e.g. `v2`) and upload the release APK to the GitHub release.
 
 ## Known Issues
 
