@@ -1,7 +1,7 @@
 package com.tichuguru.repository
 
 import android.util.Log
-import com.tichuguru.TGApp
+import com.tichuguru.TAG
 import com.tichuguru.db.GameEntity
 import com.tichuguru.db.HandEntity
 import com.tichuguru.db.PlayerEntity
@@ -53,7 +53,7 @@ class TichuRepository(private val db: TichuDatabase) {
     private fun buildGameFromEntity(ge: GameEntity, players: List<Player>): Game? {
         fun findPlayer(id: Long): Player? {
             val p = players.find { it.dbId == id }
-            if (p == null) Log.e(TGApp.TAG, "Player not found when loading game, id=$id")
+            if (p == null) Log.e(TAG, "Player not found when loading game, id=$id")
             return p
         }
         val gamePlayers = listOf(ge.player0, ge.player1, ge.player2, ge.player3)
