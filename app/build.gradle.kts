@@ -18,8 +18,8 @@ android {
         applicationId = "com.tichuguru"
         minSdk = 30
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.03"
+        versionCode = 5
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
 
     val roomVersion = "2.8.4"
     implementation("androidx.room:room-runtime:$roomVersion")
