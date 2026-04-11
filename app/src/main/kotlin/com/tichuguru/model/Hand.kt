@@ -3,6 +3,12 @@ package com.tichuguru.model
 import java.io.Serializable
 
 class Hand(var isAddOnFailure: Boolean = false) : Serializable {
+    enum class Bid(val points: Int) {
+        NONE(0),
+        TICHU(100),
+        GRAND_TICHU(200),
+    }
+
     companion object {
         /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */
         val CARD_SCORE_OPTIONS: IntArray =
@@ -39,8 +45,7 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
     }
 
     var dbId: Long = 0
-    private var tichu = BooleanArray(4)
-    private var grandTichu = BooleanArray(4)
+    private var bids = Array(4) { Bid.NONE }
     private var _outFirst: Int = 0
     private var _cardScore1: Int = 0
     private var _cardScore2: Int = 0
@@ -65,58 +70,41 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
     }
 
     fun setTichuFor(player: Int) {
-        tichu[player] = true
+        bids[player] = Bid.TICHU
     }
 
     fun setGrandTichuFor(player: Int) {
-        grandTichu[player] = true
+        bids[player] = Bid.GRAND_TICHU
     }
 
-    fun isTichuFor(player: Int) = tichu[player]
+    fun isTichuFor(player: Int) = bids[player] == Bid.TICHU
 
-    fun isGrandTichuFor(player: Int) = grandTichu[player]
+    fun isGrandTichuFor(player: Int) = bids[player] == Bid.GRAND_TICHU
 
     fun setOutFirst(player: Int) {
         _outFirst = player
         tichuScore1 = 0
         tichuScore2 = 0
-        if (isAddOnFailure) {
-            if (tichu[0]) {
-                if (_outFirst == 0) tichuScore1 += 100 else tichuScore2 += 100
-            }
-            if (tichu[2]) {
-                if (_outFirst == 2) tichuScore1 += 100 else tichuScore2 += 100
-            }
-            if (tichu[1]) {
-                if (_outFirst == 1) tichuScore2 += 100 else tichuScore1 += 100
-            }
-            if (tichu[3]) {
-                if (_outFirst == 3) tichuScore2 += 100 else tichuScore1 += 100
-            }
-            if (grandTichu[0]) {
-                if (_outFirst == 0) tichuScore1 += 200 else tichuScore2 += 200
-            }
-            if (grandTichu[2]) {
-                if (_outFirst == 2) tichuScore1 += 200 else tichuScore2 += 200
-            }
-            if (grandTichu[1]) {
-                if (_outFirst == 1) tichuScore2 += 200 else tichuScore1 += 200
-            }
-            if (grandTichu[3]) {
-                if (_outFirst == 3) tichuScore2 += 200 else tichuScore1 += 200
-            }
-        } else {
-            if (tichu[0]) tichuScore1 += if (_outFirst == 0) 100 else -100
-            if (tichu[2]) tichuScore1 += if (_outFirst == 2) 100 else -100
-            if (tichu[1]) tichuScore2 += if (_outFirst == 1) 100 else -100
-            if (tichu[3]) tichuScore2 += if (_outFirst == 3) 100 else -100
-            if (grandTichu[0]) tichuScore1 += if (_outFirst == 0) 200 else -200
-            if (grandTichu[2]) tichuScore1 += if (_outFirst == 2) 200 else -200
-            if (grandTichu[1]) tichuScore2 += if (_outFirst == 1) 200 else -200
-            if (grandTichu[3]) tichuScore2 += if (_outFirst == 3) 200 else -200
+        for (i in 0..3) {
+            val points = bids[i].points
+            if (points > 0) applyBidPoints(i % 2 == 0, _outFirst == i, points)
         }
         totalScore1 = _cardScore1 + tichuScore1
         totalScore2 = _cardScore2 + tichuScore2
+    }
+
+    private fun applyBidPoints(
+        isTeam1: Boolean,
+        made: Boolean,
+        points: Int,
+    ) {
+        if (isAddOnFailure) {
+            val toTeam1 = if (made) isTeam1 else !isTeam1
+            if (toTeam1) tichuScore1 += points else tichuScore2 += points
+        } else {
+            val delta = if (made) points else -points
+            if (isTeam1) tichuScore1 += delta else tichuScore2 += delta
+        }
     }
 
     /** Set cardScore1 without recalculating totals (use when loading persisted data). */
@@ -139,7 +127,7 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
         player: Int,
         v: Boolean,
     ) {
-        tichu[player] = v
+        if (v) bids[player] = Bid.TICHU
     }
 
     /** Set grand tichu flag directly without recalculating scores (use when loading persisted data). */
@@ -147,6 +135,6 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
         player: Int,
         v: Boolean,
     ) {
-        grandTichu[player] = v
+        if (v) bids[player] = Bid.GRAND_TICHU
     }
 }

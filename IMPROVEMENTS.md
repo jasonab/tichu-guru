@@ -30,9 +30,9 @@ Open items only appear in the active sections below. All completed work is in th
   scoring, grand tichu scoring). If one is updated the other must be updated identically.
   Extract a private helper that takes a sign multiplier (`+1` or `-1`) and apply it to both.
 
-- [ ] **#44 `Hand.setOutFirst()` repeats the same block for each of 4 players**
-  Sixteen sequential `if` statements handle players 0–3 with identical structure. Replace
-  with a loop over `0..3` indexing into the `tichu` and `grandTichu` arrays.
+- [x] **#44 `Hand.setOutFirst()` repeats the same block for each of 4 players**
+  Replaced 16 sequential `if` statements with a loop over `0..3` plus a private
+  `applyBidPoints(isTeam1, made, points)` helper covering both scoring modes.
 
 - [x] **#45 `setPendingHand()` / `setPendingGame()` passed via static setters**
   `Game` and `Hand` given `Serializable` interface. `ScoreHandFragment.newInstance()` and
