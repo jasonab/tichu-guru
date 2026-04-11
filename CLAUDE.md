@@ -5,14 +5,14 @@ Android scoring and statistics app for the card game Tichu (4-player partnership
 ## Build Commands
 
 ```bash
-./gradlew assembleDebug    # Build debug APK
-./gradlew assembleRelease  # Build release APK
-./gradlew clean            # Clean build outputs
+./gradlew assembleDebug          # Build debug APK
+./gradlew assembleRelease        # Build release APK
+./gradlew clean assembleDebug    # After AndroidManifest.xml or build.gradle changes
+./gradlew lintKotlin             # Kotlin linter
+./gradlew test                   # Unit tests (77 total)
 ```
 
-No tests exist in this project.
-
-IMPORTANT: Run `./gradlew assembleDebug` before considering any change complete. After any change to `AndroidManifest.xml` or `build.gradle`, use `./gradlew clean assembleDebug`.
+IMPORTANT: After every code change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before a change is complete.
 
 ## Tech Stack
 
@@ -27,8 +27,8 @@ IMPORTANT: Run `./gradlew assembleDebug` before considering any change complete.
 ```
 app/src/main/kotlin/com/tichuguru/
 ├── TGActivity.kt            # Single-Activity host (BottomNav, Toolbar)
-├── TGApp.kt                 # Application singleton — global state + DB I/O
-├── TGViewModel.kt           # Shared LiveData for all Fragments
+├── TGApp.kt                 # Application singleton — in-memory state only
+├── TGViewModel.kt           # All mutations + LiveData + DB I/O delegation
 ├── CurHandFragment.kt       # Tab: current hand, Tichu bids
 ├── ScorecardFragment.kt     # Tab: scorecard for current game
 ├── AllGamesFragment.kt      # Tab: historical game list
@@ -49,25 +49,48 @@ app/src/main/kotlin/com/tichuguru/
     ├── GameEntity/Dao
     ├── HandEntity/Dao
     └── PlayerEntity/Dao
-app/proguard-rules.pro       # R8 keep rules for release builds
+app/src/test/kotlin/com/tichuguru/model/
+    HandTest.kt / GameTest.kt / PlayerTest.kt   # model unit tests
+app/proguard-rules.pro                          # R8 keep rules for release builds
 ```
 
-## Key Patterns
+## Architecture Rules
 
-- **Global state:** `TGApp.getGame()`, `TGApp.getGames()`, `TGApp.getPlayers()`
-- **Saving data:** Call `TGApp.saveGames()` / `TGApp.savePlayers()` at each mutation point. NEVER defer to `onPause`.
-- **Rule logic** belongs in `model/` classes, not Fragments.
-- **DB schema changes:** increment `version` in `@Database` and add `Migration(n, n+1)` in `TichuDatabase`. Do NOT use `fallbackToDestructiveMigration()` for new versions.
-- **Fragment data passing:** `Bundle.putSerializable()` via `BundleCompat.getSerializable()` — `Game` and `Hand` implement `Serializable`. Always use Fragment `arguments`, never static setters.
-- **Null assertions:** Use `requireNotNull(x) { "message" }` or `checkNotNull(x) { "message" }`. Never use bare `!!`.
+- **`TGViewModel` owns all mutations** — Fragments call ViewModel methods. LiveData is private and set inside each mutation. No public `notify*()` methods.
+- **`TGApp` is thin** — `companion object` with `@JvmStatic` accessors for global state (`TGApp.getGame()`, `TGApp.getGames()`, `TGApp.getPlayers()`). DB I/O lives in `TGViewModel`.
+- **Save eagerly** — `TGViewModel` calls `saveGames()` / `savePlayers()` (fire-and-forget via `dbScope.launch`) at every mutation. NEVER defer to `onPause`.
+- **Rule logic in `model/`** — business logic belongs in `Game`/`Hand`/`Player`, not Fragments.
+- **Fragment args via Bundle** — `Game` and `Hand` implement `Serializable`. Use `Bundle.putSerializable()` / `BundleCompat.getSerializable()` and `Fragment.arguments`. Never static setters.
+
+## Kotlin Conventions
+
+- **Null assertions:** `requireNotNull(x) { "message" }` or `checkNotNull(x) { "message" }`. Never bare `!!`.
 - **Colors:** `Color.YELLOW` / `Color.GRAY` — never raw integer literals.
-- **Game rule constants** (bonus scores, thresholds): `const val` in the relevant model class `companion object`.
+- **Constants:** `const val` in the relevant model class `companion object`.
+- **Boolean names:** `gameOver`, not `isGameOver` — avoids getter naming clash.
+- **Backing properties:** expose as `val foo: T get() = _foo`, never as `fun foo(): T`. The linter requires a matching property, not a function.
+
+## Room DB Conventions
+
+- Use `@Upsert` instead of `@Insert(onConflict = REPLACE)`.
+- `Entity.from(model)` includes `id = model.dbId`; `entity.toModel()` sets `model.dbId = id`.
+- Schema changes: increment `version` in `@Database` and add `Migration(n, n+1)` in `TichuDatabase`. Do NOT use `fallbackToDestructiveMigration()`.
+
+## Co-Change Patterns
+
+| Change type | Files that co-change |
+|---|---|
+| Any meaningful change | Modified file + `IMPROVEMENTS.md` (mark item `[x]` or add new `#N`) |
+| DB schema change | Entity `.kt` + DAO `.kt` + `TichuDatabase.kt` (new `Migration`) |
+| Model field added/renamed | `model/*.kt` + `db/*Entity.kt` + `db/*Dao.kt` + Fragment callers |
+| New Fragment | Fragment `.kt` + layout XML + `TGActivity.kt` (navigation) |
 
 ## Repo Etiquette
 
 - Commit directly to `main` — no PR workflow.
+- Commit messages: plain lowercase imperative, no prefixes (`fix score hand layout`, not `fix: score hand layout`).
 - Tag releases as `vN` (e.g. `v2`) and upload the release APK to the GitHub release.
 
 ## Known Issues
 
-See `IMPROVEMENTS.md` for the full tracked list.
+See @IMPROVEMENTS.md for the full tracked list.
