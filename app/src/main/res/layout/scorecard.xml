@@ -8,55 +8,56 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:id="@+id/scorecardName1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-            <TextView
-                android:textSize="14sp"
-                android:ellipsize="end"
-                android:gravity="left"
-                android:id="@+id/scorecardName1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Stephanie"/>
-            <TextView
-                android:textSize="14sp"
-                android:ellipsize="end"
-                android:gravity="right"
-                android:id="@+id/scorecardName3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Corey"/>
-        </LinearLayout>
+            android:layout_weight="1"
+            android:text="Stephanie"/>
+        <TextView
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:id="@+id/scorecardName3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Corey"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text=""
-            android:layout_weight="1"/>
-        <LinearLayout
-            android:orientation="vertical"
+            android:layout_weight="1"
+            android:text=""/>
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-            <TextView
-                android:textSize="14sp"
-                android:ellipsize="end"
-                android:gravity="left"
-                android:id="@+id/scorecardName2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Stephanie Kington"/>
-            <TextView
-                android:textSize="14sp"
-                android:ellipsize="end"
-                android:gravity="right"
-                android:id="@+id/scorecardName4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Zoe"/>
-        </LinearLayout>
+            android:layout_weight="1"
+            android:text=""/>
+        <TextView
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:id="@+id/scorecardName2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stephanie Kington"/>
+        <TextView
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:id="@+id/scorecardName4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Zoe"/>
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/scorecardList"

@@ -12,7 +12,7 @@ Android scoring and statistics app for the card game Tichu (4-player partnership
 ./gradlew test                   # Unit tests (77 total)
 ```
 
-IMPORTANT: After every code change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before a change is complete.
+IMPORTANT: After any `.kt` file change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before the change is complete. XML/resource-only changes do not require lint or tests.
 
 ## Tech Stack
 
