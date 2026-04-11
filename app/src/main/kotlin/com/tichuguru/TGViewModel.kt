@@ -49,11 +49,19 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getCurrentGame(): LiveData<Game?> = _currentGame
+
     fun getAllGames(): LiveData<List<Game>> = _allGames
+
     fun getAllPlayers(): LiveData<List<Player>> = _allPlayers
+
     fun getClearTichuButtons(): LiveData<Boolean> = _clearTichuButtons
+
     fun getInitialized(): LiveData<Boolean> = _initialized
-    fun requestClearTichuButtons() { _clearTichuButtons.value = true }
+
+    fun requestClearTichuButtons() {
+        _clearTichuButtons.value = true
+    }
+
     fun getPlayer(name: String): Player? = players.find { it.name == name }
 
     fun setGame(game: Game) {
@@ -142,6 +150,11 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         _allPlayers.value = players
     }
 
-    private fun savePlayers() { dbScope.launch { repository.savePlayers(players) } }
-    private fun saveGames() { dbScope.launch { repository.saveGames(players, games) } }
+    private fun savePlayers() {
+        dbScope.launch { repository.savePlayers(players) }
+    }
+
+    private fun saveGames() {
+        dbScope.launch { repository.saveGames(players, games) }
+    }
 }

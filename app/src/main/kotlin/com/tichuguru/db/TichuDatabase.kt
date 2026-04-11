@@ -7,9 +7,10 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [PlayerEntity::class, GameEntity::class, HandEntity::class], version = 1, exportSchema = false)
 abstract class TichuDatabase : RoomDatabase() {
-
     abstract fun playerDao(): PlayerDao
+
     abstract fun gameDao(): GameDao
+
     abstract fun handDao(): HandDao
 
     companion object {
@@ -17,7 +18,8 @@ abstract class TichuDatabase : RoomDatabase() {
 
         fun getInstance(context: Context): TichuDatabase =
             instance ?: synchronized(this) {
-                instance ?: Room.databaseBuilder(context.applicationContext, TichuDatabase::class.java, "tichu.db")
+                instance ?: Room
+                    .databaseBuilder(context.applicationContext, TichuDatabase::class.java, "tichu.db")
                     .build()
                     .also { instance = it }
             }

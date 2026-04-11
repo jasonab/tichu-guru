@@ -1,9 +1,5 @@
 package com.tichuguru
 
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.MenuProvider
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,20 +8,33 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.tichuguru.databinding.CurhandBinding
 import com.tichuguru.model.Game
 import com.tichuguru.model.Hand
 
-class CurHandFragment : Fragment(), MenuProvider {
+class CurHandFragment :
+    Fragment(),
+    MenuProvider {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: CurhandBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = CurhandBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.curHandScoreHand.isEnabled = false
         binding.curHandScoreHand.setOnClickListener { onScoreHand() }
@@ -77,13 +86,13 @@ class CurHandFragment : Fragment(), MenuProvider {
             AlertDialog.Builder(requireContext()).setMessage("You can't end the game when the score is tied.").show()
             return
         }
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
                 viewModel.endGame()
                 updateDisplay()
-            }
-            .setNegativeButton("No", null)
+            }.setNegativeButton("No", null)
             .show()
     }
 
@@ -91,13 +100,13 @@ class CurHandFragment : Fragment(), MenuProvider {
         val game = viewModel.getCurrentGame().value ?: return
         val hand = Hand(game.addOnFailure)
         if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
-        if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1T)  hand.setTichuFor(0)
+        if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1T) hand.setTichuFor(0)
         if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
-        if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2T)  hand.setTichuFor(1)
+        if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2T) hand.setTichuFor(1)
         if (binding.curHandP3RG.checkedRadioButtonId == R.id.curHandP3GT) hand.setGrandTichuFor(2)
-        if (binding.curHandP3RG.checkedRadioButtonId == R.id.curHandP3T)  hand.setTichuFor(2)
+        if (binding.curHandP3RG.checkedRadioButtonId == R.id.curHandP3T) hand.setTichuFor(2)
         if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4GT) hand.setGrandTichuFor(3)
-        if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4T)  hand.setTichuFor(3)
+        if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4T) hand.setTichuFor(3)
         val playerNames = Array(4) { game.players[it].name }
         (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand, playerNames))
     }
@@ -124,7 +133,7 @@ class CurHandFragment : Fragment(), MenuProvider {
         binding.curHandP4.text = players[3].name
         if (game.gameOver) {
             val team1wins = game.score1 > game.score2
-            val winColor  = Color.YELLOW
+            val winColor = Color.YELLOW
             val loseColor = Color.GRAY
             binding.curHandScore1.setTextColor(if (team1wins) winColor else loseColor)
             binding.curHandP1.setTextColor(if (team1wins) winColor else loseColor)
@@ -145,13 +154,27 @@ class CurHandFragment : Fragment(), MenuProvider {
         }
     }
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+    override fun onCreateMenu(
+        menu: Menu,
+        menuInflater: MenuInflater,
+    ) {
         menuInflater.inflate(R.menu.menu_curhand, menu)
     }
 
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
-        R.id.menu_end_game -> { onEndGame(); true }
-        R.id.menu_quit     -> { requireActivity().finish(); true }
-        else               -> false
-    }
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+        when (menuItem.itemId) {
+            R.id.menu_end_game -> {
+                onEndGame()
+                true
+            }
+
+            R.id.menu_quit -> {
+                requireActivity().finish()
+                true
+            }
+
+            else -> {
+                false
+            }
+        }
 }

@@ -1,16 +1,16 @@
 package com.tichuguru
 
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.AllgamesBinding
 import com.tichuguru.databinding.AllgamesrowBinding
 import com.tichuguru.model.Game
@@ -22,12 +22,19 @@ class AllGamesFragment : Fragment() {
     private lateinit var binding: AllgamesBinding
     private lateinit var adapter: GamesAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = AllgamesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.gamesList.layoutManager = LinearLayoutManager(requireContext())
         adapter = GamesAdapter()
@@ -46,17 +53,22 @@ class AllGamesFragment : Fragment() {
 
         inner class ViewHolder(val binding: AllgamesrowBinding) : RecyclerView.ViewHolder(binding.root)
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(AllgamesrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int,
+        ): ViewHolder = ViewHolder(AllgamesrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: ViewHolder,
+            position: Int,
+        ) {
             val idx = games.size - position - 1
             val game = games[idx]
             val players = game.players
 
-            holder.binding.gamesDate.text   = df.format(game.date)
-            holder.binding.gamesTeam1.text  = "${players[0].name} and ${players[2].name}"
-            holder.binding.gamesTeam2.text  = "${players[1].name} and ${players[3].name}"
+            holder.binding.gamesDate.text = df.format(game.date)
+            holder.binding.gamesTeam1.text = "${players[0].name} and ${players[2].name}"
+            holder.binding.gamesTeam2.text = "${players[1].name} and ${players[3].name}"
             holder.binding.gamesScore1.text = game.score1.toString()
             holder.binding.gamesScore2.text = game.score2.toString()
 
@@ -85,7 +97,8 @@ class AllGamesFragment : Fragment() {
     }
 
     private fun onDeleteGame(game: Game) {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
                 viewModel.requestClearTichuButtons()
@@ -93,8 +106,7 @@ class AllGamesFragment : Fragment() {
                 if (viewModel.getAllGames().value.isNullOrEmpty()) {
                     (requireActivity() as TGActivity).createFirstGame()
                 }
-            }
-            .setNegativeButton("No", null)
+            }.setNegativeButton("No", null)
             .show()
     }
 }

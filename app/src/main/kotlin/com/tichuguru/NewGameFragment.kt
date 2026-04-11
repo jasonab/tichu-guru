@@ -1,8 +1,5 @@
 package com.tichuguru
 
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.BundleCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.tichuguru.databinding.NewgameBinding
 import com.tichuguru.model.Game
 import com.tichuguru.model.Player
@@ -25,42 +25,58 @@ class NewGameFragment : Fragment() {
     private lateinit var binding: NewgameBinding
 
     companion object {
-        private const val ARG_GAME    = "game"
+        private const val ARG_GAME = "game"
         private const val ARG_PLAYERS = "players"
 
-        fun newInstance(game: Game, players: List<Player>): NewGameFragment {
-            return NewGameFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARG_GAME, game)
-                    putSerializable(ARG_PLAYERS, ArrayList(players))
-                }
+        fun newInstance(
+            game: Game,
+            players: List<Player>,
+        ): NewGameFragment =
+            NewGameFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putSerializable(ARG_GAME, game)
+                        putSerializable(ARG_PLAYERS, ArrayList(players))
+                    }
             }
-        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = NewgameBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "New Game"
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
 
         game = requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)) { "game arg missing" }
         @Suppress("UNCHECKED_CAST")
-        allPlayers = (requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)) { "players arg missing" } as ArrayList<Player>).toMutableList()
+        allPlayers =
+            (
+                requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)) {
+                    "players arg missing"
+                } as ArrayList<Player>
+            ).toMutableList()
 
         binding.newGameRandomizeTeams.setOnClickListener { onRandomizeTeams() }
         binding.newGameStart.setOnClickListener { onStartGame() }
 
-        nameSpinners = listOf(
-            binding.newGameName1,
-            binding.newGameName2,
-            binding.newGameName3,
-            binding.newGameName4
-        )
+        nameSpinners =
+            listOf(
+                binding.newGameName1,
+                binding.newGameName2,
+                binding.newGameName3,
+                binding.newGameName4
+            )
 
         val choices = allPlayers.map { it.name }.toMutableList()
         choices.add("New Player")
@@ -70,9 +86,9 @@ class NewGameFragment : Fragment() {
             nameSpinners[i].adapter = spinAdapter
         }
         updateNameSpinners()
-        binding.newGameAffectsStats.isChecked      = true
-        binding.newGameAddOnFailedTichu.isChecked  = game.addOnFailure
-        binding.newGameMercyRule.isChecked         = game.mercyRule
+        binding.newGameAffectsStats.isChecked = true
+        binding.newGameAddOnFailedTichu.isChecked = game.addOnFailure
+        binding.newGameMercyRule.isChecked = game.mercyRule
     }
 
     private fun onRandomizeTeams() {
@@ -109,10 +125,10 @@ class NewGameFragment : Fragment() {
             AlertDialog.Builder(requireContext()).setMessage("Enter a valid game limit").show()
             return
         }
-        game.gameLimit    = limit
+        game.gameLimit = limit
         game.addOnFailure = binding.newGameAddOnFailedTichu.isChecked
-        game.ignoreStats  = !binding.newGameAffectsStats.isChecked
-        game.mercyRule    = binding.newGameMercyRule.isChecked
+        game.ignoreStats = !binding.newGameAffectsStats.isChecked
+        game.mercyRule = binding.newGameMercyRule.isChecked
         viewModel.addGame(game)
         parentFragmentManager.setFragmentResult("new_game", Bundle())
         parentFragmentManager.popBackStack()
@@ -132,8 +148,12 @@ class NewGameFragment : Fragment() {
     }
 
     private inner class PlayerSelectedListener(private val playerNum: Int) : AdapterView.OnItemSelectedListener {
-
-        override fun onItemSelected(parent: AdapterView<*>, view: View?, index: Int, id: Long) {
+        override fun onItemSelected(
+            parent: AdapterView<*>,
+            view: View?,
+            index: Int,
+            id: Long,
+        ) {
             if (index < allPlayers.size) {
                 game.setPlayer(playerNum, allPlayers[index])
             } else if (!addingPlayer) {
@@ -144,7 +164,8 @@ class NewGameFragment : Fragment() {
 
         private fun getNewPlayerName() {
             val input = android.widget.EditText(requireContext())
-            AlertDialog.Builder(requireContext())
+            AlertDialog
+                .Builder(requireContext())
                 .setTitle("New Player")
                 .setMessage("Enter the new player's name")
                 .setView(input)
@@ -168,8 +189,7 @@ class NewGameFragment : Fragment() {
                     game.setPlayer(playerNum, newPlayer)
                     addingPlayer = false
                     requireActivity().runOnUiThread { updateNameSpinners() }
-                }
-                .setNegativeButton("Cancel") { _, _ -> addingPlayer = false }
+                }.setNegativeButton("Cancel") { _, _ -> addingPlayer = false }
                 .show()
         }
 

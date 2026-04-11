@@ -1,13 +1,13 @@
 package com.tichuguru
 
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import androidx.core.os.BundleCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.tichuguru.databinding.ScorehandBinding
 import com.tichuguru.model.Hand
 
@@ -16,25 +16,35 @@ class ScoreHandFragment : Fragment() {
     private lateinit var binding: ScorehandBinding
 
     companion object {
-        private const val ARG_HAND         = "hand"
+        private const val ARG_HAND = "hand"
         private const val ARG_PLAYER_NAMES = "playerNames"
 
-        fun newInstance(hand: Hand, playerNames: Array<String>): ScoreHandFragment {
-            return ScoreHandFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARG_HAND, hand)
-                    putStringArray(ARG_PLAYER_NAMES, playerNames)
-                }
+        fun newInstance(
+            hand: Hand,
+            playerNames: Array<String>,
+        ): ScoreHandFragment =
+            ScoreHandFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putSerializable(ARG_HAND, hand)
+                        putStringArray(ARG_PLAYER_NAMES, playerNames)
+                    }
             }
-        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = ScorehandBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "Score Hand"
 
@@ -43,17 +53,18 @@ class ScoreHandFragment : Fragment() {
 
         val scoreLabels = Array(Hand.CARD_SCORE_OPTIONS.size) { Hand.CARD_SCORE_OPTIONS[it].toString() }
 
-        val changeListener = NumberPicker.OnValueChangeListener { picker, _, _ ->
-            if (picker != binding.scoreHandOutFirst) {
-                val other = if (picker == binding.scoreHandScore1) binding.scoreHandScore2 else binding.scoreHandScore1
-                val v = Hand.CARD_SCORE_OPTIONS[picker.value]
-                val otherVal = Hand.otherCardScore(v)
-                if (v != 0 || other.value != Hand.cardScoreIndex(200)) {
-                    other.value = Hand.cardScoreIndex(otherVal)
+        val changeListener =
+            NumberPicker.OnValueChangeListener { picker, _, _ ->
+                if (picker != binding.scoreHandOutFirst) {
+                    val other = if (picker == binding.scoreHandScore1) binding.scoreHandScore2 else binding.scoreHandScore1
+                    val v = Hand.CARD_SCORE_OPTIONS[picker.value]
+                    val otherVal = Hand.otherCardScore(v)
+                    if (v != 0 || other.value != Hand.cardScoreIndex(200)) {
+                        other.value = Hand.cardScoreIndex(otherVal)
+                    }
                 }
+                updateHandScore()
             }
-            updateHandScore()
-        }
 
         binding.scoreHandScore1.minValue = 0
         binding.scoreHandScore1.maxValue = Hand.CARD_SCORE_OPTIONS.size - 1

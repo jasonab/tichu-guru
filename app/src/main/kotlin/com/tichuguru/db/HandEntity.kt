@@ -8,12 +8,14 @@ import com.tichuguru.model.Hand
 
 @Entity(
     tableName = "hands",
-    foreignKeys = [ForeignKey(
-        entity = GameEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["gameId"],
-        onDelete = ForeignKey.CASCADE
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = GameEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["gameId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [Index("gameId")]
 )
 data class HandEntity(
@@ -35,10 +37,14 @@ data class HandEntity(
     var grandTichu0: Boolean = false,
     var grandTichu1: Boolean = false,
     var grandTichu2: Boolean = false,
-    var grandTichu3: Boolean = false
+    var grandTichu3: Boolean = false,
 ) {
     companion object {
-        fun from(h: Hand, gameId: Long, order: Int) = HandEntity(
+        fun from(
+            h: Hand,
+            gameId: Long,
+            order: Int,
+        ) = HandEntity(
             id = h.dbId,
             gameId = gameId,
             handOrder = order,
@@ -49,7 +55,7 @@ data class HandEntity(
             totalScore2 = h.totalScore2,
             tichuScore1 = h.tichuScore1,
             tichuScore2 = h.tichuScore2,
-            outFirst = h.outFirst(),
+            outFirst = h.outFirst,
             tichu0 = h.isTichuFor(0),
             tichu1 = h.isTichuFor(1),
             tichu2 = h.isTichuFor(2),

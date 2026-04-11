@@ -7,7 +7,6 @@ import org.junit.Before
 import org.junit.Test
 
 class PlayerTest {
-
     private lateinit var player: Player
 
     @Before fun setup() {
@@ -17,7 +16,10 @@ class PlayerTest {
     // Helpers
 
     /** Build a fully scored hand with no bids. */
-    private fun plainHand(cardScore1: Int, outFirst: Int = 0): Hand {
+    private fun plainHand(
+        cardScore1: Int,
+        outFirst: Int = 0,
+    ): Hand {
         val h = Hand()
         h.setCardScore1(cardScore1)
         h.setCardScore2(Hand.otherCardScore(cardScore1))
@@ -25,10 +27,18 @@ class PlayerTest {
         return h
     }
 
-    private fun game(score1: Int = 1000, score2: Int = 500): Game {
+    private fun game(
+        score1: Int = 1000,
+        score2: Int = 500,
+    ): Game {
         val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
-        return Game(players = players.toMutableList(), score1 = score1, score2 = score2,
-            gameLimit = 1000, gameOver = true)
+        return Game(
+            players = players.toMutableList(),
+            score1 = score1,
+            score2 = score2,
+            gameLimit = 1000,
+            gameOver = true
+        )
     }
 
     // --- recordHand: card points ---
@@ -41,7 +51,7 @@ class PlayerTest {
     }
 
     @Test fun recordHand_team2Seat_addsCardScore2() {
-        player.recordHand(plainHand(60), seat = 1)  // cardScore2 = 40
+        player.recordHand(plainHand(60), seat = 1) // cardScore2 = 40
         assertEquals(40, player.cardPoints)
         assertEquals(40, player.totalPoints)
     }
@@ -73,7 +83,7 @@ class PlayerTest {
         h.setCardScore1(200)
         h.setCardScore2(0)
         h.setOutFirst(0)
-        player.recordHand(h, seat = 1)   // team2 got 0 card points (double-win by team1)
+        player.recordHand(h, seat = 1) // team2 got 0 card points (double-win by team1)
         assertEquals(0, player.cardPoints)
         assertEquals(0, player.numDoubleWins)
     }
@@ -109,7 +119,7 @@ class PlayerTest {
         h.setTichuFor(0)
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(1)   // player 1 wins
+        h.setOutFirst(1) // player 1 wins
         player.recordHand(h, seat = 0)
         assertEquals(1, player.numTichuCalled)
         assertEquals(0, player.numTichuMade)
@@ -170,10 +180,10 @@ class PlayerTest {
 
     @Test fun recordHand_opponentTichuFailed_incrementsStopped() {
         val h = Hand()
-        h.setTichuFor(1)    // opponent (seat 1) called tichu
+        h.setTichuFor(1) // opponent (seat 1) called tichu
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(0)    // team1 wins → opponent tichu stopped
+        h.setOutFirst(0) // team1 wins → opponent tichu stopped
         player.recordHand(h, seat = 0)
         assertEquals(1, player.numTichusCalledByOpps)
         assertEquals(1, player.numTichusStopped)
@@ -181,7 +191,7 @@ class PlayerTest {
 
     @Test fun recordHand_opponentTichuSucceeded_notStopped() {
         val h = Hand()
-        h.setTichuFor(1)    // opponent (seat 1) called tichu and made it
+        h.setTichuFor(1) // opponent (seat 1) called tichu and made it
         h.setCardScore1(50)
         h.setCardScore2(50)
         h.setOutFirst(1)
@@ -192,10 +202,10 @@ class PlayerTest {
 
     @Test fun recordHand_opponentSeat3Tichu() {
         val h = Hand()
-        h.setTichuFor(3)    // opponent seat 3 for a seat-2 player
+        h.setTichuFor(3) // opponent seat 3 for a seat-2 player
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(2)    // seat 2 wins → opp tichu stopped
+        h.setOutFirst(2) // seat 2 wins → opp tichu stopped
         player.recordHand(h, seat = 2)
         assertEquals(1, player.numTichusCalledByOpps)
         assertEquals(1, player.numTichusStopped)
@@ -205,10 +215,10 @@ class PlayerTest {
 
     @Test fun recordHand_partnerTichuCalledAndMade() {
         val h = Hand()
-        h.setTichuFor(2)    // partner of seat 0
+        h.setTichuFor(2) // partner of seat 0
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(2)    // partner wins
+        h.setOutFirst(2) // partner wins
         player.recordHand(h, seat = 0)
         assertEquals(1, player.numTichusCalledByPartner)
         assertEquals(1, player.numTichusMadeByPartner)
@@ -216,10 +226,10 @@ class PlayerTest {
 
     @Test fun recordHand_partnerTichuCalledAndFailed() {
         val h = Hand()
-        h.setTichuFor(2)    // partner of seat 0
+        h.setTichuFor(2) // partner of seat 0
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(0)    // seat 0 wins, not partner
+        h.setOutFirst(0) // seat 0 wins, not partner
         player.recordHand(h, seat = 0)
         assertEquals(1, player.numTichusCalledByPartner)
         assertEquals(0, player.numTichusMadeByPartner)
@@ -270,7 +280,8 @@ class PlayerTest {
     @Test fun unrecordHand_revertsTichu() {
         val h = Hand()
         h.setTichuFor(0)
-        h.setCardScore1(50); h.setCardScore2(50)
+        h.setCardScore1(50)
+        h.setCardScore2(50)
         h.setOutFirst(0)
         player.recordHand(h, seat = 0)
         player.unrecordHand(h, seat = 0)
@@ -283,7 +294,8 @@ class PlayerTest {
     @Test fun unrecordHand_revertsGrandTichu() {
         val h = Hand()
         h.setGrandTichuFor(0)
-        h.setCardScore1(50); h.setCardScore2(50)
+        h.setCardScore1(50)
+        h.setCardScore2(50)
         h.setOutFirst(0)
         player.recordHand(h, seat = 0)
         player.unrecordHand(h, seat = 0)
@@ -294,7 +306,8 @@ class PlayerTest {
     @Test fun unrecordHand_revertsOpponentTichu() {
         val h = Hand()
         h.setTichuFor(1)
-        h.setCardScore1(50); h.setCardScore2(50)
+        h.setCardScore1(50)
+        h.setCardScore2(50)
         h.setOutFirst(0)
         player.recordHand(h, seat = 0)
         player.unrecordHand(h, seat = 0)
@@ -304,7 +317,8 @@ class PlayerTest {
 
     @Test fun unrecordHand_revertsDoubleWin() {
         val h = Hand()
-        h.setCardScore1(200); h.setCardScore2(0)
+        h.setCardScore1(200)
+        h.setCardScore2(0)
         h.setOutFirst(0)
         player.recordHand(h, seat = 0)
         player.unrecordHand(h, seat = 0)
@@ -314,7 +328,7 @@ class PlayerTest {
 
     @Test fun unrecordHand_onEmptyPlayer_isNoOp() {
         val h = plainHand(60)
-        player.unrecordHand(h, seat = 0)  // numHands == 0 → returns early
+        player.unrecordHand(h, seat = 0) // numHands == 0 → returns early
         assertEquals(0, player.numHands)
     }
 
@@ -324,7 +338,8 @@ class PlayerTest {
         val h = Hand()
         h.setTichuFor(0)
         h.setGrandTichuFor(2)
-        h.setCardScore1(60); h.setCardScore2(40)
+        h.setCardScore1(60)
+        h.setCardScore2(40)
         h.setOutFirst(0)
         player.recordHand(h, seat = 0)
         player.recordGame(game(), seat = 0)
@@ -351,27 +366,34 @@ class PlayerTest {
     // --- stat helper functions ---
 
     @Test fun getWinPct_noGames_returnsZero() = assertEquals(0.0, player.getWinPct(), 0.0)
+
     @Test fun getWinPct_oneWinOneGame_returns100() {
-        player.numGames = 1; player.numWins = 1
+        player.numGames = 1
+        player.numWins = 1
         assertEquals(100.0, player.getWinPct(), 0.001)
     }
 
     @Test fun getPtsPerHand_noHands_returnsZero() = assertEquals(0.0, player.getPtsPerHand(), 0.0)
+
     @Test fun getPtsPerHand_calculated() {
-        player.numHands = 4; player.totalPoints = 200
+        player.numHands = 4
+        player.totalPoints = 200
         assertEquals(50.0, player.getPtsPerHand(), 0.001)
     }
 
     @Test fun getTichuPct_noCalls_returnsZero() = assertEquals(0.0, player.getTichuPct(), 0.0)
+
     @Test fun getTichuPct_calculated() {
-        player.numTichuCalled = 4; player.numTichuMade = 3
+        player.numTichuCalled = 4
+        player.numTichuMade = 3
         assertEquals(75.0, player.getTichuPct(), 0.001)
     }
 
-    @Test fun getTichuStopPct_noOpponentCalls_returnsZero() =
-        assertEquals(0.0, player.getTichuStopPct(), 0.0)
+    @Test fun getTichuStopPct_noOpponentCalls_returnsZero() = assertEquals(0.0, player.getTichuStopPct(), 0.0)
+
     @Test fun getTichuStopPct_calculated() {
-        player.numTichusCalledByOpps = 5; player.numTichusStopped = 2
+        player.numTichusCalledByOpps = 5
+        player.numTichusStopped = 2
         assertEquals(40.0, player.getTichuStopPct(), 0.001)
     }
 }

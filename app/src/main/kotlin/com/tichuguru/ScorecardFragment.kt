@@ -1,15 +1,15 @@
 package com.tichuguru
 
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.ScorecardBinding
 import com.tichuguru.databinding.ScorecardrowBinding
 import com.tichuguru.model.Game
@@ -18,12 +18,19 @@ class ScorecardFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: ScorecardBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = ScorecardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.scorecardList.layoutManager = LinearLayoutManager(requireContext())
         binding.scorecardDelete.setOnClickListener { onDeleteHand() }
@@ -47,7 +54,8 @@ class ScorecardFragment : Fragment() {
     }
 
     private fun onDeleteHand() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ -> viewModel.deleteLastHand() }
             .setNegativeButton("No", null)
@@ -55,16 +63,25 @@ class ScorecardFragment : Fragment() {
     }
 
     private class ScorecardAdapter(private val game: Game) : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
-
         class ViewHolder(val binding: ScorecardrowBinding) : RecyclerView.ViewHolder(binding.root) {
-            val tichus = arrayOf(binding.scorecardTichu1, binding.scorecardTichu2,
-                                 binding.scorecardTichu3, binding.scorecardTichu4)
+            val tichus =
+                arrayOf(
+                    binding.scorecardTichu1,
+                    binding.scorecardTichu2,
+                    binding.scorecardTichu3,
+                    binding.scorecardTichu4
+                )
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(ScorecardrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int,
+        ): ViewHolder = ViewHolder(ScorecardrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: ViewHolder,
+            position: Int,
+        ) {
             val hand = game.hands[position]
             val s1 = hand.totalScore1
             holder.binding.scorecardHandScore1.text = "${if (s1 >= 0) "+" else ""}$s1"
@@ -73,15 +90,17 @@ class ScorecardFragment : Fragment() {
 
             for (i in 0..3) {
                 val tv = holder.tichus[i]
-                tv.text = when {
-                    hand.isTichuFor(i)      -> "T"
-                    hand.isGrandTichuFor(i) -> "GT"
-                    else                    -> ""
-                }
-                tv.setTextColor(if (hand.outFirst() == i) 0xFF00AA00.toInt() else Color.RED)
+                tv.text =
+                    when {
+                        hand.isTichuFor(i) -> "T"
+                        hand.isGrandTichuFor(i) -> "GT"
+                        else -> ""
+                    }
+                tv.setTextColor(if (hand.outFirst == i) 0xFF00AA00.toInt() else Color.RED)
             }
 
-            var t1 = 0; var t2 = 0
+            var t1 = 0
+            var t2 = 0
             for (i in 0..position) {
                 t1 += game.hands[i].totalScore1
                 t2 += game.hands[i].totalScore2

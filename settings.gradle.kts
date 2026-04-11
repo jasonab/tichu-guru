@@ -7,6 +7,7 @@ pluginManagement {
     plugins {
         id("com.android.application") version "9.1.0"
         id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+        id("org.jmailen.kotlinter") version "5.4.2"
     }
 }
 

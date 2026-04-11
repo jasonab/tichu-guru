@@ -23,29 +23,30 @@ data class PlayerEntity(
     var numTichusStopped: Int = 0,
     var numTichusCalledByOpps: Int = 0,
     var numTichusCalledByPartner: Int = 0,
-    var numTichusMadeByPartner: Int = 0
+    var numTichusMadeByPartner: Int = 0,
 ) {
     companion object {
-        fun from(p: Player) = PlayerEntity(
-            id = p.dbId,
-            name = p.name,
-            numGames = p.numGames,
-            numWins = p.numWins,
-            numHands = p.numHands,
-            totalPoints = p.totalPoints,
-            cardPoints = p.cardPoints,
-            numDoubleWins = p.numDoubleWins,
-            numTichuCalled = p.numTichuCalled,
-            numTichuMade = p.numTichuMade,
-            numGTCalled = p.numGTCalled,
-            numGTMade = p.numGTMade,
-            tichuEfficiencyPoints = p.tichuEfficiencyPoints,
-            tichuEfficiencyHands = p.tichuEfficiencyHands,
-            numTichusStopped = p.numTichusStopped,
-            numTichusCalledByOpps = p.numTichusCalledByOpps,
-            numTichusCalledByPartner = p.numTichusCalledByPartner,
-            numTichusMadeByPartner = p.numTichusMadeByPartner
-        )
+        fun from(p: Player) =
+            PlayerEntity(
+                id = p.dbId,
+                name = p.name,
+                numGames = p.numGames,
+                numWins = p.numWins,
+                numHands = p.numHands,
+                totalPoints = p.totalPoints,
+                cardPoints = p.cardPoints,
+                numDoubleWins = p.numDoubleWins,
+                numTichuCalled = p.numTichuCalled,
+                numTichuMade = p.numTichuMade,
+                numGTCalled = p.numGTCalled,
+                numGTMade = p.numGTMade,
+                tichuEfficiencyPoints = p.tichuEfficiencyPoints,
+                tichuEfficiencyHands = p.tichuEfficiencyHands,
+                numTichusStopped = p.numTichusStopped,
+                numTichusCalledByOpps = p.numTichusCalledByOpps,
+                numTichusCalledByPartner = p.numTichusCalledByPartner,
+                numTichusMadeByPartner = p.numTichusMadeByPartner
+            )
     }
 
     fun toPlayer(): Player {

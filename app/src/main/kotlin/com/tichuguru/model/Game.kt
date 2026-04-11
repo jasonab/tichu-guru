@@ -15,9 +15,8 @@ class Game(
     var ignoreStats: Boolean = false,
     var addOnFailure: Boolean = false,
     var date: Instant = Instant.now(),
-    var dbId: Long = 0
+    var dbId: Long = 0,
 ) : Serializable {
-
     constructor(players: List<Player>) : this(
         players = players.toMutableList(),
         gameLimit = 1000,
@@ -43,8 +42,11 @@ class Game(
             hands.add(hand)
             score1 += hand.totalScore1
             score2 += hand.totalScore2
-            if (score1 != score2 && (score1 >= gameLimit || score2 >= gameLimit ||
-                    (mercyRule && abs(score1 - score2) >= gameLimit))) {
+            if (score1 != score2 && (
+                    score1 >= gameLimit || score2 >= gameLimit ||
+                        (mercyRule && abs(score1 - score2) >= gameLimit)
+                )
+            ) {
                 gameOver = true
             }
             if (!ignoreStats) {
@@ -72,5 +74,10 @@ class Game(
 
     fun containsPlayer(p: Player): Boolean = players.any { it === p }
 
-    fun setPlayer(seat: Int, p: Player) { players[seat] = p }
+    fun setPlayer(
+        seat: Int,
+        p: Player,
+    ) {
+        players[seat] = p
+    }
 }

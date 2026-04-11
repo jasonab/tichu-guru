@@ -7,7 +7,6 @@ import org.junit.Before
 import org.junit.Test
 
 class GameTest {
-
     private lateinit var game: Game
 
     @Before fun setup() {
@@ -15,7 +14,10 @@ class GameTest {
         game = Game(players)
     }
 
-    private fun hand(score1: Int, score2: Int = Hand.otherCardScore(score1)): Hand {
+    private fun hand(
+        score1: Int,
+        score2: Int = Hand.otherCardScore(score1),
+    ): Hand {
         val h = Hand()
         h.setCardScore1(score1)
         h.setCardScore2(score2)
@@ -63,8 +65,8 @@ class GameTest {
     }
 
     @Test fun gameEnds_whenScore2ReachesLimit() {
-        game.scoreHand(hand(0))   // score1=0, score2=100
-        repeat(9) { game.scoreHand(hand(0)) }   // score2=1000
+        game.scoreHand(hand(0)) // score1=0, score2=100
+        repeat(9) { game.scoreHand(hand(0)) } // score2=1000
         assertTrue(game.gameOver)
     }
 
@@ -72,7 +74,7 @@ class GameTest {
 
     @Test fun mercyRule_disabled_gameDoesNotEndEarly() {
         game.mercyRule = false
-        game.scoreHand(hand(600))   // diff = 500, not 1000
+        game.scoreHand(hand(600)) // diff = 500, not 1000
         assertFalse(game.gameOver)
     }
 
@@ -83,15 +85,15 @@ class GameTest {
         // Neither team reaches gameLimit (1000) through normal scoring.
         game.mercyRule = true
         val h = Hand()
-        h.setGrandTichuFor(1)          // team2 player 1 calls GT and fails
+        h.setGrandTichuFor(1) // team2 player 1 calls GT and fails
         h.setCardScore1(50)
         h.setCardScore2(50)
-        h.setOutFirst(0)               // team1 wins → GT failure → −200 to team2
+        h.setOutFirst(0) // team1 wins → GT failure → −200 to team2
         repeat(4) {
             game.scoreHand(h)
             assertFalse(game.gameOver)
         }
-        game.scoreHand(h)              // 5th hand: diff reaches 1000
+        game.scoreHand(h) // 5th hand: diff reaches 1000
         assertTrue(game.gameOver)
     }
 

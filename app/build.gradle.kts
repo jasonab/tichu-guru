@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.application")
     id("com.google.devtools.ksp")
+    id("org.jmailen.kotlinter")
 }
 
 kotlin {
