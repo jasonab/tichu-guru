@@ -54,28 +54,6 @@ app/src/test/kotlin/com/tichuguru/model/
 app/proguard-rules.pro                          # R8 keep rules for release builds
 ```
 
-## Architecture Rules
-
-- **`TGViewModel` owns all mutations** — Fragments call ViewModel methods. LiveData is private and set inside each mutation. No public `notify*()` methods.
-- **`TGApp` is thin** — `companion object` with `@JvmStatic` accessors for global state (`TGApp.getGame()`, `TGApp.getGames()`, `TGApp.getPlayers()`). DB I/O lives in `TGViewModel`.
-- **Save eagerly** — `TGViewModel` calls `saveGames()` / `savePlayers()` (fire-and-forget via `dbScope.launch`) at every mutation. NEVER defer to `onPause`.
-- **Rule logic in `model/`** — business logic belongs in `Game`/`Hand`/`Player`, not Fragments.
-- **Fragment args via Bundle** — `Game` and `Hand` implement `Serializable`. Use `Bundle.putSerializable()` / `BundleCompat.getSerializable()` and `Fragment.arguments`. Never static setters.
-
-## Kotlin Conventions
-
-- **Null assertions:** `requireNotNull(x) { "message" }` or `checkNotNull(x) { "message" }`. Never bare `!!`.
-- **Colors:** `Color.YELLOW` / `Color.GRAY` — never raw integer literals.
-- **Constants:** `const val` in the relevant model class `companion object`.
-- **Boolean names:** `gameOver`, not `isGameOver` — avoids getter naming clash.
-- **Backing properties:** expose as `val foo: T get() = _foo`, never as `fun foo(): T`. The linter requires a matching property, not a function.
-
-## Room DB Conventions
-
-- Use `@Upsert` instead of `@Insert(onConflict = REPLACE)`.
-- `Entity.from(model)` includes `id = model.dbId`; `entity.toModel()` sets `model.dbId = id`.
-- Schema changes: increment `version` in `@Database` and add `Migration(n, n+1)` in `TichuDatabase`. Do NOT use `fallbackToDestructiveMigration()`.
-
 ## Co-Change Patterns
 
 | Change type | Files that co-change |
@@ -84,6 +62,10 @@ app/proguard-rules.pro                          # R8 keep rules for release buil
 | DB schema change | Entity `.kt` + DAO `.kt` + `TichuDatabase.kt` (new `Migration`) |
 | Model field added/renamed | `model/*.kt` + `db/*Entity.kt` + `db/*Dao.kt` + Fragment callers |
 | New Fragment | Fragment `.kt` + layout XML + `TGActivity.kt` (navigation) |
+
+## Coding Rules
+
+See @.claude/rules/project.md, @.claude/rules/languages/kotlin.md, and @.claude/rules/frameworks/android-room.md for project-specific coding rules.
 
 ## Repo Etiquette
 
