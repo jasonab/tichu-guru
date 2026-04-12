@@ -59,10 +59,9 @@ Open items only appear in the active sections below. All completed work is in th
   keep their inner `LinearLayout` (needed for the divider) but are also fixed to `0dp` width.
   View count reduced from 16 to 12.
 
-- [ ] **#46 Magic seat index numbers with no named constant** (`Player.kt`)
-  The condition `seat == 0 || seat == 2` (team 1) appears 12+ times with no explanation.
-  Extract to `fun isTeam1(seat: Int) = seat % 2 == 0` or a `Seat` enum so the team mapping
-  is defined once and the intent is clear at every call site.
+- [x] **#46 Magic seat index numbers with no named constant** (`Player.kt`)
+  Added private top-level `fun isTeam1(seat: Int) = seat % 2 == 0` in `Player.kt`.
+  All 4 occurrences of `seat == 0 || seat == 2` replaced with `isTeam1(seat)`.
 
 - [ ] **#47 Win-color logic duplicated across three fragments**
   `if (team1wins) Color.YELLOW else Color.GRAY` appears in `CurHandFragment`,

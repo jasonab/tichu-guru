@@ -84,17 +84,26 @@ class Hand : Serializable {
     private fun computeTichuScore(
         forTeam1: Boolean,
         addOnFailure: Boolean,
-    ): Int =
-        (0..3).sumOf { player ->
-            val isTeam1 = player % 2 == 0
-            val made = playerOutFirst == player
-            val points = bids[player].points
-            when {
-                addOnFailure -> if (made == (isTeam1 == forTeam1)) points else 0
-                isTeam1 == forTeam1 -> if (made) points else -points
-                else -> 0
+    ): Int {
+        val teamSeats = if (forTeam1) intArrayOf(0, 2) else intArrayOf(1, 3)
+        val own =
+            teamSeats.sumOf { p ->
+                val points = bids[p].points
+                if (playerOutFirst == p) {
+                    points
+                } else if (addOnFailure) {
+                    0
+                } else {
+                    -points
+                }
             }
-        }
+        return own + if (addOnFailure) stoppedTichuScore(forTeam1) else 0
+    }
+
+    private fun stoppedTichuScore(forTeam1: Boolean): Int {
+        val oppSeats = if (forTeam1) intArrayOf(1, 3) else intArrayOf(0, 2)
+        return oppSeats.sumOf { p -> if (playerOutFirst != p) bids[p].points else 0 }
+    }
 
     /** Set tichu flag directly without recalculating scores (use when loading persisted data). */
     fun setTichuDirect(

@@ -1,5 +1,7 @@
 package com.tichuguru.model
 
+internal fun isTeamOne(seat: Int) = seat % 2 == 0
+
 class Player(var name: String = "") : Comparable<Player> {
     var dbId: Long = 0
     var numGames: Int = 0
@@ -24,7 +26,7 @@ class Player(var name: String = "") : Comparable<Player> {
         seat: Int,
     ) {
         numGames++
-        if (seat == 0 || seat == 2) {
+        if (isTeamOne(seat)) {
             if (game.score1 > game.score2) numWins++
         } else if (game.score1 < game.score2) {
             numWins++
@@ -36,7 +38,7 @@ class Player(var name: String = "") : Comparable<Player> {
         seat: Int,
     ) {
         numGames--
-        if (seat == 0 || seat == 2) {
+        if (isTeamOne(seat)) {
             if (game.score1 > game.score2) numWins--
         } else if (game.score1 < game.score2) {
             numWins--
@@ -50,7 +52,7 @@ class Player(var name: String = "") : Comparable<Player> {
     ) {
         numHands++
         val numTichusThisHand = (0..3).count { hand.isTichuFor(it) || hand.isGrandTichuFor(it) }
-        if (seat == 0 || seat == 2) {
+        if (isTeamOne(seat)) {
             totalPoints += hand.totalScoreTeamOne(addOnFailure)
             if (hand.cardScoreTeamOne == 200) {
                 cardPoints += 100
@@ -109,7 +111,7 @@ class Player(var name: String = "") : Comparable<Player> {
         if (numHands == 0) return
         numHands--
         val numTichusThisHand = (0..3).count { hand.isTichuFor(it) || hand.isGrandTichuFor(it) }
-        if (seat == 0 || seat == 2) {
+        if (isTeamOne(seat)) {
             totalPoints -= hand.totalScoreTeamOne(addOnFailure)
             if (hand.cardScoreTeamOne == 200) {
                 cardPoints -= 100

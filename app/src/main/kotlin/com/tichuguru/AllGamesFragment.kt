@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.AllgamesBinding
 import com.tichuguru.databinding.AllgamesrowBinding
 import com.tichuguru.model.Game
+import com.tichuguru.model.isTeamOne
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -67,8 +68,8 @@ class AllGamesFragment : Fragment() {
             val players = game.players
 
             holder.binding.gamesDate.text = df.format(game.date)
-            holder.binding.gamesTeam1.text = "${players[0].name} and ${players[2].name}"
-            holder.binding.gamesTeam2.text = "${players[1].name} and ${players[3].name}"
+            holder.binding.gamesTeam1.text = players.filterIndexed { i, _ -> isTeamOne(i) }.joinToString(" and ") { it.name }
+            holder.binding.gamesTeam2.text = players.filterIndexed { i, _ -> !isTeamOne(i) }.joinToString(" and ") { it.name }
             holder.binding.gamesScore1.text = game.score1.toString()
             holder.binding.gamesScore2.text = game.score2.toString()
 
