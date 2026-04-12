@@ -11,9 +11,14 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
     }
 
     companion object {
-        /** All card score values selectable during scoring (0-100 in steps of 5, plus 200 for double win). */
+        /** All card score values selectable during scoring (-25 to 125 in steps of 5, plus 200 for double win). */
         val CARD_SCORE_OPTIONS: IntArray =
             intArrayOf(
+                -25,
+                -20,
+                -15,
+                -10,
+                -5,
                 0,
                 5,
                 10,
@@ -35,6 +40,11 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
                 90,
                 95,
                 100,
+                105,
+                110,
+                115,
+                120,
+                125,
                 200
             )
 
@@ -42,7 +52,7 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
         fun otherCardScore(score: Int) = if (score == 200) 0 else 100 - score
 
         /** Returns the index of a card score in [CARD_SCORE_OPTIONS]. */
-        fun cardScoreIndex(score: Int) = if (score == 200) 21 else score / 5
+        fun cardScoreIndex(score: Int) = if (score == 200) 31 else (score + 25) / 5
     }
 
     var dbId: Long = 0

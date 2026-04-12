@@ -12,15 +12,23 @@ class HandTest {
 
     @Test fun otherCardScore_hundred() = assertEquals(0, Hand.otherCardScore(100))
 
+    @Test fun otherCardScore_negativeTwentyFive() = assertEquals(125, Hand.otherCardScore(-25))
+
+    @Test fun otherCardScore_hundredTwentyFive() = assertEquals(-25, Hand.otherCardScore(125))
+
     @Test fun otherCardScore_doubleWin() = assertEquals(0, Hand.otherCardScore(200))
 
-    @Test fun cardScoreIndex_zero() = assertEquals(0, Hand.cardScoreIndex(0))
+    @Test fun cardScoreIndex_negativeTwentyFive() = assertEquals(0, Hand.cardScoreIndex(-25))
 
-    @Test fun cardScoreIndex_fifty() = assertEquals(10, Hand.cardScoreIndex(50))
+    @Test fun cardScoreIndex_zero() = assertEquals(5, Hand.cardScoreIndex(0))
 
-    @Test fun cardScoreIndex_hundred() = assertEquals(20, Hand.cardScoreIndex(100))
+    @Test fun cardScoreIndex_fifty() = assertEquals(15, Hand.cardScoreIndex(50))
 
-    @Test fun cardScoreIndex_doubleWin() = assertEquals(21, Hand.cardScoreIndex(200))
+    @Test fun cardScoreIndex_hundred() = assertEquals(25, Hand.cardScoreIndex(100))
+
+    @Test fun cardScoreIndex_hundredTwentyFive() = assertEquals(30, Hand.cardScoreIndex(125))
+
+    @Test fun cardScoreIndex_doubleWin() = assertEquals(31, Hand.cardScoreIndex(200))
 
     // --- setCardScore updates totals ---
 
