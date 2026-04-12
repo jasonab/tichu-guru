@@ -11,7 +11,7 @@ class GameTest {
     private lateinit var game: Game
 
     @Before fun setup() {
-        game = Game(players)
+        game = Game(players = players.toMutableList(), gameLimit = 1000)
     }
 
     private fun hand(
@@ -82,7 +82,7 @@ class GameTest {
         // totalScore1=50, totalScore2=−150 per hand.
         // After 5 hands: score1=250, score2=−750, diff=1000 → mercy rule fires.
         // Neither team reaches gameLimit (1000) through normal scoring.
-        val game = Game(players, mercyRule = true)
+        val game = Game(players = players.toMutableList(), gameLimit = 1000, mercyRule = true)
         val h = Hand()
         h.setGrandTichuFor(1) // team2 player 1 calls GT and fails
         h.cardScoreTeamOne = 50
@@ -142,7 +142,7 @@ class GameTest {
     // --- ignoreStats ---
 
     @Test fun ignoreStats_doesNotRecordPlayerStats() {
-        val game = Game(players, ignoreStats = true)
+        val game = Game(players = players.toMutableList(), gameLimit = 1000, ignoreStats = true)
         game.scoreHand(hand(60))
         assertEquals(0, game.players[0].numHands)
     }

@@ -17,17 +17,6 @@ class Game(
     val date: Instant = Instant.now(),
     var dbId: Long = 0,
 ) : Serializable {
-    constructor(
-        players: List<Player>,
-        mercyRule: Boolean = false,
-        ignoreStats: Boolean = false,
-    ) : this(
-        players = players.toMutableList(),
-        gameLimit = 1000,
-        mercyRule = mercyRule,
-        ignoreStats = ignoreStats
-    )
-
     fun endGame() {
         gameOver = true
         if (!ignoreStats) {
