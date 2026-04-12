@@ -6,19 +6,6 @@ Open items only appear in the active sections below. All completed work is in th
 
 ## High
 
-- [x] **#33 Weighted children use `match_parent` width instead of `0dp`** (`newgame.xml`, `scorehand.xml`)
-  Changed all 9 weighted children (4 Spinners, 1 TextView, 1 EditText in `newgame.xml`;
-  3 column `LinearLayout`s in `scorehand.xml`) from `layout_width="match_parent"` to
-  `layout_width="0dp"` so weight distribution is correct on all screen sizes.
-
-- [x] **#34 Hardcoded color literal in `scorecardrow.xml`**
-  Created `res/values/colors.xml` with `scorecard_divider` (`#ff909090`). Both divider
-  `View`s in `scorecardrow.xml` updated to `@color/scorecard_divider`.
-
-- [x] **#35 Text sizes use `dp` instead of `sp`** (`newgame.xml`, `statslistrow.xml`, `scorehand.xml`)
-  Fixed 7 occurrences: 3× `18dp` → `18sp` in `newgame.xml`, 2× `18dp` → `18sp` in
-  `statslistrow.xml`, 2× `24dp` → `24sp` in `scorehand.xml`.
-
 - [ ] **#42 Duplicated "Are you sure?" AlertDialog pattern**
   The same `AlertDialog.Builder` block (message, Yes/No buttons, dismiss on No) appears in
   `CurHandFragment`, `ScorecardFragment`, `AllGamesFragment`, `StatsListFragment`, and
@@ -30,54 +17,20 @@ Open items only appear in the active sections below. All completed work is in th
   scoring, grand tichu scoring). If one is updated the other must be updated identically.
   Extract a private helper that takes a sign multiplier (`+1` or `-1`) and apply it to both.
 
-- [x] **#44 `Hand.setOutFirst()` repeats the same block for each of 4 players**
-  Replaced 16 sequential `if` statements with a loop over `0..3` plus a private
-  `applyBidPoints(isTeam1, made, points)` helper covering both scoring modes.
-
-- [x] **#45 `setPendingHand()` / `setPendingGame()` passed via static setters**
-  `Game` and `Hand` given `Serializable` interface. `ScoreHandFragment.newInstance()` and
-  `NewGameFragment.newInstance()` now pack their argument into `Bundle` via `putSerializable`
-  and read it back in `onViewCreated` via `requireArguments()`. `pendingGame` / `pendingHand`
-  fields and all four accessors removed from `TGApp`.
-
 ---
 
 ## Medium
-
-- [x] **#36 `RelativeLayout` root used only to pin a button at the bottom** (`scorecard.xml`, `newgame.xml`, `scorehand.xml`)
-  Converted all three roots to vertical `LinearLayout`. Scrollable body gets
-  `layout_height="0dp"` + `layout_weight="1"`; button(s) placed after it. Removed all
-  `layout_alignParentBottom` and `layout_above` attributes. Also took the opportunity to
-  remove the spurious `android:orientation` attribute from `scorecard.xml` (closes #40).
-
-- [x] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
-  `LinearLayout` wrapper removed; `RecyclerView` is now the root element in both files.
-
-- [x] **#38 `scorecardrow.xml`: six single-child `LinearLayout` wrappers**
-  Removed the four single-child wrappers (tichu columns); their `TextView`s now sit directly
-  in the root with `layout_width="0dp"` + `layout_weight="1"`. The two score/total columns
-  keep their inner `LinearLayout` (needed for the divider) but are also fixed to `0dp` width.
-  View count reduced from 16 to 12.
-
-- [x] **#46 Magic seat index numbers with no named constant** (`Player.kt`)
-  Added private top-level `fun isTeam1(seat: Int) = seat % 2 == 0` in `Player.kt`.
-  All 4 occurrences of `seat == 0 || seat == 2` replaced with `isTeam1(seat)`.
 
 - [ ] **#47 Win-color logic duplicated across three fragments**
   `if (team1wins) Color.YELLOW else Color.GRAY` appears in `CurHandFragment`,
   `AllGamesFragment`, and `ScorecardFragment`. Extract to a single extension or top-level
   function, e.g. `fun winColor(team1wins: Boolean): Int`.
 
-- [x] **#48 `GamesAdapter` recreated on every list refresh** (`AllGamesFragment.kt`)
-  Adapter created once in `onViewCreated` with a mutable `games` property. The LiveData
-  observer now updates `adapter.games` and calls `notifyDataSetChanged()` instead of
-  replacing the adapter.
-
 ---
 
 ## Testing
 
-No tests currently exist in this project. Add in priority order.
+Add in priority order.
 
 - [ ] **#30 Unit tests for `model/` business logic**
   `Game` score calculation, `Hand` bid/outcome logic, and `Player` stat accumulation
@@ -92,40 +45,6 @@ No tests currently exist in this project. Add in priority order.
 - [ ] **#32 Integration tests for Room DAOs**
   Use `androidx.room:room-testing` with an in-memory database to test upsert, orphan deletion,
   and transaction semantics. Requires `src/androidTest/`.
-
----
-
-## Low
-
-- [x] **#51 Replace bare `!!` with `requireNotNull` / `checkNotNull`**
-  Replaced all `!!` usages across 5 files: `NewGameFragment` (2), `ScoreHandFragment` (2),
-  `StatsListFragment` (3), `StatsFragment` (1), `CurHandFragment` (12). Fragment bundle args
-  use `requireNotNull(x) { "x arg missing" }`; internal-state assertions use `checkNotNull(x)
-  { "x not bound" }`. `StatsFragment` `adapter == null || adapter!!.itemCount` simplified to
-  `adapter?.itemCount`. `CurHandFragment.onScoreHand` captures local `g1–g4` vals to avoid
-  repeated assertions. `onSaveInstanceState` uses `it` (the let receiver) for grp1.
-
-- [x] **#49 Players sorted twice** (`NewGameFragment.kt`)
-  Replaced `allPlayers.add()` + `Collections.sort()` + `indexOf()` with a single
-  `indexOfFirst { it.name > newPlayer.name }` to find the insertion point, then
-  `allPlayers.add(insertIndex, newPlayer)` and `spinAdapter.insert(name, insertIndex)`.
-  Removed unused `java.util.Collections` import.
-
-- [x] **#50 `TGViewModel.notify*()` methods are manual sync between two state stores**
-  Made `games`, `players`, and `curGame` private. Removed all public `notify*()` and `sync()`
-  methods — each mutation now updates LiveData directly. Removed redundant external callers:
-  `viewModel.sync()` from `TGActivity.onResume()` and both `viewModel.notifyGameChanged()`
-  calls from `CurHandFragment` fragment result listeners. `TGActivity.createFirstGame()`
-  now reads state through LiveData instead of the former public fields.
-
-- [x] **#39 `layout_marginLeft/Right` instead of `layout_marginStart/End`** (`allgamesrow.xml`)
-  Replaced all 5 occurrences across `allgamesrow.xml`, `statslistrow.xml`, and `statsrow.xml`.
-
-- [x] **#40 `android:orientation` on `RelativeLayout`** (`scorecard.xml`)
-  Resolved by #36 — `RelativeLayout` replaced with `LinearLayout`, so the attribute is now meaningful rather than a no-op.
-
-- [x] **#41 `textAppearance` references framework style `textAppearanceMedium`** (`statsrow.xml`)
-  Replaced `?android:attr/textAppearanceMedium` with `?attr/textAppearanceBody1`.
 
 ---
 
@@ -287,3 +206,80 @@ No tests currently exist in this project. Add in priority order.
   avoid a D8 stack-map-table bug in AGP 9.1.0 with Kotlin-compiled lambda array initializers.
   Files: `TGActivity`, `CurHandFragment`, `ScorecardFragment`, `AllGamesFragment`,
   `StatsFragment`, `NewGameFragment`, `ScoreHandFragment`, `StatsListFragment`.
+
+- [x] **#33 Weighted children use `match_parent` width instead of `0dp`** (`newgame.xml`, `scorehand.xml`)
+  Changed all 9 weighted children (4 Spinners, 1 TextView, 1 EditText in `newgame.xml`;
+  3 column `LinearLayout`s in `scorehand.xml`) from `layout_width="match_parent"` to
+  `layout_width="0dp"` so weight distribution is correct on all screen sizes.
+
+- [x] **#34 Hardcoded color literal in `scorecardrow.xml`**
+  Created `res/values/colors.xml` with `scorecard_divider` (`#ff909090`). Both divider
+  `View`s in `scorecardrow.xml` updated to `@color/scorecard_divider`.
+
+- [x] **#35 Text sizes use `dp` instead of `sp`** (`newgame.xml`, `statslistrow.xml`, `scorehand.xml`)
+  Fixed 7 occurrences: 3× `18dp` → `18sp` in `newgame.xml`, 2× `18dp` → `18sp` in
+  `statslistrow.xml`, 2× `24dp` → `24sp` in `scorehand.xml`.
+
+- [x] **#36 `RelativeLayout` root used only to pin a button at the bottom** (`scorecard.xml`, `newgame.xml`, `scorehand.xml`)
+  Converted all three roots to vertical `LinearLayout`. Scrollable body gets
+  `layout_height="0dp"` + `layout_weight="1"`; button(s) placed after it. Removed all
+  `layout_alignParentBottom` and `layout_above` attributes. Also took the opportunity to
+  remove the spurious `android:orientation` attribute from `scorecard.xml` (closes #40).
+
+- [x] **#37 Lone `RecyclerView` wrapped in a `LinearLayout`** (`allgames.xml`, `rankinglist.xml`)
+  `LinearLayout` wrapper removed; `RecyclerView` is now the root element in both files.
+
+- [x] **#38 `scorecardrow.xml`: six single-child `LinearLayout` wrappers**
+  Removed the four single-child wrappers (tichu columns); their `TextView`s now sit directly
+  in the root with `layout_width="0dp"` + `layout_weight="1"`. The two score/total columns
+  keep their inner `LinearLayout` (needed for the divider) but are also fixed to `0dp` width.
+  View count reduced from 16 to 12.
+
+- [x] **#39 `layout_marginLeft/Right` instead of `layout_marginStart/End`** (`allgamesrow.xml`)
+  Replaced all 5 occurrences across `allgamesrow.xml`, `statslistrow.xml`, and `statsrow.xml`.
+
+- [x] **#40 `android:orientation` on `RelativeLayout`** (`scorecard.xml`)
+  Resolved by #36 — `RelativeLayout` replaced with `LinearLayout`, so the attribute is now meaningful rather than a no-op.
+
+- [x] **#41 `textAppearance` references framework style `textAppearanceMedium`** (`statsrow.xml`)
+  Replaced `?android:attr/textAppearanceMedium` with `?attr/textAppearanceBody1`.
+
+- [x] **#44 `Hand.setOutFirst()` repeats the same block for each of 4 players**
+  Replaced 16 sequential `if` statements with a loop over `0..3` plus a private
+  `applyBidPoints(isTeam1, made, points)` helper covering both scoring modes.
+
+- [x] **#45 `setPendingHand()` / `setPendingGame()` passed via static setters**
+  `Game` and `Hand` given `Serializable` interface. `ScoreHandFragment.newInstance()` and
+  `NewGameFragment.newInstance()` now pack their argument into `Bundle` via `putSerializable`
+  and read it back in `onViewCreated` via `requireArguments()`. `pendingGame` / `pendingHand`
+  fields and all four accessors removed from `TGApp`.
+
+- [x] **#46 Magic seat index numbers with no named constant** (`Player.kt`)
+  Added private top-level `fun isTeam1(seat: Int) = seat % 2 == 0` in `Player.kt`.
+  All 4 occurrences of `seat == 0 || seat == 2` replaced with `isTeam1(seat)`.
+
+- [x] **#48 `GamesAdapter` recreated on every list refresh** (`AllGamesFragment.kt`)
+  Adapter created once in `onViewCreated` with a mutable `games` property. The LiveData
+  observer now updates `adapter.games` and calls `notifyDataSetChanged()` instead of
+  replacing the adapter.
+
+- [x] **#49 Players sorted twice** (`NewGameFragment.kt`)
+  Replaced `allPlayers.add()` + `Collections.sort()` + `indexOf()` with a single
+  `indexOfFirst { it.name > newPlayer.name }` to find the insertion point, then
+  `allPlayers.add(insertIndex, newPlayer)` and `spinAdapter.insert(name, insertIndex)`.
+  Removed unused `java.util.Collections` import.
+
+- [x] **#50 `TGViewModel.notify*()` methods are manual sync between two state stores**
+  Made `games`, `players`, and `curGame` private. Removed all public `notify*()` and `sync()`
+  methods — each mutation now updates LiveData directly. Removed redundant external callers:
+  `viewModel.sync()` from `TGActivity.onResume()` and both `viewModel.notifyGameChanged()`
+  calls from `CurHandFragment` fragment result listeners. `TGActivity.createFirstGame()`
+  now reads state through LiveData instead of the former public fields.
+
+- [x] **#51 Replace bare `!!` with `requireNotNull` / `checkNotNull`**
+  Replaced all `!!` usages across 5 files: `NewGameFragment` (2), `ScoreHandFragment` (2),
+  `StatsListFragment` (3), `StatsFragment` (1), `CurHandFragment` (12). Fragment bundle args
+  use `requireNotNull(x) { "x arg missing" }`; internal-state assertions use `checkNotNull(x)
+  { "x not bound" }`. `StatsFragment` `adapter == null || adapter!!.itemCount` simplified to
+  `adapter?.itemCount`. `CurHandFragment.onScoreHand` captures local `g1–g4` vals to avoid
+  repeated assertions. `onSaveInstanceState` uses `it` (the let receiver) for grp1.
