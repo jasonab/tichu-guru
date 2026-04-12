@@ -1,5 +1,6 @@
 package com.tichuguru.model
 
+import com.tichuguru.model.Hand.Companion.CARD_SCORE_OPTIONS
 import java.io.Serializable
 
 class Hand(var isAddOnFailure: Boolean = false) : Serializable {
@@ -49,24 +50,22 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
     private var _outFirst: Int = 0
     private var _cardScore1: Int = 0
     private var _cardScore2: Int = 0
-    var tichuScore1: Int = 0
-    var tichuScore2: Int = 0
-    var totalScore1: Int = 0
-    var totalScore2: Int = 0
 
     val cardScore1: Int get() = _cardScore1
     val cardScore2: Int get() = _cardScore2
-
     val outFirst: Int get() = _outFirst
+
+    val tichuScore1: Int get() = computeTichuScore(forTeam1 = true)
+    val tichuScore2: Int get() = computeTichuScore(forTeam1 = false)
+    val totalScore1: Int get() = _cardScore1 + tichuScore1
+    val totalScore2: Int get() = _cardScore2 + tichuScore2
 
     fun setCardScore1(score: Int) {
         _cardScore1 = score
-        totalScore1 = _cardScore1 + tichuScore1
     }
 
     fun setCardScore2(score: Int) {
         _cardScore2 = score
-        totalScore2 = _cardScore2 + tichuScore2
     }
 
     fun setTichuFor(player: Int) {
@@ -83,29 +82,25 @@ class Hand(var isAddOnFailure: Boolean = false) : Serializable {
 
     fun setOutFirst(player: Int) {
         _outFirst = player
-        tichuScore1 = 0
-        tichuScore2 = 0
-        for (i in 0..3) {
-            val points = bids[i].points
-            if (points > 0) applyBidPoints(i % 2 == 0, _outFirst == i, points)
-        }
-        totalScore1 = _cardScore1 + tichuScore1
-        totalScore2 = _cardScore2 + tichuScore2
     }
 
-    private fun applyBidPoints(
-        isTeam1: Boolean,
-        made: Boolean,
-        points: Int,
-    ) {
-        if (isAddOnFailure) {
-            val toTeam1 = if (made) isTeam1 else !isTeam1
-            if (toTeam1) tichuScore1 += points else tichuScore2 += points
-        } else {
-            val delta = if (made) points else -points
-            if (isTeam1) tichuScore1 += delta else tichuScore2 += delta
+    private fun computeTichuScore(forTeam1: Boolean): Int =
+        (0..3).sumOf { player ->
+            val isTeam1 = player % 2 == 0
+            val made = _outFirst == player
+            val points = bids[player].points
+
+            if (points == 0) {
+                0
+            } else if (isAddOnFailure) {
+                val toTeam1 = if (made) isTeam1 else !isTeam1
+                if (toTeam1 == forTeam1) points else 0
+            } else if (isTeam1 != forTeam1) {
+                0
+            } else {
+                if (made) points else -points
+            }
         }
-    }
 
     /** Set cardScore1 without recalculating totals (use when loading persisted data). */
     fun setCardScore1Direct(v: Int) {

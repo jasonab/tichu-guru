@@ -27,12 +27,18 @@ class HandTest {
     @Test fun setCardScore1_updatesTotalScore1() {
         val hand = Hand()
         hand.setCardScore1(60)
+        assertEquals(0, hand.tichuScore1)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(60, hand.cardScore1)
         assertEquals(60, hand.totalScore1)
     }
 
     @Test fun setCardScore2_updatesTotalScore2() {
         val hand = Hand()
         hand.setCardScore2(40)
+        assertEquals(0, hand.tichuScore1)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(40, hand.cardScore2)
         assertEquals(40, hand.totalScore2)
     }
 
@@ -40,8 +46,14 @@ class HandTest {
         val hand = Hand()
         hand.setTichuFor(0)
         hand.setOutFirst(0) // tichu success: +100 to team1
-        hand.setCardScore1(60) // total1 = 60 + 100 = 160
+        hand.setCardScore1(60)
+        hand.setCardScore2(40)
+        assertEquals(60, hand.cardScore1)
+        assertEquals(100, hand.tichuScore1)
         assertEquals(160, hand.totalScore1)
+        assertEquals(40, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(40, hand.totalScore2)
     }
 
     // --- tichu scoring (subtract-on-failure mode, default) ---
@@ -52,9 +64,11 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(0) // player 0 goes out first → success
+        assertEquals(50, hand.cardScore1)
         assertEquals(100, hand.tichuScore1)
-        assertEquals(0, hand.tichuScore2)
         assertEquals(150, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
         assertEquals(50, hand.totalScore2)
     }
 
@@ -64,9 +78,11 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(1) // player 1 (team2) goes out first → failure
+        assertEquals(50, hand.cardScore1)
         assertEquals(-100, hand.tichuScore1)
-        assertEquals(0, hand.tichuScore2)
         assertEquals(-50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
         assertEquals(50, hand.totalScore2)
     }
 
@@ -76,8 +92,12 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(1) // player 1 goes out first → success
+        assertEquals(50, hand.cardScore1)
         assertEquals(0, hand.tichuScore1)
+        assertEquals(50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(100, hand.tichuScore2)
+        assertEquals(150, hand.totalScore2)
     }
 
     @Test fun tichu_team2_failure() {
@@ -86,8 +106,12 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(0) // player 0 (team1) goes out first → failure for p3
+        assertEquals(50, hand.cardScore1)
         assertEquals(0, hand.tichuScore1)
+        assertEquals(50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(-100, hand.tichuScore2)
+        assertEquals(-50, hand.totalScore2)
     }
 
     // --- grand tichu scoring ---
@@ -98,7 +122,12 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(2) // success
+        assertEquals(50, hand.cardScore1)
         assertEquals(200, hand.tichuScore1)
+        assertEquals(250, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(50, hand.totalScore2)
     }
 
     @Test fun grandTichu_failure_subtracts200() {
@@ -107,7 +136,12 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(1) // failure
+        assertEquals(50, hand.cardScore1)
         assertEquals(-200, hand.tichuScore1)
+        assertEquals(-150, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(50, hand.totalScore2)
     }
 
     // --- addOnFailure mode ---
@@ -118,7 +152,12 @@ class HandTest {
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(0) // success
+        assertEquals(50, hand.cardScore1)
         assertEquals(100, hand.tichuScore1)
+        assertEquals(150, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(50, hand.totalScore2)
     }
 
     @Test fun addOnFailure_tichu_failure_addsToOpponents() {
@@ -128,39 +167,58 @@ class HandTest {
         hand.setCardScore2(50)
         hand.setOutFirst(1) // player 1 (team2) goes out first
         // In addOnFailure mode, failed tichu score goes to opponent team
+        assertEquals(50, hand.cardScore1)
         assertEquals(0, hand.tichuScore1)
+        assertEquals(50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(100, hand.tichuScore2)
+        assertEquals(150, hand.totalScore2)
     }
 
     @Test fun addOnFailure_grandTichu_failure_addsToOpponents() {
         val hand = Hand(isAddOnFailure = true)
         hand.setGrandTichuFor(0) // player 0 (team1) calls GT, fails
+        hand.setCardScore1(50)
+        hand.setCardScore2(50)
         hand.setOutFirst(1)
+        assertEquals(50, hand.cardScore1)
         assertEquals(0, hand.tichuScore1)
+        assertEquals(50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(200, hand.tichuScore2)
+        assertEquals(250, hand.totalScore2)
     }
 
     // --- multiple bids in one hand ---
 
-    @Test fun bothTeamsTichu_bothSucceed() {
+    @Test fun opposingTichus_outFirstSucceedsOtherFails() {
         val hand = Hand()
         hand.setTichuFor(0) // team1 tichu
         hand.setTichuFor(1) // team2 tichu
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(0) // player 0 wins → p0 tichu succeeds, p1 fails
+        assertEquals(50, hand.cardScore1)
         assertEquals(100, hand.tichuScore1) // p0 success
+        assertEquals(150, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(-100, hand.tichuScore2) // p1 failure
+        assertEquals(-50, hand.totalScore2)
     }
 
-    @Test fun twoTeammateTichus_bothSucceed() {
+    @Test fun twoTeammateTichus_onlyOutFirstSucceeds() {
         val hand = Hand()
         hand.setTichuFor(0)
         hand.setTichuFor(2) // both team1 players call tichu, only one can succeed
         hand.setCardScore1(50)
         hand.setCardScore2(50)
         hand.setOutFirst(0) // player 0 wins → p0 success, p2 failure
+        assertEquals(50, hand.cardScore1)
         assertEquals(0, hand.tichuScore1) // +100 (p0) - 100 (p2 failure) = 0
+        assertEquals(50, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
+        assertEquals(0, hand.tichuScore2)
+        assertEquals(50, hand.totalScore2)
     }
 
     // --- setOutFirst resets tichu scores on each call ---
@@ -172,7 +230,11 @@ class HandTest {
         hand.setCardScore2(50)
         hand.setOutFirst(1) // failure first
         hand.setOutFirst(0) // then success
+        assertEquals(50, hand.cardScore1)
         assertEquals(100, hand.tichuScore1)
+        assertEquals(150, hand.totalScore1)
+        assertEquals(50, hand.cardScore2)
         assertEquals(0, hand.tichuScore2)
+        assertEquals(50, hand.totalScore2)
     }
 }

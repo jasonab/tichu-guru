@@ -73,10 +73,6 @@ data class HandEntity(
         h.isAddOnFailure = addOnFailure
         h.setCardScore1Direct(cardScore1)
         h.setCardScore2Direct(cardScore2)
-        h.totalScore1 = totalScore1
-        h.totalScore2 = totalScore2
-        h.tichuScore1 = tichuScore1
-        h.tichuScore2 = tichuScore2
         h.setOutFirstDirect(outFirst)
         h.setTichuDirect(0, tichu0)
         h.setTichuDirect(1, tichu1)
