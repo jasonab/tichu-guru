@@ -31,7 +31,7 @@ class Game(
     fun endGame() {
         gameOver = true
         if (!ignoreStats) {
-            for (i in 0..3) players[i].recordGame(this, i)
+            players.forEachIndexed { i, p -> p.recordGame(this, i) }
         }
     }
 
@@ -48,9 +48,9 @@ class Game(
                 gameOver = true
             }
             if (!ignoreStats) {
-                for (i in 0..3) {
-                    players[i].recordHand(hand, i, addOnFailure)
-                    if (gameOver) players[i].recordGame(this, i)
+                players.forEachIndexed { i, p ->
+                    p.recordHand(hand, i, addOnFailure)
+                    if (gameOver) p.recordGame(this, i)
                 }
             }
         }
@@ -60,8 +60,7 @@ class Game(
         val hand = hands[handNum]
         val undoGame = gameOver
         gameOver = false
-        for (i in 0..3) {
-            val p = players[i]
+        players.forEachIndexed { i, p ->
             if (undoGame) p.unrecordGame(this, i)
             p.unrecordHand(hand, i, addOnFailure)
         }

@@ -93,9 +93,9 @@ class NewGameFragment : Fragment() {
         val choices = allPlayers.map { it.name }.toMutableList()
         choices.add("New Player")
         spinAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, choices)
-        for (i in 0..3) {
-            nameSpinners[i].onItemSelectedListener = PlayerSelectedListener(i)
-            nameSpinners[i].adapter = spinAdapter
+        nameSpinners.forEachIndexed { i, spinner ->
+            spinner.onItemSelectedListener = PlayerSelectedListener(i)
+            spinner.adapter = spinAdapter
         }
         updateNameSpinners()
         binding.newGameAffectsStats.isChecked = true
@@ -149,14 +149,9 @@ class NewGameFragment : Fragment() {
     }
 
     private fun updateNameSpinners() {
-        for (i in 0..3) {
-            val name = selectedPlayers[i].name
-            for (j in 0 until spinAdapter.count) {
-                if (spinAdapter.getItem(j) == name) {
-                    nameSpinners[i].setSelection(j)
-                    break
-                }
-            }
+        selectedPlayers.forEachIndexed { i, player ->
+            val idx = (0 until spinAdapter.count).indexOfFirst { spinAdapter.getItem(it) == player.name }
+            if (idx >= 0) nameSpinners[i].setSelection(idx)
         }
     }
 

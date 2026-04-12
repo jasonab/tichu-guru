@@ -88,8 +88,7 @@ class ScorecardFragment : Fragment() {
             val s2 = hand.totalScoreTeamTwo(game.addOnFailure)
             holder.binding.scorecardHandScore2.text = "${if (s2 >= 0) "+" else ""}$s2"
 
-            for (i in 0..3) {
-                val tv = holder.tichus[i]
+            holder.tichus.forEachIndexed { i, tv ->
                 tv.text =
                     when {
                         hand.isTichuFor(i) -> "T"

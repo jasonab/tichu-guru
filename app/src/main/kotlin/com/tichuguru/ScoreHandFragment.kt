@@ -98,12 +98,8 @@ class ScoreHandFragment : Fragment() {
 
         binding.scoreHandScore1.value = Hand.cardScoreIndex(50)
         binding.scoreHandScore2.value = Hand.cardScoreIndex(50)
-        for (i in 0..3) {
-            if (hand.isTichuFor(i) || hand.isGrandTichuFor(i)) {
-                binding.scoreHandOutFirst.value = i
-                break
-            }
-        }
+        val bidder = (0..3).firstOrNull { hand.isTichuFor(it) || hand.isGrandTichuFor(it) }
+        if (bidder != null) binding.scoreHandOutFirst.value = bidder
         updateHandScore()
     }
 
