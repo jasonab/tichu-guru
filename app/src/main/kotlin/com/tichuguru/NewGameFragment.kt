@@ -18,25 +18,31 @@ import com.tichuguru.model.Player
 class NewGameFragment : Fragment() {
     private var addingPlayer = false
     private lateinit var allPlayers: MutableList<Player>
-    private lateinit var game: Game
+    private lateinit var selectedPlayers: MutableList<Player>
     private lateinit var nameSpinners: List<Spinner>
     private lateinit var spinAdapter: ArrayAdapter<String>
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: NewgameBinding
 
     companion object {
-        private const val ARG_GAME = "game"
-        private const val ARG_PLAYERS = "players"
+        private const val ARG_ALL_PLAYERS = "allPlayers"
+        private const val ARG_SELECTED_PLAYERS = "selectedPlayers"
+        private const val ARG_MERCY_RULE = "mercyRule"
+        private const val ARG_ADD_ON_FAILURE = "addOnFailure"
 
         fun newInstance(
-            game: Game,
-            players: List<Player>,
+            allPlayers: List<Player>,
+            selectedPlayers: List<Player>,
+            mercyRule: Boolean = false,
+            addOnFailure: Boolean = false,
         ): NewGameFragment =
             NewGameFragment().apply {
                 arguments =
                     Bundle().apply {
-                        putSerializable(ARG_GAME, game)
-                        putSerializable(ARG_PLAYERS, ArrayList(players))
+                        putSerializable(ARG_ALL_PLAYERS, ArrayList(allPlayers))
+                        putSerializable(ARG_SELECTED_PLAYERS, ArrayList(selectedPlayers))
+                        putBoolean(ARG_MERCY_RULE, mercyRule)
+                        putBoolean(ARG_ADD_ON_FAILURE, addOnFailure)
                     }
             }
     }
@@ -58,12 +64,18 @@ class NewGameFragment : Fragment() {
         requireActivity().title = "New Game"
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
 
-        game = requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_GAME, Game::class.java)) { "game arg missing" }
         @Suppress("UNCHECKED_CAST")
         allPlayers =
             (
-                requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_PLAYERS, ArrayList::class.java)) {
-                    "players arg missing"
+                requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_ALL_PLAYERS, ArrayList::class.java)) {
+                    "allPlayers arg missing"
+                } as ArrayList<Player>
+            ).toMutableList()
+        @Suppress("UNCHECKED_CAST")
+        selectedPlayers =
+            (
+                requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_SELECTED_PLAYERS, ArrayList::class.java)) {
+                    "selectedPlayers arg missing"
                 } as ArrayList<Player>
             ).toMutableList()
 
@@ -87,28 +99,26 @@ class NewGameFragment : Fragment() {
         }
         updateNameSpinners()
         binding.newGameAffectsStats.isChecked = true
-        binding.newGameAddOnFailedTichu.isChecked = game.addOnFailure
-        binding.newGameMercyRule.isChecked = game.mercyRule
+        binding.newGameAddOnFailedTichu.isChecked = requireArguments().getBoolean(ARG_ADD_ON_FAILURE)
+        binding.newGameMercyRule.isChecked = requireArguments().getBoolean(ARG_MERCY_RULE)
     }
 
     private fun onRandomizeTeams() {
-        val players = game.players
         for (i in 3 downTo 1) {
             val j = (Math.random() * (i + 1)).toInt()
             if (j != i) {
-                val tmp = players[i]
-                players[i] = players[j]
-                players[j] = tmp
+                val tmp = selectedPlayers[i]
+                selectedPlayers[i] = selectedPlayers[j]
+                selectedPlayers[j] = tmp
             }
         }
         updateNameSpinners()
     }
 
     private fun onStartGame() {
-        val players = game.players
         for (i in 0 until 4) {
             for (j in i + 1 until 4) {
-                if (players[i].name == players[j].name) {
+                if (selectedPlayers[i].name == selectedPlayers[j].name) {
                     AlertDialog.Builder(requireContext()).setMessage("You selected the same player twice").show()
                     return
                 }
@@ -125,19 +135,22 @@ class NewGameFragment : Fragment() {
             AlertDialog.Builder(requireContext()).setMessage("Enter a valid game limit").show()
             return
         }
-        game.gameLimit = limit
-        game.addOnFailure = binding.newGameAddOnFailedTichu.isChecked
-        game.ignoreStats = !binding.newGameAffectsStats.isChecked
-        game.mercyRule = binding.newGameMercyRule.isChecked
+        val game =
+            Game(
+                players = selectedPlayers.toMutableList(),
+                gameLimit = limit,
+                addOnFailure = binding.newGameAddOnFailedTichu.isChecked,
+                ignoreStats = !binding.newGameAffectsStats.isChecked,
+                mercyRule = binding.newGameMercyRule.isChecked
+            )
         viewModel.addGame(game)
         parentFragmentManager.setFragmentResult("new_game", Bundle())
         parentFragmentManager.popBackStack()
     }
 
     private fun updateNameSpinners() {
-        val players = game.players
         for (i in 0..3) {
-            val name = players[i].name
+            val name = selectedPlayers[i].name
             for (j in 0 until spinAdapter.count) {
                 if (spinAdapter.getItem(j) == name) {
                     nameSpinners[i].setSelection(j)
@@ -155,7 +168,7 @@ class NewGameFragment : Fragment() {
             id: Long,
         ) {
             if (index < allPlayers.size) {
-                game.setPlayer(playerNum, allPlayers[index])
+                selectedPlayers[playerNum] = allPlayers[index]
             } else if (!addingPlayer) {
                 addingPlayer = true
                 getNewPlayerName()
@@ -186,7 +199,7 @@ class NewGameFragment : Fragment() {
                         spinAdapter.insert(newPlayer.name, insertIndex)
                         viewModel.addPlayer(newPlayer)
                     }
-                    game.setPlayer(playerNum, newPlayer)
+                    selectedPlayers[playerNum] = newPlayer
                     addingPlayer = false
                     requireActivity().runOnUiThread { updateNameSpinners() }
                 }.setNegativeButton("Cancel") { _, _ -> addingPlayer = false }

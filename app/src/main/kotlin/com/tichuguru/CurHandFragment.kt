@@ -13,7 +13,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.tichuguru.databinding.CurhandBinding
-import com.tichuguru.model.Game
 import com.tichuguru.model.Hand
 
 class CurHandFragment :
@@ -75,8 +74,14 @@ class CurHandFragment :
 
     private fun onNewGame() {
         val game = viewModel.getCurrentGame().value ?: return
+        val allPlayers = viewModel.getAllPlayers().value ?: emptyList()
         (requireActivity() as TGActivity).pushFragment(
-            NewGameFragment.newInstance(Game(game), viewModel.getAllPlayers().value ?: emptyList())
+            NewGameFragment.newInstance(
+                allPlayers,
+                game.players.toList(),
+                mercyRule = game.mercyRule,
+                addOnFailure = game.addOnFailure
+            )
         )
     }
 

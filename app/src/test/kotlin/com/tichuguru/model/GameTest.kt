@@ -7,10 +7,10 @@ import org.junit.Before
 import org.junit.Test
 
 class GameTest {
+    private val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     private lateinit var game: Game
 
     @Before fun setup() {
-        val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
         game = Game(players)
     }
 
@@ -73,8 +73,7 @@ class GameTest {
     // --- mercy rule ---
 
     @Test fun mercyRule_disabled_gameDoesNotEndEarly() {
-        game.mercyRule = false
-        game.scoreHand(hand(600)) // diff = 500, not 1000
+        game.scoreHand(hand(600)) // diff = 500, not 1000; mercyRule=false by default
         assertFalse(game.gameOver)
     }
 
@@ -83,7 +82,7 @@ class GameTest {
         // totalScore1=50, totalScore2=−150 per hand.
         // After 5 hands: score1=250, score2=−750, diff=1000 → mercy rule fires.
         // Neither team reaches gameLimit (1000) through normal scoring.
-        game.mercyRule = true
+        val game = Game(players, mercyRule = true)
         val h = Hand()
         h.setGrandTichuFor(1) // team2 player 1 calls GT and fails
         h.cardScoreTeamOne = 50
@@ -143,7 +142,7 @@ class GameTest {
     // --- ignoreStats ---
 
     @Test fun ignoreStats_doesNotRecordPlayerStats() {
-        game.ignoreStats = true
+        val game = Game(players, ignoreStats = true)
         game.scoreHand(hand(60))
         assertEquals(0, game.players[0].numHands)
     }

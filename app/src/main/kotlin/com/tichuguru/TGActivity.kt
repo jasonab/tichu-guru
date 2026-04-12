@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tichuguru.model.Game
 import com.tichuguru.model.Player
 
 class TGActivity : AppCompatActivity() {
@@ -140,8 +139,7 @@ class TGActivity : AppCompatActivity() {
 
     fun createFirstGame() {
         val allPlayers = viewModel.getAllPlayers().value ?: emptyList()
-        val players = List(4) { i -> if (i < allPlayers.size) allPlayers[i] else Player("New Player") }
-        val curGame = viewModel.getCurrentGame().value
-        pushFragment(NewGameFragment.newInstance(if (curGame == null) Game(players) else Game(curGame), allPlayers))
+        val selectedPlayers = List(4) { i -> if (i < allPlayers.size) allPlayers[i] else Player("New Player") }
+        pushFragment(NewGameFragment.newInstance(allPlayers, selectedPlayers))
     }
 }

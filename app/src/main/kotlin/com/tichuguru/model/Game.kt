@@ -5,29 +5,27 @@ import java.time.Instant
 import kotlin.math.abs
 
 class Game(
-    var players: MutableList<Player> = mutableListOf(),
-    var hands: MutableList<Hand> = mutableListOf(),
+    val players: MutableList<Player> = mutableListOf(),
+    val hands: MutableList<Hand> = mutableListOf(),
     var score1: Int = 0,
     var score2: Int = 0,
-    var gameLimit: Int = 0,
+    val gameLimit: Int = 0,
     var gameOver: Boolean = false,
-    var mercyRule: Boolean = false,
-    var ignoreStats: Boolean = false,
-    var addOnFailure: Boolean = false,
-    var date: Instant = Instant.now(),
+    val mercyRule: Boolean = false,
+    val ignoreStats: Boolean = false,
+    val addOnFailure: Boolean = false,
+    val date: Instant = Instant.now(),
     var dbId: Long = 0,
 ) : Serializable {
-    constructor(players: List<Player>) : this(
+    constructor(
+        players: List<Player>,
+        mercyRule: Boolean = false,
+        ignoreStats: Boolean = false,
+    ) : this(
         players = players.toMutableList(),
         gameLimit = 1000,
-        mercyRule = false
-    )
-
-    constructor(g: Game) : this(
-        players = g.players.toMutableList(),
-        gameLimit = 1000,
-        mercyRule = g.mercyRule,
-        addOnFailure = g.addOnFailure
+        mercyRule = mercyRule,
+        ignoreStats = ignoreStats
     )
 
     fun endGame() {
@@ -73,11 +71,4 @@ class Game(
     }
 
     fun containsPlayer(p: Player): Boolean = players.any { it === p }
-
-    fun setPlayer(
-        seat: Int,
-        p: Player,
-    ) {
-        players[seat] = p
-    }
 }

@@ -63,17 +63,18 @@ class TichuRepository(private val db: TichuDatabase) {
         val gamePlayers =
             listOf(ge.player0, ge.player1, ge.player2, ge.player3)
                 .map { findPlayer(it) ?: return null }
-        return Game(gamePlayers).apply {
+        return Game(
+            players = gamePlayers.toMutableList(),
+            hands = db.handDao().getHandsForGame(ge.id).map { it.toHand() }.toMutableList(),
+            score1 = ge.score1,
+            score2 = ge.score2,
+            gameLimit = ge.gameLimit,
+            gameOver = ge.gameOver,
+            mercyRule = ge.mercyRule,
+            ignoreStats = ge.ignoreStats,
+            addOnFailure = ge.addOnFailure,
+            date = Instant.ofEpochMilli(ge.dateMs),
             dbId = ge.id
-            score1 = ge.score1
-            score2 = ge.score2
-            gameLimit = ge.gameLimit
-            gameOver = ge.gameOver
-            date = Instant.ofEpochMilli(ge.dateMs)
-            mercyRule = ge.mercyRule
-            ignoreStats = ge.ignoreStats
-            addOnFailure = ge.addOnFailure
-            hands = db.handDao().getHandsForGame(ge.id).map { it.toHand() }.toMutableList()
-        }
+        )
     }
 }
