@@ -9,10 +9,11 @@ Android scoring and statistics app for the card game Tichu (4-player partnership
 ./gradlew assembleRelease        # Build release APK
 ./gradlew clean assembleDebug    # After AndroidManifest.xml or build.gradle changes
 ./gradlew lintKotlin             # Kotlin linter
+./gradlew formatKotlin           # Auto-fix Kotlin formatting
 ./gradlew test                   # Unit tests (77 total)
 ```
 
-IMPORTANT: After any `.kt` file change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before the change is complete. XML/resource-only changes do not require lint or tests.
+IMPORTANT: After any `.kt` file change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before the change is complete. XML/resource-only changes do not require lint or tests. If `lintKotlin` fails, run `./gradlew formatKotlin` to auto-fix — do not edit files manually to fix lint errors.
 
 ## Tech Stack
 

@@ -14,20 +14,24 @@ import com.tichuguru.model.Hand
 class ScoreHandFragment : Fragment() {
     private lateinit var hand: Hand
     private lateinit var binding: ScorehandBinding
+    private var addOnFailure: Boolean = false
 
     companion object {
         private const val ARG_HAND = "hand"
         private const val ARG_PLAYER_NAMES = "playerNames"
+        private const val ARG_ADD_ON_FAILURE = "addOnFailure"
 
         fun newInstance(
             hand: Hand,
             playerNames: Array<String>,
+            addOnFailure: Boolean = false,
         ): ScoreHandFragment =
             ScoreHandFragment().apply {
                 arguments =
                     Bundle().apply {
                         putSerializable(ARG_HAND, hand)
                         putStringArray(ARG_PLAYER_NAMES, playerNames)
+                        putBoolean(ARG_ADD_ON_FAILURE, addOnFailure)
                     }
             }
     }
@@ -50,6 +54,7 @@ class ScoreHandFragment : Fragment() {
 
         hand = requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_HAND, Hand::class.java)) { "hand arg missing" }
         val playerNames = requireNotNull(requireArguments().getStringArray(ARG_PLAYER_NAMES)) { "playerNames arg missing" }
+        addOnFailure = requireArguments().getBoolean(ARG_ADD_ON_FAILURE)
 
         val scoreLabels = Array(Hand.CARD_SCORE_OPTIONS.size) { Hand.CARD_SCORE_OPTIONS[it].toString() }
 
@@ -103,11 +108,11 @@ class ScoreHandFragment : Fragment() {
     }
 
     private fun updateHandScore() {
-        hand.setCardScore1(Hand.CARD_SCORE_OPTIONS[binding.scoreHandScore1.value])
-        hand.setCardScore2(Hand.CARD_SCORE_OPTIONS[binding.scoreHandScore2.value])
-        hand.setOutFirst(binding.scoreHandOutFirst.value)
-        binding.scoreHandTotal1.text = hand.totalScore1.toString()
-        binding.scoreHandTotal2.text = hand.totalScore2.toString()
+        hand.cardScoreTeamOne = Hand.CARD_SCORE_OPTIONS[binding.scoreHandScore1.value]
+        hand.cardScoreTeamTwo = Hand.CARD_SCORE_OPTIONS[binding.scoreHandScore2.value]
+        hand.playerOutFirst = binding.scoreHandOutFirst.value
+        binding.scoreHandTotal1.text = hand.totalScoreTeamOne(addOnFailure).toString()
+        binding.scoreHandTotal2.text = hand.totalScoreTeamTwo(addOnFailure).toString()
     }
 
     private fun onSave() {

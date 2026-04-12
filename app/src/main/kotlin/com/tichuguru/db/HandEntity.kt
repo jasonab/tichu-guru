@@ -44,18 +44,19 @@ data class HandEntity(
             h: Hand,
             gameId: Long,
             order: Int,
+            addOnFailure: Boolean,
         ) = HandEntity(
             id = h.dbId,
             gameId = gameId,
             handOrder = order,
-            addOnFailure = h.isAddOnFailure,
-            cardScore1 = h.cardScore1,
-            cardScore2 = h.cardScore2,
-            totalScore1 = h.totalScore1,
-            totalScore2 = h.totalScore2,
-            tichuScore1 = h.tichuScore1,
-            tichuScore2 = h.tichuScore2,
-            outFirst = h.outFirst,
+            addOnFailure = addOnFailure,
+            cardScore1 = h.cardScoreTeamOne,
+            cardScore2 = h.cardScoreTeamTwo,
+            totalScore1 = h.totalScoreTeamOne(addOnFailure),
+            totalScore2 = h.totalScoreTeamTwo(addOnFailure),
+            tichuScore1 = h.tichuScoreTeamOne(addOnFailure),
+            tichuScore2 = h.tichuScoreTeamTwo(addOnFailure),
+            outFirst = h.playerOutFirst,
             tichu0 = h.isTichuFor(0),
             tichu1 = h.isTichuFor(1),
             tichu2 = h.isTichuFor(2),
@@ -70,10 +71,9 @@ data class HandEntity(
     fun toHand(): Hand {
         val h = Hand()
         h.dbId = id
-        h.isAddOnFailure = addOnFailure
-        h.setCardScore1Direct(cardScore1)
-        h.setCardScore2Direct(cardScore2)
-        h.setOutFirstDirect(outFirst)
+        h.cardScoreTeamOne = cardScore1
+        h.cardScoreTeamTwo = cardScore2
+        h.playerOutFirst = outFirst
         h.setTichuDirect(0, tichu0)
         h.setTichuDirect(1, tichu1)
         h.setTichuDirect(2, tichu2)

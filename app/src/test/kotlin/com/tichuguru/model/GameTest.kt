@@ -19,9 +19,9 @@ class GameTest {
         score2: Int = Hand.otherCardScore(score1),
     ): Hand {
         val h = Hand()
-        h.setCardScore1(score1)
-        h.setCardScore2(score2)
-        h.setOutFirst(0)
+        h.cardScoreTeamOne = score1
+        h.cardScoreTeamTwo = score2
+        h.playerOutFirst = 0
         return h
     }
 
@@ -57,9 +57,9 @@ class GameTest {
     @Test fun gameDoesNotEnd_whenTied() {
         // Both teams reach 1000 simultaneously → tied scores → game continues
         val h = Hand()
-        h.setCardScore1(1000)
-        h.setCardScore2(1000)
-        h.setOutFirst(0)
+        h.cardScoreTeamOne = 1000
+        h.cardScoreTeamTwo = 1000
+        h.playerOutFirst = 0
         game.scoreHand(h)
         assertFalse(game.gameOver)
     }
@@ -86,9 +86,9 @@ class GameTest {
         game.mercyRule = true
         val h = Hand()
         h.setGrandTichuFor(1) // team2 player 1 calls GT and fails
-        h.setCardScore1(50)
-        h.setCardScore2(50)
-        h.setOutFirst(0) // team1 wins → GT failure → −200 to team2
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 0 // team1 wins → GT failure → −200 to team2
         repeat(4) {
             game.scoreHand(h)
             assertFalse(game.gameOver)
@@ -101,9 +101,9 @@ class GameTest {
 
     @Test fun doubleWin_score200_countsAs200ForTeam1() {
         val h = Hand()
-        h.setCardScore1(200)
-        h.setCardScore2(0)
-        h.setOutFirst(0)
+        h.cardScoreTeamOne = 200
+        h.cardScoreTeamTwo = 0
+        h.playerOutFirst = 0
         game.scoreHand(h)
         assertEquals(200, game.score1)
         assertEquals(0, game.score2)

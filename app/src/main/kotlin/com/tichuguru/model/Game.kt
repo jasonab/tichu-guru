@@ -40,8 +40,8 @@ class Game(
     fun scoreHand(hand: Hand) {
         if (!gameOver) {
             hands.add(hand)
-            score1 += hand.totalScore1
-            score2 += hand.totalScore2
+            score1 += hand.totalScoreTeamOne(addOnFailure)
+            score2 += hand.totalScoreTeamTwo(addOnFailure)
             if (score1 != score2 && (
                     score1 >= gameLimit || score2 >= gameLimit ||
                         (mercyRule && abs(score1 - score2) >= gameLimit)
@@ -51,7 +51,7 @@ class Game(
             }
             if (!ignoreStats) {
                 for (i in 0..3) {
-                    players[i].recordHand(hand, i)
+                    players[i].recordHand(hand, i, addOnFailure)
                     if (gameOver) players[i].recordGame(this, i)
                 }
             }
@@ -65,10 +65,10 @@ class Game(
         for (i in 0..3) {
             val p = players[i]
             if (undoGame) p.unrecordGame(this, i)
-            p.unrecordHand(hand, i)
+            p.unrecordHand(hand, i, addOnFailure)
         }
-        score1 -= hand.totalScore1
-        score2 -= hand.totalScore2
+        score1 -= hand.totalScoreTeamOne(addOnFailure)
+        score2 -= hand.totalScoreTeamTwo(addOnFailure)
         hands.removeAt(handNum)
     }
 

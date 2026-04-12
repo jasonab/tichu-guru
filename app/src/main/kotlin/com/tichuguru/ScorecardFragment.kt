@@ -83,9 +83,9 @@ class ScorecardFragment : Fragment() {
             position: Int,
         ) {
             val hand = game.hands[position]
-            val s1 = hand.totalScore1
+            val s1 = hand.totalScoreTeamOne(game.addOnFailure)
             holder.binding.scorecardHandScore1.text = "${if (s1 >= 0) "+" else ""}$s1"
-            val s2 = hand.totalScore2
+            val s2 = hand.totalScoreTeamTwo(game.addOnFailure)
             holder.binding.scorecardHandScore2.text = "${if (s2 >= 0) "+" else ""}$s2"
 
             for (i in 0..3) {
@@ -96,14 +96,14 @@ class ScorecardFragment : Fragment() {
                         hand.isGrandTichuFor(i) -> "GT"
                         else -> ""
                     }
-                tv.setTextColor(if (hand.outFirst == i) 0xFF00AA00.toInt() else Color.RED)
+                tv.setTextColor(if (hand.playerOutFirst == i) 0xFF00AA00.toInt() else Color.RED)
             }
 
             var t1 = 0
             var t2 = 0
             for (i in 0..position) {
-                t1 += game.hands[i].totalScore1
-                t2 += game.hands[i].totalScore2
+                t1 += game.hands[i].totalScoreTeamOne(game.addOnFailure)
+                t2 += game.hands[i].totalScoreTeamTwo(game.addOnFailure)
             }
             holder.binding.scorecardTotalScore1.text = t1.toString()
             holder.binding.scorecardTotalScore2.text = t2.toString()

@@ -38,7 +38,7 @@ class TichuRepository(private val db: TichuDatabase) {
                 if (hands.isEmpty()) {
                     db.handDao().deleteHandsForGame(gid)
                 } else {
-                    val handEntities = hands.mapIndexed { i, h -> HandEntity.from(h, gid, i) }
+                    val handEntities = hands.mapIndexed { i, h -> HandEntity.from(h, gid, i, g.addOnFailure) }
                     val handIds = db.handDao().upsertAll(handEntities)
                     hands.forEachIndexed { i, h -> if (handIds[i] > 0) h.dbId = handIds[i] }
                     db.handDao().deleteOrphanHands(gid, hands.map { it.dbId })

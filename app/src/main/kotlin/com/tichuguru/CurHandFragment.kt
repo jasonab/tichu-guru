@@ -98,7 +98,7 @@ class CurHandFragment :
 
     private fun onScoreHand() {
         val game = viewModel.getCurrentGame().value ?: return
-        val hand = Hand(game.addOnFailure)
+        val hand = Hand()
         if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1GT) hand.setGrandTichuFor(0)
         if (binding.curHandP1RG.checkedRadioButtonId == R.id.curHandP1T) hand.setTichuFor(0)
         if (binding.curHandP2RG.checkedRadioButtonId == R.id.curHandP2GT) hand.setGrandTichuFor(1)
@@ -108,7 +108,7 @@ class CurHandFragment :
         if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4GT) hand.setGrandTichuFor(3)
         if (binding.curHandP4RG.checkedRadioButtonId == R.id.curHandP4T) hand.setTichuFor(3)
         val playerNames = Array(4) { game.players[it].name }
-        (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand, playerNames))
+        (requireActivity() as TGActivity).pushFragment(ScoreHandFragment.newInstance(hand, playerNames, game.addOnFailure))
     }
 
     private fun clearTichuButtons() {
