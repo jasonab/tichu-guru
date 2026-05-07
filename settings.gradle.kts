@@ -5,7 +5,7 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        id("com.android.application") version "9.1.1"
+        id("com.android.application") version "9.2.1"
         id("com.google.devtools.ksp") version "2.3.2"
         id("org.jmailen.kotlinter") version "5.4.2"
     }
