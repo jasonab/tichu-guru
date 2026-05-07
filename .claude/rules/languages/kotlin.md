@@ -7,6 +7,7 @@ paths:
 ## Principles
 
 - Explicit null handling (requireNotNull with message, checkNotNull with message, no bare `!!`)
+- Prefer `let`/`run` over null checks (`nullable?.let { v -> ... } ?: run { ... }` instead of `if (v != null) { ... } else { ... }`)
 - Boolean property naming without `is` prefix (avoids Kotlin getter clash, e.g. `gameOver` not `isGameOver`)
 - Backing property as val getter (expose `val foo: T get() = _foo`, never `fun foo(): T` — linter enforces matching property)
 - Constants in companion objects (`const val` in relevant model class companion, not top-level or object singletons)

@@ -12,6 +12,29 @@ hand = requireNotNull(BundleCompat.getSerializable(requireArguments(), ARG_HAND,
 hand = BundleCompat.getSerializable(requireArguments(), ARG_HAND, Hand::class.java)!!
 ```
 
+### Prefer `let`/`run` over null checks
+**Good:**
+```kotlin
+values[position]?.let { v ->
+    holder.binding.statsLabel.setTypeface(null, Typeface.NORMAL)
+    holder.binding.statsValue.text = v
+} ?: run {
+    holder.binding.statsLabel.setTypeface(null, Typeface.BOLD)
+    holder.binding.statsValue.text = ""
+}
+```
+**Bad:**
+```kotlin
+val v = values[position]
+if (v != null) {
+    holder.binding.statsLabel.setTypeface(null, Typeface.NORMAL)
+    holder.binding.statsValue.text = v
+} else {
+    holder.binding.statsLabel.setTypeface(null, Typeface.BOLD)
+    holder.binding.statsValue.text = ""
+}
+```
+
 ### Boolean property naming without `is` prefix
 **Good:**
 ```kotlin

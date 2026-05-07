@@ -212,7 +212,7 @@ class StatsFragment : Fragment() {
                 values[18] = "%.2f".format(player.getPartnerTichuPct())
 
                 (v.context as TGActivity).pushFragment(
-                    StatsListFragment.newInstance("Stats for ${player.name}", labels, values, player)
+                    PlayerStatsFragment.newInstance("Stats for ${player.name}", labels, values, player)
                 )
             }
         }
@@ -256,7 +256,7 @@ class StatsFragment : Fragment() {
                     }
 
                 (v.context as TGActivity).pushFragment(
-                    StatsListFragment.newInstance(title, names, values, null)
+                    RankingFragment.newInstance(title, names, values)
                 )
             }
         }
