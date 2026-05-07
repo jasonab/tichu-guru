@@ -18,7 +18,6 @@ import kotlin.math.max
 import kotlin.math.sign
 
 class StatsFragment : Fragment() {
-    private var adapter: StatsAdapter? = null
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: StatsBinding
 
@@ -40,10 +39,7 @@ class StatsFragment : Fragment() {
         binding.statsClearAll.setOnClickListener { onClearStats() }
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllPlayers().observe(viewLifecycleOwner) { players ->
-            if (adapter?.itemCount != players.size + 11) {
-                adapter = StatsAdapter(players)
-                binding.statsList.adapter = adapter
-            }
+            binding.statsList.adapter = StatsAdapter(players)
         }
     }
 
@@ -53,7 +49,6 @@ class StatsFragment : Fragment() {
             .setMessage("Are you sure?")
             .setPositiveButton("Yes") { _, _ ->
                 viewModel.clearAllPlayerStats()
-                adapter?.notifyDataSetChanged()
             }.setNegativeButton("No", null)
             .show()
     }
