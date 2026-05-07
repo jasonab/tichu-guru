@@ -64,6 +64,8 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getPlayer(name: String): Player? = players.find { it.name == name }
 
+    fun getPlayerById(id: Long): Player? = players.find { it.dbId == id }
+
     fun setGame(game: Game) {
         curGame = game
         _currentGame.value = game
@@ -118,6 +120,19 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         players.sort()
         savePlayers()
         _allPlayers.value = players
+    }
+
+    fun renamePlayer(
+        player: Player,
+        newName: String,
+    ) {
+        player.name = newName
+        players.sort()
+        savePlayers()
+        saveGames()
+        _allPlayers.value = players
+        _allGames.value = games
+        _currentGame.value = curGame
     }
 
     fun clearPlayerStats(player: Player) {

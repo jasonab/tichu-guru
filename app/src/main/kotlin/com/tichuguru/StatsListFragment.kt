@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +19,7 @@ class StatsListFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
 
     companion object {
-        private const val ARG_PLAYER_NAME = "playerName"
+        private const val ARG_PLAYER_ID = "playerId"
 
         fun newInstance(
             title: String,
@@ -33,7 +34,7 @@ class StatsListFragment : Fragment() {
                         putStringArray("labels", labels)
                         @Suppress("UNCHECKED_CAST")
                         putStringArray("values", values as Array<String>)
-                        if (player != null) putString(ARG_PLAYER_NAME, player.name)
+                        if (player != null) putLong(ARG_PLAYER_ID, player.dbId)
                     }
             }
     }
@@ -44,8 +45,8 @@ class StatsListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
-        val playerName = requireArguments().getString(ARG_PLAYER_NAME)
-        player = if (playerName != null) viewModel.getPlayer(playerName) else null
+        val playerId = requireArguments().getLong(ARG_PLAYER_ID, -1L)
+        player = if (playerId != -1L) viewModel.getPlayerById(playerId) else null
         return inflater.inflate(if (player == null) R.layout.rankinglist else R.layout.statslist, container, false)
     }
 
@@ -67,9 +68,44 @@ class StatsListFragment : Fragment() {
         statsList.adapter = StatsAdapter(labels, values)
 
         if (player != null) {
+            view.findViewById<View>(R.id.statsRenamePlayer).setOnClickListener { onRenamePlayer() }
             view.findViewById<View>(R.id.statsClearPlayerStats).setOnClickListener { onClearStats() }
             view.findViewById<View>(R.id.statsDelPlayer).setOnClickListener { onDeletePlayer() }
         }
+    }
+
+    private fun onRenamePlayer() {
+        val p = checkNotNull(player) { "player not set" }
+        val ctx = requireContext()
+        val activity = requireActivity()
+        val input = EditText(ctx)
+        input.setText(p.name)
+        input.selectAll()
+        AlertDialog
+            .Builder(ctx)
+            .setTitle("Rename Player")
+            .setView(input)
+            .setPositiveButton("Ok") { _, _ ->
+                if (!isAdded) return@setPositiveButton
+                val newName = input.text.toString().trim()
+                when {
+                    newName.isEmpty() -> {
+                        AlertDialog.Builder(ctx).setMessage("Name cannot be empty").show()
+                    }
+
+                    newName == p.name -> {}
+
+                    viewModel.getPlayer(newName) != null -> {
+                        AlertDialog.Builder(ctx).setMessage("A player named \"$newName\" already exists").show()
+                    }
+
+                    else -> {
+                        viewModel.renamePlayer(p, newName)
+                        activity.title = "Stats for $newName"
+                    }
+                }
+            }.setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun onClearStats() {
