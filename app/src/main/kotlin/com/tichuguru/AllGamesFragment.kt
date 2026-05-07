@@ -18,6 +18,8 @@ import com.tichuguru.model.isTeamOne
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+internal fun winColor(team1wins: Boolean): Int = if (team1wins) Color.YELLOW else Color.GRAY
+
 class AllGamesFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: AllgamesBinding
@@ -75,10 +77,10 @@ class AllGamesFragment : Fragment() {
 
             if (game.gameOver) {
                 val team1wins = game.score1 > game.score2
-                holder.binding.gamesTeam1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
-                holder.binding.gamesScore1.setTextColor(if (team1wins) Color.YELLOW else Color.GRAY)
-                holder.binding.gamesTeam2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
-                holder.binding.gamesScore2.setTextColor(if (team1wins) Color.GRAY else Color.YELLOW)
+                holder.binding.gamesTeam1.setTextColor(winColor(team1wins))
+                holder.binding.gamesScore1.setTextColor(winColor(team1wins))
+                holder.binding.gamesTeam2.setTextColor(winColor(!team1wins))
+                holder.binding.gamesScore2.setTextColor(winColor(!team1wins))
             } else {
                 holder.binding.gamesTeam1.setTextColor(Color.GRAY)
                 holder.binding.gamesScore1.setTextColor(Color.GRAY)

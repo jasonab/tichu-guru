@@ -138,14 +138,12 @@ class CurHandFragment :
         binding.curHandP4.text = players[3].name
         if (game.gameOver) {
             val team1wins = game.score1 > game.score2
-            val winColor = Color.YELLOW
-            val loseColor = Color.GRAY
-            binding.curHandScore1.setTextColor(if (team1wins) winColor else loseColor)
-            binding.curHandP1.setTextColor(if (team1wins) winColor else loseColor)
-            binding.curHandP3.setTextColor(if (team1wins) winColor else loseColor)
-            binding.curHandScore2.setTextColor(if (team1wins) loseColor else winColor)
-            binding.curHandP2.setTextColor(if (team1wins) loseColor else winColor)
-            binding.curHandP4.setTextColor(if (team1wins) loseColor else winColor)
+            binding.curHandScore1.setTextColor(winColor(team1wins))
+            binding.curHandP1.setTextColor(winColor(team1wins))
+            binding.curHandP3.setTextColor(winColor(team1wins))
+            binding.curHandScore2.setTextColor(winColor(!team1wins))
+            binding.curHandP2.setTextColor(winColor(!team1wins))
+            binding.curHandP4.setTextColor(winColor(!team1wins))
             binding.curHandScoreHand.isEnabled = false
         } else {
             val color = Color.GRAY
