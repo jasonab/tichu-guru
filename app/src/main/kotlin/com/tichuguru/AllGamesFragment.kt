@@ -1,6 +1,5 @@
 package com.tichuguru
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.AllgamesBinding
 import com.tichuguru.databinding.AllgamesrowBinding
@@ -44,14 +45,24 @@ class AllGamesFragment : Fragment() {
         binding.gamesList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllGames().observe(viewLifecycleOwner) { games ->
-            adapter.games = games
-            adapter.notifyDataSetChanged()
+            adapter.submitList(games.reversed())
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private inner class GamesAdapter : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
-        var games: List<Game> = emptyList()
+    private inner class GamesAdapter :
+        ListAdapter<Game, GamesAdapter.ViewHolder>(
+            object : DiffUtil.ItemCallback<Game>() {
+                override fun areItemsTheSame(
+                    a: Game,
+                    b: Game,
+                ) = a.dbId == b.dbId
+
+                override fun areContentsTheSame(
+                    a: Game,
+                    b: Game,
+                ) = false
+            }
+        ) {
         private val df = DateTimeFormatter.ofPattern("M/d").withZone(ZoneId.systemDefault())
 
         inner class ViewHolder(val binding: AllgamesrowBinding) : RecyclerView.ViewHolder(binding.root)
@@ -65,8 +76,7 @@ class AllGamesFragment : Fragment() {
             holder: ViewHolder,
             position: Int,
         ) {
-            val idx = games.size - position - 1
-            val game = games[idx]
+            val game = getItem(position)
             val players = game.players
 
             holder.binding.gamesDate.text = df.format(game.date)
@@ -88,15 +98,13 @@ class AllGamesFragment : Fragment() {
                 holder.binding.gamesScore2.setTextColor(Color.GRAY)
             }
 
-            holder.binding.gamesDeleteOne.setOnClickListener { onDeleteGame(games[idx]) }
+            holder.binding.gamesDeleteOne.setOnClickListener { onDeleteGame(game) }
             holder.binding.root.setOnClickListener {
                 viewModel.requestClearTichuButtons()
-                viewModel.setGame(games[idx])
+                viewModel.setGame(game)
                 (requireActivity() as TGActivity).navigateToTab(0)
             }
         }
-
-        override fun getItemCount() = games.size
     }
 
     private fun onDeleteGame(game: Game) {
