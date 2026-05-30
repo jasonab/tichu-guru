@@ -111,25 +111,17 @@ class PlayerStatsFragment : Fragment() {
     }
 
     private fun onClearStats() {
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                viewModel.clearPlayerStats(player)
-                parentFragmentManager.popBackStack()
-            }.setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") {
+            viewModel.clearPlayerStats(player)
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun onDeletePlayer() {
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                viewModel.deletePlayer(player)
-                parentFragmentManager.popBackStack()
-            }.setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") {
+            viewModel.deletePlayer(player)
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private class StatsAdapter(private val labels: Array<String>, private val values: Array<String?>) :

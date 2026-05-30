@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.ScorecardBinding
 import com.tichuguru.databinding.ScorecardrowBinding
 import com.tichuguru.model.Game
+import java.util.Locale
 
 class ScorecardFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
@@ -54,12 +54,7 @@ class ScorecardFragment : Fragment() {
     }
 
     private fun onDeleteHand() {
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ -> viewModel.deleteLastHand() }
-            .setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") { viewModel.deleteLastHand() }
     }
 
     private class ScorecardAdapter(private val game: Game) : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
@@ -84,9 +79,9 @@ class ScorecardFragment : Fragment() {
         ) {
             val hand = game.hands[position]
             val s1 = hand.totalScoreTeamOne(game.addOnFailure)
-            holder.binding.scorecardHandScore1.text = "${if (s1 >= 0) "+" else ""}$s1"
+            holder.binding.scorecardHandScore1.text = String.format(Locale.getDefault(), "%+d", s1)
             val s2 = hand.totalScoreTeamTwo(game.addOnFailure)
-            holder.binding.scorecardHandScore2.text = "${if (s2 >= 0) "+" else ""}$s2"
+            holder.binding.scorecardHandScore2.text = String.format(Locale.getDefault(), "%+d", s2)
 
             holder.tichus.forEachIndexed { i, tv ->
                 tv.text =
@@ -104,8 +99,8 @@ class ScorecardFragment : Fragment() {
                 t1 += game.hands[i].totalScoreTeamOne(game.addOnFailure)
                 t2 += game.hands[i].totalScoreTeamTwo(game.addOnFailure)
             }
-            holder.binding.scorecardTotalScore1.text = t1.toString()
-            holder.binding.scorecardTotalScore2.text = t2.toString()
+            holder.binding.scorecardTotalScore1.text = String.format(Locale.getDefault(), "%d", t1)
+            holder.binding.scorecardTotalScore2.text = String.format(Locale.getDefault(), "%d", t2)
         }
 
         override fun getItemCount() = game.hands.size

@@ -91,14 +91,10 @@ class CurHandFragment :
             AlertDialog.Builder(requireContext()).setMessage("You can't end the game when the score is tied.").show()
             return
         }
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                viewModel.endGame()
-                updateDisplay()
-            }.setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") {
+            viewModel.endGame()
+            updateDisplay()
+        }
     }
 
     private fun onScoreHand() {

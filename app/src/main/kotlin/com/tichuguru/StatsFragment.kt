@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.StatsBinding
 import com.tichuguru.databinding.StatsrowBinding
 import com.tichuguru.model.Player
+import java.util.Locale
 import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.sign
@@ -44,13 +44,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun onClearStats() {
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                viewModel.clearAllPlayerStats()
-            }.setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") { viewModel.clearAllPlayerStats() }
     }
 
     private inner class StatsAdapter(private val players: List<Player>) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
@@ -234,9 +228,9 @@ class StatsFragment : Fragment() {
                 }
                 val fmt =
                     if (extraGetter2 != null) {
-                        String.format("%%.2f%%%% (%%0%dd/%%0%dd)", digits, digits)
+                        String.format(Locale.ROOT, "%%.2f%%%% (%%0%dd/%%0%dd)", digits, digits)
                     } else {
-                        String.format("%%.2f (%%0%dd)", digits)
+                        String.format(Locale.ROOT, "%%.2f (%%0%dd)", digits)
                     }
 
                 val names = Array(sorted.size) { sorted[it].name }
@@ -244,9 +238,9 @@ class StatsFragment : Fragment() {
                     Array<String?>(sorted.size) { i ->
                         val p = sorted[i]
                         if (extraGetter2 != null) {
-                            String.format(fmt, rankValueGetter(p), extraGetter1(p), extraGetter2(p))
+                            String.format(Locale.getDefault(), fmt, rankValueGetter(p), extraGetter1(p), extraGetter2(p))
                         } else {
-                            String.format(fmt, rankValueGetter(p), extraGetter1(p))
+                            String.format(Locale.getDefault(), fmt, rankValueGetter(p), extraGetter1(p))
                         }
                     }
 

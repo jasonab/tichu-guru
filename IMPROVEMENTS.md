@@ -4,13 +4,15 @@ Open items only appear in the active sections below. All completed work is in th
 
 ---
 
-## High
+## Highwhy do
 
-- [ ] **#42 Duplicated "Are you sure?" AlertDialog pattern**
-  The same `AlertDialog.Builder` block (message, Yes/No buttons, dismiss on No) appears in
-  `CurHandFragment`, `ScorecardFragment`, `AllGamesFragment`, `StatsListFragment`, and
-  `StatsFragment` — 6+ times. Extract to a single helper function, e.g.
-  `fun Fragment.confirmAction(message: String, onConfirm: () -> Unit)`.
+- [x] **#42 Duplicated "Are you sure?" AlertDialog pattern**
+  Extracted `internal fun Fragment.confirmAction(message: String, onConfirm: () -> Unit)` as a
+  package-level extension in `AllGamesFragment.kt` (alongside `winColor`). All 6 occurrences
+  replaced: `CurHandFragment.onEndGame`, `ScorecardFragment.onDeleteHand`,
+  `AllGamesFragment.onDeleteGame`, `StatsFragment.onClearStats`,
+  `PlayerStatsFragment.onClearStats`, and `PlayerStatsFragment.onDeletePlayer`.
+  `AlertDialog` import removed from `ScorecardFragment` and `StatsFragment`.
 
 - [ ] **#43 `recordHand` / `unrecordHand` are manual mirrors of each other** (`Player.kt`)
   Both methods contain ~50 lines of nearly identical conditionals (seat → team check, tichu

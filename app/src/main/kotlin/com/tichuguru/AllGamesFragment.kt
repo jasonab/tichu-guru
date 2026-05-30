@@ -21,6 +21,18 @@ import java.time.format.DateTimeFormatter
 
 internal fun winColor(team1wins: Boolean): Int = if (team1wins) Color.YELLOW else Color.GRAY
 
+internal fun Fragment.confirmAction(
+    message: String,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog
+        .Builder(requireContext())
+        .setMessage(message)
+        .setPositiveButton("Yes") { _, _ -> onConfirm() }
+        .setNegativeButton("No", null)
+        .show()
+}
+
 class AllGamesFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: AllgamesBinding
@@ -108,16 +120,12 @@ class AllGamesFragment : Fragment() {
     }
 
     private fun onDeleteGame(game: Game) {
-        AlertDialog
-            .Builder(requireContext())
-            .setMessage("Are you sure?")
-            .setPositiveButton("Yes") { _, _ ->
-                viewModel.requestClearTichuButtons()
-                viewModel.deleteGame(game)
-                if (viewModel.getAllGames().value.isNullOrEmpty()) {
-                    (requireActivity() as TGActivity).createFirstGame()
-                }
-            }.setNegativeButton("No", null)
-            .show()
+        confirmAction("Are you sure?") {
+            viewModel.requestClearTichuButtons()
+            viewModel.deleteGame(game)
+            if (viewModel.getAllGames().value.isNullOrEmpty()) {
+                (requireActivity() as TGActivity).createFirstGame()
+            }
+        }
     }
 }
