@@ -61,6 +61,7 @@ class AllGamesFragment : Fragment() {
 
     private inner class GamesAdapter : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
         var games: List<Game> = emptyList()
+            @Suppress("NotifyDataSetChanged")
             set(value) {
                 field = value
                 notifyDataSetChanged()

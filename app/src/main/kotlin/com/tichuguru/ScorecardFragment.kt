@@ -61,9 +61,28 @@ class ScorecardFragment : Fragment() {
     }
 
     private class ScorecardAdapter : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
+        private var cumTotals1: IntArray = intArrayOf()
+        private var cumTotals2: IntArray = intArrayOf()
+
         var game: Game? = null
+            @Suppress("NotifyDataSetChanged")
             set(value) {
                 field = value
+                value?.let { g ->
+                    cumTotals1 = IntArray(g.hands.size)
+                    cumTotals2 = IntArray(g.hands.size)
+                    var t1 = 0
+                    var t2 = 0
+                    g.hands.forEachIndexed { i, hand ->
+                        t1 += hand.totalScoreTeamOne(g.addOnFailure)
+                        t2 += hand.totalScoreTeamTwo(g.addOnFailure)
+                        cumTotals1[i] = t1
+                        cumTotals2[i] = t2
+                    }
+                } ?: run {
+                    cumTotals1 = intArrayOf()
+                    cumTotals2 = intArrayOf()
+                }
                 notifyDataSetChanged()
             }
 
@@ -86,7 +105,7 @@ class ScorecardFragment : Fragment() {
             holder: ViewHolder,
             position: Int,
         ) {
-            val game = game ?: return
+            val game = checkNotNull(game) { "game not set" }
             val hand = game.hands[position]
             val s1 = hand.totalScoreTeamOne(game.addOnFailure)
             holder.binding.scorecardHandScore1.text = String.format(Locale.getDefault(), "%+d", s1)
@@ -103,14 +122,8 @@ class ScorecardFragment : Fragment() {
                 tv.setTextColor(if (hand.playerOutFirst == i) 0xFF00AA00.toInt() else Color.RED)
             }
 
-            var t1 = 0
-            var t2 = 0
-            for (i in 0..position) {
-                t1 += game.hands[i].totalScoreTeamOne(game.addOnFailure)
-                t2 += game.hands[i].totalScoreTeamTwo(game.addOnFailure)
-            }
-            holder.binding.scorecardTotalScore1.text = String.format(Locale.getDefault(), "%d", t1)
-            holder.binding.scorecardTotalScore2.text = String.format(Locale.getDefault(), "%d", t2)
+            holder.binding.scorecardTotalScore1.text = String.format(Locale.getDefault(), "%d", cumTotals1[position])
+            holder.binding.scorecardTotalScore2.text = String.format(Locale.getDefault(), "%d", cumTotals2[position])
         }
 
         override fun getItemCount() = game?.hands?.size ?: 0

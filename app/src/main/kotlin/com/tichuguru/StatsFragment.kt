@@ -52,6 +52,7 @@ class StatsFragment : Fragment() {
 
     private inner class StatsAdapter : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
         var players: List<Player> = emptyList()
+            @Suppress("NotifyDataSetChanged")
             set(value) {
                 field = value
                 notifyDataSetChanged()

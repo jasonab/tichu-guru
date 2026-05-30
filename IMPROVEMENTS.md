@@ -54,10 +54,9 @@ Open items only appear in the active sections below. All completed work is in th
   causing `IndexOutOfBoundsException`. The Scorecard delete button can reach this path.
   Fix: guard with `if (game.hands.isEmpty()) return` and/or disable the button when the list is empty.
 
-- [ ] **#60 Scorecard running totals recomputed O(N²)** (`ScorecardFragment.kt:96-101`)
-  Each `onBindViewHolder` call re-sums all prior hands from index 0. Binding N rows is O(N²)
-  and recomputes on every recycle/scroll. Fix: precompute a cumulative-total list when the game
-  is set and index into it during bind.
+- [x] **#60 Scorecard running totals recomputed O(N²)** (`ScorecardFragment.kt:96-101`)
+  Added `cumTotals1`/`cumTotals2: IntArray` computed once in the `game` setter. `onBindViewHolder`
+  now indexes directly into these arrays instead of re-summing from 0 each bind.
 
 - [ ] **#61 Per-player stat value array built inside `StatsFragment`** (`StatsFragment.kt:161-206`)
   `PlayerExpandListener.onClick` assembles a 19-element `values` array with hardcoded index
