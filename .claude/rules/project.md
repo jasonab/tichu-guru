@@ -13,6 +13,7 @@
 - Seat indexing: 0-3, team1 = seats 0+2, team2 = seats 1+3. This permeates all scoring, stat recording, and UI layout.
 - Domain objects are mutable classes (not data classes) — `Game`, `Hand`, `Player` use `var` properties mutated in place. Only entities are `data class`.
 - `Serializable` for Fragment args — `Game` and `Hand` implement `Serializable` for `Bundle.putSerializable()`. Do not switch to `Parcelable`.
+- RecyclerView adapters created once in `onViewCreated`, never reassigned — set `binding.list.adapter = adapter` once; expose a `var data` property whose setter calls `notifyDataSetChanged()`. Never assign `binding.list.adapter` inside observers or refresh methods. Domain objects are mutable in place so `ListAdapter`/DiffUtil cannot detect changes; use plain `RecyclerView.Adapter` instead.
 
 ## Testing
 

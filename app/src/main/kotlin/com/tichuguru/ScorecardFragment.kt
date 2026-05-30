@@ -17,6 +17,7 @@ import java.util.Locale
 class ScorecardFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: ScorecardBinding
+    private lateinit var adapter: ScorecardAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +35,8 @@ class ScorecardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.scorecardList.layoutManager = LinearLayoutManager(requireContext())
         binding.scorecardDelete.setOnClickListener { onDeleteHand() }
+        adapter = ScorecardAdapter()
+        binding.scorecardList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getCurrentGame().observe(viewLifecycleOwner) { refreshDisplay() }
     }
@@ -50,14 +53,20 @@ class ScorecardFragment : Fragment() {
         binding.scorecardName2.text = players[1].name
         binding.scorecardName3.text = players[2].name
         binding.scorecardName4.text = players[3].name
-        binding.scorecardList.adapter = ScorecardAdapter(game)
+        adapter.game = game
     }
 
     private fun onDeleteHand() {
         confirmAction("Are you sure?") { viewModel.deleteLastHand() }
     }
 
-    private class ScorecardAdapter(private val game: Game) : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
+    private class ScorecardAdapter : RecyclerView.Adapter<ScorecardAdapter.ViewHolder>() {
+        var game: Game? = null
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
         class ViewHolder(val binding: ScorecardrowBinding) : RecyclerView.ViewHolder(binding.root) {
             val tichus =
                 arrayOf(
@@ -77,6 +86,7 @@ class ScorecardFragment : Fragment() {
             holder: ViewHolder,
             position: Int,
         ) {
+            val game = game ?: return
             val hand = game.hands[position]
             val s1 = hand.totalScoreTeamOne(game.addOnFailure)
             holder.binding.scorecardHandScore1.text = String.format(Locale.getDefault(), "%+d", s1)
@@ -103,6 +113,6 @@ class ScorecardFragment : Fragment() {
             holder.binding.scorecardTotalScore2.text = String.format(Locale.getDefault(), "%d", t2)
         }
 
-        override fun getItemCount() = game.hands.size
+        override fun getItemCount() = game?.hands?.size ?: 0
     }
 }

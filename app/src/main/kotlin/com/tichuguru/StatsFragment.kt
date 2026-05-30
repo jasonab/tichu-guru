@@ -20,6 +20,7 @@ import kotlin.math.sign
 class StatsFragment : Fragment() {
     private lateinit var viewModel: TGViewModel
     private lateinit var binding: StatsBinding
+    private lateinit var adapter: StatsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +38,11 @@ class StatsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.statsList.layoutManager = LinearLayoutManager(requireContext())
         binding.statsClearAll.setOnClickListener { onClearStats() }
+        adapter = StatsAdapter()
+        binding.statsList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllPlayers().observe(viewLifecycleOwner) { players ->
-            binding.statsList.adapter = StatsAdapter(players)
+            adapter.players = players
         }
     }
 
@@ -47,7 +50,13 @@ class StatsFragment : Fragment() {
         confirmAction("Are you sure?") { viewModel.clearAllPlayerStats() }
     }
 
-    private inner class StatsAdapter(private val players: List<Player>) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+    private inner class StatsAdapter : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+        var players: List<Player> = emptyList()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
         inner class ViewHolder(val binding: StatsrowBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(

@@ -40,15 +40,14 @@ Open items only appear in the active sections below. All completed work is in th
   a save triggered right after startup can race the load, breaking the single-writer guarantee.
   Fix: route the initial load through `dbScope` too.
 
-- [ ] **#57 `ScorecardFragment` creates a new adapter on every game change** (`ScorecardFragment.kt:53`)
-  `binding.scorecardList.adapter = ScorecardAdapter(game)` runs inside `refreshDisplay()`, which
-  is called on every `getCurrentGame()` emission and every `onHiddenChanged`. This is the
-  anti-pattern fixed in #48 for `AllGamesFragment`, reintroduced here. Fix: create the adapter
-  once in `onViewCreated`, expose a `game` setter, and call `notifyDataSetChanged()`.
+- [x] **#57 `ScorecardFragment` creates a new adapter on every game change** (`ScorecardFragment.kt:53`)
+  `ScorecardAdapter` created once in `onViewCreated` with `var game: Game?`; setter calls
+  `notifyDataSetChanged()`. `refreshDisplay()` now sets `adapter.game = game`. `getItemCount`
+  and `onBindViewHolder` guard on null game.
 
-- [ ] **#58 `StatsFragment` creates a new adapter on every player-list emission** (`StatsFragment.kt:41-43`)
-  `binding.statsList.adapter = StatsAdapter(players)` runs inside the LiveData observer. Same
-  adapter-recreation anti-pattern as #57. Fix: create once in `onViewCreated`, update in-place.
+- [x] **#58 `StatsFragment` creates a new adapter on every player-list emission** (`StatsFragment.kt:41-43`)
+  `StatsAdapter` created once in `onViewCreated` with `var players: List<Player> = emptyList()`;
+  setter calls `notifyDataSetChanged()`. Observer now sets `adapter.players = players`.
 
 - [ ] **#59 `deleteLastHand` crashes on empty hand list** (`TGViewModel.kt:85`)
   `game.removeHand(game.hands.size - 1)` evaluates to `removeHand(-1)` when `hands` is empty,
@@ -86,7 +85,7 @@ Open items only appear in the active sections below. All completed work is in th
 
 ---
 
-## Low
+## Lowm
 
 - [ ] **#66 `SegmentedControlButton` Tichu/GT state conveyed only by color** (`ui/SegmentedControlButton.kt`)
   Selected vs. unselected is distinguished purely by teal vs. gray fill — a colorblind concern
