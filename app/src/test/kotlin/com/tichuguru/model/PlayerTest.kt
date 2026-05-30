@@ -396,4 +396,114 @@ class PlayerTest {
         player.numTichusStopped = 2
         assertEquals(40.0, player.getTichuStopPct(), 0.001)
     }
+
+    // --- addOnFailure mode (#73) ---
+
+    @Test fun recordHand_addOnFailure_ownTichuFails_noPenalty() {
+        val h = Hand()
+        h.setTichuFor(0)
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 1 // seat 0 fails tichu
+        player.recordHand(h, seat = 0, addOnFailure = true)
+        // No -100 penalty: totalScore = 50 (card only)
+        assertEquals(50, player.totalPoints)
+    }
+
+    @Test fun recordHand_addOnFailure_ownTichuFails_normalModeDeducts() {
+        val h = Hand()
+        h.setTichuFor(0)
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 1
+        player.recordHand(h, seat = 0, addOnFailure = false)
+        // Normal mode: 50 (card) - 100 (penalty) = -50
+        assertEquals(-50, player.totalPoints)
+    }
+
+    @Test fun recordHand_addOnFailure_opponentTichuFails_teamGainsPoints() {
+        val h = Hand()
+        h.setTichuFor(1) // opponent calls tichu and fails
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 0 // seat 0 goes out first; opponent tichu stopped
+        player.recordHand(h, seat = 0, addOnFailure = true)
+        // stoppedTichuScore adds +100 to team1: 50 (card) + 100 (stopped) = 150
+        assertEquals(150, player.totalPoints)
+    }
+
+    @Test fun recordHand_addOnFailure_opponentTichuFails_normalModeNoGain() {
+        val h = Hand()
+        h.setTichuFor(1)
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 0
+        player.recordHand(h, seat = 0, addOnFailure = false)
+        // Normal mode: team1 gains nothing from stopping; 50 (card) only
+        assertEquals(50, player.totalPoints)
+    }
+
+    @Test fun unrecordHand_addOnFailure_revertsCorrectly() {
+        val h = Hand()
+        h.setTichuFor(0)
+        h.cardScoreTeamOne = 50
+        h.cardScoreTeamTwo = 50
+        h.playerOutFirst = 1
+        player.recordHand(h, seat = 0, addOnFailure = true)
+        player.unrecordHand(h, seat = 0, addOnFailure = true)
+        assertEquals(0, player.totalPoints)
+        assertEquals(0, player.numHands)
+    }
+
+    // --- untested derived stat helpers (#75) ---
+
+    @Test fun getCardPtsPerHand_noHands_returnsZero() = assertEquals(0.0, player.getCardPtsPerHand(), 0.0)
+
+    @Test fun getCardPtsPerHand_calculated() {
+        player.numHands = 4
+        player.cardPoints = 220
+        assertEquals(55.0, player.getCardPtsPerHand(), 0.001)
+    }
+
+    @Test fun getTichuEfficiency_noHands_returnsZero() = assertEquals(0.0, player.getTichuEfficiency(), 0.0)
+
+    @Test fun getTichuEfficiency_calculated() {
+        player.tichuEfficiencyHands = 5
+        player.tichuEfficiencyPoints = 150
+        assertEquals(30.0, player.getTichuEfficiency(), 0.001)
+    }
+
+    @Test fun getGTPct_noCalls_returnsZero() = assertEquals(0.0, player.getGTPct(), 0.0)
+
+    @Test fun getGTPct_calculated() {
+        player.numGTCalled = 4
+        player.numGTMade = 1
+        assertEquals(25.0, player.getGTPct(), 0.001)
+    }
+
+    @Test fun getHandsPerDW_noDoubleWins_returns1000() = assertEquals(1000.0, player.getHandsPerDW(), 0.0)
+
+    @Test fun getHandsPerDW_calculated() {
+        player.numHands = 10
+        player.numDoubleWins = 2
+        assertEquals(5.0, player.getHandsPerDW(), 0.001)
+    }
+
+    @Test fun nonCalls_noEfficiencyHands_returnsZero() {
+        assertEquals(0, player.nonCalls())
+    }
+
+    @Test fun nonCalls_calculatedAsEfficiencyHandsMinusTichuCalled() {
+        player.tichuEfficiencyHands = 5
+        player.numTichuCalled = 2
+        assertEquals(3, player.nonCalls())
+    }
+
+    @Test fun getPartnerTichuPct_noCalls_returnsZero() = assertEquals(0.0, player.getPartnerTichuPct(), 0.0)
+
+    @Test fun getPartnerTichuPct_calculated() {
+        player.numTichusCalledByPartner = 4
+        player.numTichusMadeByPartner = 3
+        assertEquals(75.0, player.getPartnerTichuPct(), 0.001)
+    }
 }

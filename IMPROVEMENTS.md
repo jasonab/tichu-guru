@@ -124,28 +124,32 @@ Open items only appear in the active sections below. All completed work is in th
 
 Add in priority order.
 
-- [ ] **#31 Unit tests for `db/` entity mappers**
-  `GameEntity.from()`/`toGame()`, `HandEntity.from()`/`toHand()`, `PlayerEntity.from()`/`toPlayer()`
-  are pure data transforms. Test round-trip fidelity and null/default handling.
+- [x] **#31 Unit tests for `db/` entity mappers**
+  Added `EntityMapperTest.kt` in `src/test/kotlin/com/tichuguru/db/`. Covers:
+  `PlayerEntity.from()`, `PlayerEntity.toPlayer()`, and full round-trip (18 fields each);
+  `HandEntity.from()` for card scores, bids, and computed tichu scores; `HandEntity.toHand()`
+  for card scores and bid restoration; `HandEntity` round-trip; `GameEntity.from()` for
+  scores, flags, player IDs, and date. 13 tests total.
 
 - [ ] **#32 Integration tests for Room DAOs**
   Use `androidx.room:room-testing` with an in-memory database to test upsert, orphan deletion,
   and transaction semantics. Requires `src/androidTest/`.
 
-- [ ] **#73 No test for `addOnFailure` stat recording in `PlayerTest`** (`model/Player.kt:67-123`)
-  `PlayerTest` exercises `recordHand` only in default (subtract-on-failure) mode. The
-  `addOnFailure` branch of `totalPoints` is untested. Given that IMPROVEMENT #2 was a real
-  stat-corruption bug in this exact area, this branch needs explicit coverage.
+- [x] **#73 `addOnFailure` stat recording in `PlayerTest`** (`model/Player.kt:67-123`)
+  Added 5 tests: own tichu fails with `addOnFailure=true` → no penalty; normal mode fails →
+  deducts 100; opponent tichu fails with `addOnFailure=true` → team gains 100 via
+  `stoppedTichuScore`; normal mode opponent failure → no gain; `unrecordHand` with
+  `addOnFailure=true` reverts cleanly.
 
-- [ ] **#74 No test for `removeHand` reverting per-player stats end-to-end** (`model/GameTest.kt`)
-  `GameTest.removeHand_*` checks scores and `gameOver` but not that `players[i].numHands` /
-  `totalPoints` are correctly reverted after `scoreHand` + `removeHand`. The unrecord path is
-  the historically buggy one (see #2, #43).
+- [x] **#74 `removeHand` reverting per-player stats end-to-end** (`model/GameTest.kt`)
+  Added 4 tests verifying that `scoreHand` + `removeHand` leaves all players with zero
+  `numHands`, `cardPoints`, `totalPoints`; and that removing a game-ending hand also reverts
+  `numGames` and `numWins` for all players.
 
-- [ ] **#75 Untested derived stat helpers in `Player`**
-  `getTichuEfficiency`, `getGTPct`, `getHandsPerDW`, `getPartnerTichuPct`, and `nonCalls` have
-  no test coverage. `getHandsPerDW`'s `numDoubleWins == 0 → 1000.0` sentinel is exactly the
-  kind of edge case that should be pinned.
+- [x] **#75 Untested derived stat helpers in `Player`**
+  Added 12 tests to `PlayerTest`: zero-guard and calculated cases for `getCardPtsPerHand`,
+  `getTichuEfficiency`, `getGTPct`, `getHandsPerDW` (including the `numDoubleWins==0 → 1000.0`
+  sentinel), `nonCalls`, and `getPartnerTichuPct`. Total tests: 114 (was 77).
 
 ---
 

@@ -139,6 +139,37 @@ class GameTest {
         assertEquals(1, game.hands.size)
     }
 
+    // --- removeHand reverts per-player stats (#74) ---
+
+    @Test fun removeHand_revertsPlayerNumHands() {
+        game.scoreHand(hand(60))
+        game.removeHand(0)
+        game.players.forEach { assertEquals(0, it.numHands) }
+    }
+
+    @Test fun removeHand_revertsPlayerCardPoints() {
+        game.scoreHand(hand(60))
+        game.removeHand(0)
+        game.players.forEach { assertEquals(0, it.cardPoints) }
+    }
+
+    @Test fun removeHand_revertsPlayerTotalPoints() {
+        game.scoreHand(hand(60))
+        game.removeHand(0)
+        game.players.forEach { assertEquals(0, it.totalPoints) }
+    }
+
+    @Test fun removeHand_afterGameEnd_revertsPlayerGameStats() {
+        game.scoreHand(hand(1000)) // triggers game over + recordGame
+        assertEquals(1, game.players[0].numGames)
+        assertEquals(1, game.players[0].numWins)
+        game.removeHand(0)
+        game.players.forEach {
+            assertEquals(0, it.numGames)
+            assertEquals(0, it.numWins)
+        }
+    }
+
     // --- ignoreStats ---
 
     @Test fun ignoreStats_doesNotRecordPlayerStats() {
