@@ -41,7 +41,8 @@
                     android:id="@+id/scoreHandScore1"
                     android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/picker_bg"/>
                 <TextView
                     android:textSize="24sp"
                     android:layout_gravity="center_horizontal"
@@ -67,7 +68,8 @@
                     android:id="@+id/scoreHandOutFirst"
                     android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/picker_bg"/>
                 <TextView
                     android:textSize="24sp"
                     android:layout_width="wrap_content"
@@ -102,7 +104,8 @@
                     android:id="@+id/scoreHandScore2"
                     android:theme="@style/WheelPicker"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/picker_bg"/>
                 <TextView
                     android:textSize="24sp"
                     android:layout_gravity="center_horizontal"
