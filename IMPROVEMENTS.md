@@ -112,9 +112,10 @@ Open items only appear in the active sections below. All completed work is in th
   to enable localization and consistent TalkBack announcements. Also remove the leftover
   template `Hello World, TGActivity!` entry (`strings.xml:3`).
 
-- [ ] **#72 Dead drawable files `wheel_bg.xml` and `wheel_val.xml` still present**
-  IMPROVEMENTS #18 states these were deleted alongside the kankan WheelView removal, but both
-  files remain in `app/src/main/res/drawable/`. Delete them.
+- [x] **#72 Dead drawable files `wheel_bg.xml` and `wheel_val.xml` still present**
+  Deleted both files. Removed dangling `android:background="@drawable/wheel_bg"` from the 3
+  `NumberPicker` elements in `scorehand.xml`, and removed the two stale `<public>` entries
+  from `public.xml`.
 
 ---
 
