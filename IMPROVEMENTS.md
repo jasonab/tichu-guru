@@ -9,11 +9,11 @@ Open items only appear in the active sections below. All completed work is in th
 - [x] **#54 `dbScope` in `TGViewModel` is never cancelled — leaks across ViewModel lifecycle** (`TGViewModel.kt:21`)
   Added `override fun onCleared() { dbScope.cancel() }`. Also added `import kotlinx.coroutines.cancel`.
 
-- [ ] **#55 DiffUtil `areContentsTheSame` always returns `false`** (`AllGamesFragment.kt:74`)
-  `GamesAdapter.areContentsTheSame` unconditionally returns `false`, forcing a full rebind of
-  every visible row on every `submitList` call and defeating the purpose of `ListAdapter`.
-  Fix: compare the fields that drive rendering:
-  `a.score1 == b.score1 && a.score2 == b.score2 && a.gameOver == b.gameOver && a.players.map { it.name } == b.players.map { it.name }`.
+- [x] **#55 `ListAdapter`/DiffUtil unusable with mutable in-place `Game` objects** (`AllGamesFragment.kt`)
+  `areContentsTheSame = false` was a workaround: property comparison would always return `true`
+  (same object reference in old and new list), so rebinds would never fire. Dropped `ListAdapter`
+  entirely; `GamesAdapter` is now a plain `RecyclerView.Adapter` with a `var games` property
+  whose setter calls `notifyDataSetChanged()`. Observer sets `adapter.games = games.reversed()`.
 
 - [x] **#42 Duplicated "Are you sure?" AlertDialog pattern**
   Extracted `internal fun Fragment.confirmAction(message: String, onConfirm: () -> Unit)` as a

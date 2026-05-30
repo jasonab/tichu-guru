@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tichuguru.databinding.AllgamesBinding
 import com.tichuguru.databinding.AllgamesrowBinding
@@ -57,24 +55,17 @@ class AllGamesFragment : Fragment() {
         binding.gamesList.adapter = adapter
         viewModel = ViewModelProvider(requireActivity())[TGViewModel::class.java]
         viewModel.getAllGames().observe(viewLifecycleOwner) { games ->
-            adapter.submitList(games.reversed())
+            adapter.games = games.reversed()
         }
     }
 
-    private inner class GamesAdapter :
-        ListAdapter<Game, GamesAdapter.ViewHolder>(
-            object : DiffUtil.ItemCallback<Game>() {
-                override fun areItemsTheSame(
-                    a: Game,
-                    b: Game,
-                ) = a.dbId == b.dbId
-
-                override fun areContentsTheSame(
-                    a: Game,
-                    b: Game,
-                ) = false
+    private inner class GamesAdapter : RecyclerView.Adapter<GamesAdapter.ViewHolder>() {
+        var games: List<Game> = emptyList()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
             }
-        ) {
+
         private val df = DateTimeFormatter.ofPattern("M/d").withZone(ZoneId.systemDefault())
 
         inner class ViewHolder(val binding: AllgamesrowBinding) : RecyclerView.ViewHolder(binding.root)
@@ -84,16 +75,18 @@ class AllGamesFragment : Fragment() {
             viewType: Int,
         ): ViewHolder = ViewHolder(AllgamesrowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
+        override fun getItemCount() = games.size
+
         override fun onBindViewHolder(
             holder: ViewHolder,
             position: Int,
         ) {
-            val game = getItem(position)
+            val game = games[position]
             val players = game.players
 
             holder.binding.gamesDate.text = df.format(game.date)
-            holder.binding.gamesTeam1.text = players.filterIndexed { i, _ -> isTeamOne(i) }.joinToString(" and ") { it.name }
-            holder.binding.gamesTeam2.text = players.filterIndexed { i, _ -> !isTeamOne(i) }.joinToString(" and ") { it.name }
+            holder.binding.gamesTeam1.text = players.filterIndexed { i, _ -> isTeamOne(i) }.joinToString(" and ") { p -> p.name }
+            holder.binding.gamesTeam2.text = players.filterIndexed { i, _ -> !isTeamOne(i) }.joinToString(" and ") { p -> p.name }
             holder.binding.gamesScore1.text = game.score1.toString()
             holder.binding.gamesScore2.text = game.score2.toString()
 
