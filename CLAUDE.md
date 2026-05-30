@@ -13,7 +13,7 @@ Android scoring and statistics app for the card game Tichu (4-player partnership
 ./gradlew test                   # Unit tests (77 total)
 ```
 
-IMPORTANT: After any `.kt` file change, run `./gradlew lintKotlin` and `./gradlew test`. Both must pass before the change is complete. XML/resource-only changes do not require lint or tests. If `lintKotlin` fails, run `./gradlew formatKotlin` to auto-fix — do not edit files manually to fix lint errors.
+IMPORTANT: After any `.kt` change, `./gradlew lintKotlin test` must pass before the change is complete. XML/resource changes are exempt. If lint fails, run `formatKotlin` — never fix manually.
 
 ## Tech Stack
 
@@ -48,18 +48,17 @@ app/src/main/kotlin/com/tichuguru/
 │   └── TichuRepository.kt   # All Room I/O (load/save players, games, hands)
 └── db/
     ├── TichuDatabase.kt     # Room singleton — version 1, add Migration for schema changes
-    ├── GameEntity/Dao
-    ├── HandEntity/Dao
-    └── PlayerEntity/Dao
+    ├── GameEntity.kt / GameDao.kt
+    ├── HandEntity.kt / HandDao.kt
+    └── PlayerEntity.kt / PlayerDao.kt
 app/src/test/kotlin/com/tichuguru/model/
-    HandTest.kt / GameTest.kt / PlayerTest.kt   # model unit tests
-app/proguard-rules.pro                          # R8 keep rules for release builds
+├── HandTest.kt / GameTest.kt / PlayerTest.kt  # model unit tests
 ```
 
 ## Co-Change Patterns
 
 | Change type | Files that co-change |
-|---|---|
+| --- | --- |
 | Any meaningful change | Modified file + `IMPROVEMENTS.md` (mark item `[x]` or add new `#N`) |
 | DB schema change | Entity `.kt` + DAO `.kt` + `TichuDatabase.kt` (new `Migration`) |
 | Model field added/renamed | `model/*.kt` + `db/*Entity.kt` + `db/*Dao.kt` + Fragment callers |
