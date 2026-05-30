@@ -6,6 +6,14 @@ Open items only appear in the active sections below. All completed work is in th
 
 ## High
 
+- [x] **#76 `deleteGame` and `deletePlayer` never revert player stats** (`TGViewModel.kt`, `Game.kt`)
+  `deleteGame` removed a game from the list but left every hand's stat contributions baked into
+  each player. `deletePlayer` had the same bug for all games it removed. Added `Game.unrecordStats()`
+  which calls `unrecordGame` (if `gameOver`) and `unrecordHand` for every hand for all 4 players.
+  `deleteGame` now calls it before removal and calls `savePlayers()`. `deletePlayer` calls it per
+  removed game so the other 3 players in that game are also corrected. `ignoreStats` games are
+  no-ops. Added 2 tests in `GameTest`.
+
 - [x] **#54 `dbScope` in `TGViewModel` is never cancelled — leaks across ViewModel lifecycle** (`TGViewModel.kt:21`)
   Added `override fun onCleared() { dbScope.cancel() }`. Also added `import kotlinx.coroutines.cancel`.
 

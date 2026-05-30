@@ -32,8 +32,8 @@ class PlayerTest {
         val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
         return Game(
             players = players.toMutableList(),
-            score1 = score1,
-            score2 = score2,
+            teamOneTotal = score1,
+            teamTwoTotal = score2,
             gameLimit = 1000,
             gameOver = true
         )

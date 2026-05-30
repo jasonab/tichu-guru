@@ -267,8 +267,8 @@ class EntityMapperTest {
                 .onEachIndexed { i, p -> p.dbId = (i + 1).toLong() }
         return Game(
             players = players.toMutableList(),
-            score1 = 750,
-            score2 = 500,
+            teamOneTotal = 750,
+            teamTwoTotal = 500,
             gameLimit = 1000,
             gameOver = false,
             mercyRule = true,

@@ -22,28 +22,27 @@ class TichuRepository(private val db: TichuDatabase) {
     fun loadGames(players: List<Player>): MutableList<Game> =
         db.gameDao().getAll().mapNotNull { buildGameFromEntity(it, players) }.toMutableList()
 
-    fun saveGames(
-        players: List<Player>,
-        games: List<Game>,
-    ) {
+    fun saveGame(game: Game) {
+        db.runInTransaction { saveGameInTransaction(game) }
+    }
+
+    fun saveGames(games: List<Game>) {
         db.runInTransaction {
-            val entities = players.map { PlayerEntity.from(it) }
-            val ids = db.playerDao().upsertAll(entities)
-            players.forEachIndexed { i, p -> if (ids[i] > 0) p.dbId = ids[i] }
-            for (g in games) {
-                val upsertedId = db.gameDao().upsert(GameEntity.from(g))
-                if (upsertedId > 0) g.dbId = upsertedId
-                val gid = g.dbId
-                val hands = g.hands
-                if (hands.isEmpty()) {
-                    db.handDao().deleteHandsForGame(gid)
-                } else {
-                    val handEntities = hands.mapIndexed { i, h -> HandEntity.from(h, gid, i, g.addOnFailure) }
-                    val handIds = db.handDao().upsertAll(handEntities)
-                    hands.forEachIndexed { i, h -> if (handIds[i] > 0) h.dbId = handIds[i] }
-                    db.handDao().deleteOrphanHands(gid, hands.map { it.dbId })
-                }
-            }
+            for (g in games) saveGameInTransaction(g)
+        }
+    }
+
+    private fun saveGameInTransaction(g: Game) {
+        val upsertedId = db.gameDao().upsert(GameEntity.from(g))
+        if (upsertedId > 0) g.dbId = upsertedId
+        val gid = g.dbId
+        if (g.hands.isEmpty()) {
+            db.handDao().deleteHandsForGame(gid)
+        } else {
+            val handEntities = g.hands.mapIndexed { i, h -> HandEntity.from(h, gid, i, g.addOnFailure) }
+            val handIds = db.handDao().upsertAll(handEntities)
+            g.hands.forEachIndexed { i, h -> if (handIds[i] > 0) h.dbId = handIds[i] }
+            db.handDao().deleteOrphanHands(gid, g.hands.map { it.dbId })
         }
     }
 
@@ -66,8 +65,8 @@ class TichuRepository(private val db: TichuDatabase) {
         return Game(
             players = gamePlayers.toMutableList(),
             hands = db.handDao().getHandsForGame(ge.id).map { it.toHand() }.toMutableList(),
-            score1 = ge.score1,
-            score2 = ge.score2,
+            teamOneTotal = ge.score1,
+            teamTwoTotal = ge.score2,
             gameLimit = ge.gameLimit,
             gameOver = ge.gameOver,
             mercyRule = ge.mercyRule,

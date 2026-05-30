@@ -73,8 +73,9 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun endGame() {
-        curGame?.endGame()
-        saveGames()
+        val game = curGame ?: return
+        game.endGame()
+        saveGame(game)
         savePlayers()
         _currentGame.value = curGame
         _allGames.value = games
@@ -84,15 +85,16 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         val game = curGame ?: return
         if (game.hands.isEmpty()) return
         game.removeHand(game.hands.size - 1)
-        saveGames()
+        saveGame(game)
         savePlayers()
         _currentGame.value = curGame
         _allGames.value = games
     }
 
     fun scoreHand(hand: Hand) {
-        curGame?.scoreHand(hand)
-        saveGames()
+        val game = curGame ?: return
+        game.scoreHand(hand)
+        saveGame(game)
         savePlayers()
         _currentGame.value = curGame
         _allGames.value = games
@@ -101,17 +103,19 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
     fun addGame(game: Game) {
         games.add(game)
         curGame = game
-        saveGames()
+        saveGame(game)
         _allGames.value = games
         _currentGame.value = curGame
     }
 
     fun deleteGame(game: Game) {
+        game.unrecordStats()
         games.remove(game)
         dbScope.launch { repository.deleteGame(game) }
         if (curGame === game) {
             curGame = if (games.isEmpty()) null else games.last()
         }
+        savePlayers()
         _allGames.value = games
         _currentGame.value = curGame
     }
@@ -152,6 +156,7 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         for (i in games.indices.reversed()) {
             val game = games[i]
             if (game.containsPlayer(player)) {
+                game.unrecordStats()
                 games.removeAt(i)
                 if (game === curGame) {
                     curGame = if (games.isEmpty()) null else games.last()
@@ -170,11 +175,15 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         dbScope.cancel()
     }
 
-    private fun savePlayers() {
-        dbScope.launch { repository.savePlayers(players) }
+    private fun saveGame(game: Game) {
+        dbScope.launch { repository.saveGame(game) }
     }
 
     private fun saveGames() {
-        dbScope.launch { repository.saveGames(players, games) }
+        dbScope.launch { repository.saveGames(games) }
+    }
+
+    private fun savePlayers() {
+        dbScope.launch { repository.savePlayers(players) }
     }
 }

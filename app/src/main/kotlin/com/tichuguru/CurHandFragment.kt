@@ -87,7 +87,7 @@ class CurHandFragment :
 
     private fun onEndGame() {
         val game = viewModel.getCurrentGame().value ?: return
-        if (game.score1 == game.score2) {
+        if (game.teamOneTotal == game.teamTwoTotal) {
             AlertDialog.Builder(requireContext()).setMessage("You can't end the game when the score is tied.").show()
             return
         }
@@ -125,15 +125,15 @@ class CurHandFragment :
             binding.curHandScoreHand.isEnabled = false
             return
         }
-        binding.curHandScore1.text = game.score1.toString()
-        binding.curHandScore2.text = game.score2.toString()
+        binding.curHandScore1.text = game.teamOneTotal.toString()
+        binding.curHandScore2.text = game.teamTwoTotal.toString()
         val players = game.players
         binding.curHandP1.text = players[0].name
         binding.curHandP2.text = players[1].name
         binding.curHandP3.text = players[2].name
         binding.curHandP4.text = players[3].name
         if (game.gameOver) {
-            val team1wins = game.score1 > game.score2
+            val team1wins = game.teamOneTotal > game.teamTwoTotal
             binding.curHandScore1.setTextColor(winColor(team1wins))
             binding.curHandP1.setTextColor(winColor(team1wins))
             binding.curHandP3.setTextColor(winColor(team1wins))

@@ -88,11 +88,11 @@ class AllGamesFragment : Fragment() {
             holder.binding.gamesDate.text = df.format(game.date)
             holder.binding.gamesTeam1.text = players.filterIndexed { i, _ -> isTeamOne(i) }.joinToString(" and ") { p -> p.name }
             holder.binding.gamesTeam2.text = players.filterIndexed { i, _ -> !isTeamOne(i) }.joinToString(" and ") { p -> p.name }
-            holder.binding.gamesScore1.text = game.score1.toString()
-            holder.binding.gamesScore2.text = game.score2.toString()
+            holder.binding.gamesScore1.text = game.teamOneTotal.toString()
+            holder.binding.gamesScore2.text = game.teamTwoTotal.toString()
 
             if (game.gameOver) {
-                val team1wins = game.score1 > game.score2
+                val team1wins = game.teamOneTotal > game.teamTwoTotal
                 holder.binding.gamesTeam1.setTextColor(winColor(team1wins))
                 holder.binding.gamesScore1.setTextColor(winColor(team1wins))
                 holder.binding.gamesTeam2.setTextColor(winColor(!team1wins))

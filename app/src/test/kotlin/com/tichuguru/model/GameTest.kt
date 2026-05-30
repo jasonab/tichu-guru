@@ -29,22 +29,22 @@ class GameTest {
 
     @Test fun scoreHand_addsTotals() {
         game.scoreHand(hand(60))
-        assertEquals(60, game.score1)
-        assertEquals(40, game.score2)
+        assertEquals(60, game.teamOneTotal)
+        assertEquals(40, game.teamTwoTotal)
     }
 
     @Test fun scoreHand_multiplehands_accumulate() {
         game.scoreHand(hand(60))
         game.scoreHand(hand(70))
-        assertEquals(130, game.score1)
-        assertEquals(70, game.score2)
+        assertEquals(130, game.teamOneTotal)
+        assertEquals(70, game.teamTwoTotal)
     }
 
     @Test fun scoreHand_ignored_afterGameOver() {
         game.scoreHand(hand(1000))
         assertTrue(game.gameOver)
         game.scoreHand(hand(60))
-        assertEquals(1000, game.score1)
+        assertEquals(1000, game.teamOneTotal)
     }
 
     // --- game-end conditions ---
@@ -104,8 +104,8 @@ class GameTest {
         h.cardScoreTeamTwo = 0
         h.playerOutFirst = 0
         game.scoreHand(h)
-        assertEquals(200, game.score1)
-        assertEquals(0, game.score2)
+        assertEquals(200, game.teamOneTotal)
+        assertEquals(0, game.teamTwoTotal)
     }
 
     // --- removeHand ---
@@ -114,15 +114,15 @@ class GameTest {
         game.scoreHand(hand(60))
         game.scoreHand(hand(70))
         game.removeHand(0)
-        assertEquals(70, game.score1)
-        assertEquals(30, game.score2)
+        assertEquals(70, game.teamOneTotal)
+        assertEquals(30, game.teamTwoTotal)
     }
 
     @Test fun removeHand_singleHand_resetsToZero() {
         game.scoreHand(hand(60))
         game.removeHand(0)
-        assertEquals(0, game.score1)
-        assertEquals(0, game.score2)
+        assertEquals(0, game.teamOneTotal)
+        assertEquals(0, game.teamTwoTotal)
     }
 
     @Test fun removeHand_undoesGameOver() {
@@ -168,6 +168,26 @@ class GameTest {
             assertEquals(0, it.numGames)
             assertEquals(0, it.numWins)
         }
+    }
+
+    // --- unrecordStats ---
+
+    @Test fun unrecordStats_revertsHandAndGameStats() {
+        game.scoreHand(hand(1000)) // triggers gameOver + recordGame for all 4 players
+        game.unrecordStats()
+        players.forEach {
+            assertEquals(0, it.numHands)
+            assertEquals(0, it.numGames)
+            assertEquals(0, it.numWins)
+            assertEquals(0, it.totalPoints)
+        }
+    }
+
+    @Test fun unrecordStats_multipleHands_revertsAll() {
+        game.scoreHand(hand(60))
+        game.scoreHand(hand(70))
+        game.unrecordStats()
+        players.forEach { assertEquals(0, it.numHands) }
     }
 
     // --- ignoreStats ---

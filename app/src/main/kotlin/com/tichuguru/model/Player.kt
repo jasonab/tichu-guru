@@ -27,8 +27,8 @@ class Player(var name: String = "") : Comparable<Player> {
     ) {
         numGames++
         if (isTeamOne(seat)) {
-            if (game.score1 > game.score2) numWins++
-        } else if (game.score1 < game.score2) {
+            if (game.teamOneTotal > game.teamTwoTotal) numWins++
+        } else if (game.teamOneTotal < game.teamTwoTotal) {
             numWins++
         }
     }
@@ -39,8 +39,8 @@ class Player(var name: String = "") : Comparable<Player> {
     ) {
         numGames--
         if (isTeamOne(seat)) {
-            if (game.score1 > game.score2) numWins--
-        } else if (game.score1 < game.score2) {
+            if (game.teamOneTotal > game.teamTwoTotal) numWins--
+        } else if (game.teamOneTotal < game.teamTwoTotal) {
             numWins--
         }
     }

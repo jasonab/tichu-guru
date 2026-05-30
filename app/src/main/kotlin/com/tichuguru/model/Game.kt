@@ -7,8 +7,8 @@ import kotlin.math.abs
 class Game(
     val players: MutableList<Player> = mutableListOf(),
     val hands: MutableList<Hand> = mutableListOf(),
-    var score1: Int = 0,
-    var score2: Int = 0,
+    var teamOneTotal: Int = 0,
+    var teamTwoTotal: Int = 0,
     val gameLimit: Int = 0,
     var gameOver: Boolean = false,
     val mercyRule: Boolean = false,
@@ -27,11 +27,11 @@ class Game(
     fun scoreHand(hand: Hand) {
         if (!gameOver) {
             hands.add(hand)
-            score1 += hand.totalScoreTeamOne(addOnFailure)
-            score2 += hand.totalScoreTeamTwo(addOnFailure)
-            if (score1 != score2 && (
-                    score1 >= gameLimit || score2 >= gameLimit ||
-                        (mercyRule && abs(score1 - score2) >= gameLimit)
+            teamOneTotal += hand.totalScoreTeamOne(addOnFailure)
+            teamTwoTotal += hand.totalScoreTeamTwo(addOnFailure)
+            if (teamOneTotal != teamTwoTotal && (
+                    teamOneTotal >= gameLimit || teamTwoTotal >= gameLimit ||
+                        (mercyRule && abs(teamOneTotal - teamTwoTotal) >= gameLimit)
                 )
             ) {
                 gameOver = true
@@ -53,9 +53,17 @@ class Game(
             if (undoGame) p.unrecordGame(this, i)
             p.unrecordHand(hand, i, addOnFailure)
         }
-        score1 -= hand.totalScoreTeamOne(addOnFailure)
-        score2 -= hand.totalScoreTeamTwo(addOnFailure)
+        teamOneTotal -= hand.totalScoreTeamOne(addOnFailure)
+        teamTwoTotal -= hand.totalScoreTeamTwo(addOnFailure)
         hands.removeAt(handNum)
+    }
+
+    fun unrecordStats() {
+        if (ignoreStats) return
+        players.forEachIndexed { i, p ->
+            if (gameOver) p.unrecordGame(this, i)
+            hands.forEach { hand -> p.unrecordHand(hand, i, addOnFailure) }
+        }
     }
 
     fun containsPlayer(p: Player): Boolean = players.any { it === p }
