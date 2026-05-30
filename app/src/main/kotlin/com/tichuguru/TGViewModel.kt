@@ -13,6 +13,7 @@ import com.tichuguru.repository.TichuRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -163,6 +164,10 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         _allGames.value = games
         _currentGame.value = curGame
         _allPlayers.value = players
+    }
+
+    override fun onCleared() {
+        dbScope.cancel()
     }
 
     private fun savePlayers() {

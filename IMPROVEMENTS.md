@@ -4,7 +4,16 @@ Open items only appear in the active sections below. All completed work is in th
 
 ---
 
-## Highwhy do
+## High
+
+- [x] **#54 `dbScope` in `TGViewModel` is never cancelled — leaks across ViewModel lifecycle** (`TGViewModel.kt:21`)
+  Added `override fun onCleared() { dbScope.cancel() }`. Also added `import kotlinx.coroutines.cancel`.
+
+- [ ] **#55 DiffUtil `areContentsTheSame` always returns `false`** (`AllGamesFragment.kt:74`)
+  `GamesAdapter.areContentsTheSame` unconditionally returns `false`, forcing a full rebind of
+  every visible row on every `submitList` call and defeating the purpose of `ListAdapter`.
+  Fix: compare the fields that drive rendering:
+  `a.score1 == b.score1 && a.score2 == b.score2 && a.gameOver == b.gameOver && a.players.map { it.name } == b.players.map { it.name }`.
 
 - [x] **#42 Duplicated "Are you sure?" AlertDialog pattern**
   Extracted `internal fun Fragment.confirmAction(message: String, onConfirm: () -> Unit)` as a
@@ -23,6 +32,92 @@ Open items only appear in the active sections below. All completed work is in th
 
 ---
 
+## Medium
+
+- [ ] **#56 Initial DB load goes through `viewModelScope`, saves go through `dbScope`** (`TGViewModel.kt:37-48`)
+  The `init {}` block loads data via `viewModelScope.launch(Dispatchers.IO)` while every save
+  uses `dbScope` (`Dispatchers.IO.limitedParallelism(1)`). These are independent dispatchers, so
+  a save triggered right after startup can race the load, breaking the single-writer guarantee.
+  Fix: route the initial load through `dbScope` too.
+
+- [ ] **#57 `ScorecardFragment` creates a new adapter on every game change** (`ScorecardFragment.kt:53`)
+  `binding.scorecardList.adapter = ScorecardAdapter(game)` runs inside `refreshDisplay()`, which
+  is called on every `getCurrentGame()` emission and every `onHiddenChanged`. This is the
+  anti-pattern fixed in #48 for `AllGamesFragment`, reintroduced here. Fix: create the adapter
+  once in `onViewCreated`, expose a `game` setter, and call `notifyDataSetChanged()`.
+
+- [ ] **#58 `StatsFragment` creates a new adapter on every player-list emission** (`StatsFragment.kt:41-43`)
+  `binding.statsList.adapter = StatsAdapter(players)` runs inside the LiveData observer. Same
+  adapter-recreation anti-pattern as #57. Fix: create once in `onViewCreated`, update in-place.
+
+- [ ] **#59 `deleteLastHand` crashes on empty hand list** (`TGViewModel.kt:85`)
+  `game.removeHand(game.hands.size - 1)` evaluates to `removeHand(-1)` when `hands` is empty,
+  causing `IndexOutOfBoundsException`. The Scorecard delete button can reach this path.
+  Fix: guard with `if (game.hands.isEmpty()) return` and/or disable the button when the list is empty.
+
+- [ ] **#60 Scorecard running totals recomputed O(N²)** (`ScorecardFragment.kt:96-101`)
+  Each `onBindViewHolder` call re-sums all prior hands from index 0. Binding N rows is O(N²)
+  and recomputes on every recycle/scroll. Fix: precompute a cumulative-total list when the game
+  is set and index into it during bind.
+
+- [ ] **#61 Per-player stat value array built inside `StatsFragment`** (`StatsFragment.kt:161-206`)
+  `PlayerExpandListener.onClick` assembles a 19-element `values` array with hardcoded index
+  positions interleaved with section-header gaps. Per project rules, this mapping belongs in a
+  `Player` method (e.g. `fun statRows(): List<StatRow>`), leaving the Fragment to render only.
+  A reordering currently silently corrupts the display.
+
+- [ ] **#62 Ranking computation inside `RankExpandListener` click handler** (`StatsFragment.kt:209-251`)
+  Sort, `log10` digit-width calculation, and format-string assembly are non-trivial business
+  logic embedded in a `View.OnClickListener` inside the adapter. Move to the model/ViewModel layer.
+
+- [ ] **#63 `AllGamesFragment.onDeleteGame` triggers "create first game" directly** (`AllGamesFragment.kt:122-130`)
+  The Fragment checks `getAllGames().value.isNullOrEmpty()` after deletion and calls
+  `createFirstGame()`. This orchestration logic belongs in the ViewModel: emit a state/event the
+  Activity observes, rather than the list Fragment reaching into the Activity.
+
+- [ ] **#64 `deleteOrphanHands` with an empty `keepIds` list generates invalid SQL** (`HandDao.kt:18-22`)
+  `NOT IN ()` is a SQL syntax error in SQLite. The repository guards against this at the call
+  site, but the DAO method has no precondition documentation or internal guard. Document the
+  constraint clearly, or move the guard into the DAO.
+
+- [ ] **#65 Icon-only buttons lack `contentDescription`** (`allgamesrow.xml`, `statsrow.xml`, scorecard delete)
+  TalkBack announces nothing meaningful for delete and expand `ImageButton`s. Add
+  `android:contentDescription` to each icon-only interactive view.
+
+---
+
+## Low
+
+- [ ] **#66 `SegmentedControlButton` Tichu/GT state conveyed only by color** (`ui/SegmentedControlButton.kt`)
+  Selected vs. unselected is distinguished purely by teal vs. gray fill — a colorblind concern
+  for the critical Tichu/GT bidding selection. Add a non-color state indicator (e.g. border,
+  checkmark, or bold text) as a secondary signal.
+
+- [ ] **#67 `NewGameFragment` uses `try/catch(Exception)` for integer parsing** (`NewGameFragment.kt:127-137`)
+  Broad `Exception` catch for control flow is non-idiomatic. Replace with:
+  `binding.newGameGameLimit.text.toString().toIntOrNull() ?: /* show error */`.
+
+- [ ] **#68 `NewGameFragment.onRandomizeTeams` uses `Math.random()` and manual swap** (`NewGameFragment.kt:106-116`)
+  Use `selectedPlayers.shuffle()` (Kotlin stdlib) instead of Java-idiom `Math.random()`.
+
+- [ ] **#69 `StatsAdapter.getItemCount` uses magic constant `players.size + 11`** (`StatsFragment.kt:159`)
+  The `11` (2 headers + 9 rank rows) is undocumented and must stay in sync with `statLabels`
+  and rank `when` arms. Extract a named constant or derive it from the structures themselves.
+
+- [ ] **#70 `RankExpandListener.onClick` throws `RuntimeException` for unreachable branch** (`StatsFragment.kt:150-152`)
+  Replace `throw RuntimeException("Unknown rank index: $num")` with `error("Unknown rank index: $num")`
+  (throws `IllegalStateException` — the idiomatic Kotlin form).
+
+- [ ] **#71 User-facing strings hardcoded throughout, not in `strings.xml`**
+  Error messages, dialog text ("Are you sure?", "Yes", "No"), button labels ("Rename", "Delete"),
+  and stat labels in `StatsFragment` are all inline string literals. Externalize to `strings.xml`
+  to enable localization and consistent TalkBack announcements. Also remove the leftover
+  template `Hello World, TGActivity!` entry (`strings.xml:3`).
+
+- [ ] **#72 Dead drawable files `wheel_bg.xml` and `wheel_val.xml` still present**
+  IMPROVEMENTS #18 states these were deleted alongside the kankan WheelView removal, but both
+  files remain in `app/src/main/res/drawable/`. Delete them.
+
 ---
 
 ## Testing
@@ -36,6 +131,21 @@ Add in priority order.
 - [ ] **#32 Integration tests for Room DAOs**
   Use `androidx.room:room-testing` with an in-memory database to test upsert, orphan deletion,
   and transaction semantics. Requires `src/androidTest/`.
+
+- [ ] **#73 No test for `addOnFailure` stat recording in `PlayerTest`** (`model/Player.kt:67-123`)
+  `PlayerTest` exercises `recordHand` only in default (subtract-on-failure) mode. The
+  `addOnFailure` branch of `totalPoints` is untested. Given that IMPROVEMENT #2 was a real
+  stat-corruption bug in this exact area, this branch needs explicit coverage.
+
+- [ ] **#74 No test for `removeHand` reverting per-player stats end-to-end** (`model/GameTest.kt`)
+  `GameTest.removeHand_*` checks scores and `gameOver` but not that `players[i].numHands` /
+  `totalPoints` are correctly reverted after `scoreHand` + `removeHand`. The unrecord path is
+  the historically buggy one (see #2, #43).
+
+- [ ] **#75 Untested derived stat helpers in `Player`**
+  `getTichuEfficiency`, `getGTPct`, `getHandsPerDW`, `getPartnerTichuPct`, and `nonCalls` have
+  no test coverage. `getHandsPerDW`'s `numDoubleWins == 0 → 1000.0` sentinel is exactly the
+  kind of edge case that should be pinned.
 
 ---
 
