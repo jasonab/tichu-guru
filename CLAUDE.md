@@ -18,7 +18,7 @@ IMPORTANT: After any `.kt` file change, run `./gradlew lintKotlin` and `./gradle
 ## Tech Stack
 
 - **Language:** Kotlin — **Min SDK:** 30, **Target/Compile SDK:** 36
-- **AGP:** 9.1.0, **Gradle:** 9.3.1, **Package:** `com.tichuguru`
+- **AGP:** 9.2.1, **Gradle:** 9.4.1, **Package:** `com.tichuguru`
 - **UI:** AppCompat + Material Components + BottomNavigationView
 - **Persistence:** Room 2.8.4 (`tichu.db`, version 1) — KSP for code generation
 - **State:** `TGApp` singleton (in-memory) + `TGViewModel` LiveData (Fragment UI)
@@ -36,7 +36,8 @@ app/src/main/kotlin/com/tichuguru/
 ├── StatsFragment.kt         # Tab: statistics dashboard
 ├── NewGameFragment.kt       # Sub-screen: new game setup
 ├── ScoreHandFragment.kt     # Sub-screen: score entry (NumberPicker)
-├── StatsListFragment.kt     # Sub-screen: per-player stats + rankings
+├── PlayerStatsFragment.kt   # Sub-screen: per-player stats (rename/clear/delete)
+├── RankingFragment.kt       # Sub-screen: player rankings
 ├── ui/
 │   └── SegmentedControlButton.kt  # Custom RadioButton for Tichu/GT selection
 ├── model/
@@ -63,6 +64,7 @@ app/proguard-rules.pro                          # R8 keep rules for release buil
 | DB schema change | Entity `.kt` + DAO `.kt` + `TichuDatabase.kt` (new `Migration`) |
 | Model field added/renamed | `model/*.kt` + `db/*Entity.kt` + `db/*Dao.kt` + Fragment callers |
 | New Fragment | Fragment `.kt` + layout XML + `TGActivity.kt` (navigation) |
+| Gradle/AGP upgrade | `settings.gradle.kts` (AGP version lives here, not `build.gradle.kts`) |
 
 ## Coding Rules
 
