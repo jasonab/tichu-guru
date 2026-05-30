@@ -14,10 +14,12 @@ Open items only appear in the active sections below. All completed work is in th
   `PlayerStatsFragment.onClearStats`, and `PlayerStatsFragment.onDeletePlayer`.
   `AlertDialog` import removed from `ScorecardFragment` and `StatsFragment`.
 
-- [ ] **#43 `recordHand` / `unrecordHand` are manual mirrors of each other** (`Player.kt`)
-  Both methods contain ~50 lines of nearly identical conditionals (seat → team check, tichu
-  scoring, grand tichu scoring). If one is updated the other must be updated identically.
-  Extract a private helper that takes a sign multiplier (`+1` or `-1`) and apply it to both.
+- [x] **#43 `recordHand` / `unrecordHand` are manual mirrors of each other** (`Player.kt`)
+  Extracted `private fun adjustHandStats(hand, seat, addOnFailure, sign)` with a `sign`
+  multiplier (`+1` or `-1`). `recordHand` increments `numHands` then delegates with `+1`;
+  `unrecordHand` guards against zero, decrements `numHands`, then delegates with `-1`.
+  All `++`/`--` and `+=`/`-=` inside the former mirror bodies replaced with `+= sign` /
+  `+= sign * value`.
 
 ---
 

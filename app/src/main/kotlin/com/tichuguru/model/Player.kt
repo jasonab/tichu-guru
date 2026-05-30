@@ -51,56 +51,7 @@ class Player(var name: String = "") : Comparable<Player> {
         addOnFailure: Boolean = false,
     ) {
         numHands++
-        val numTichusThisHand = (0..3).count { hand.isTichuFor(it) || hand.isGrandTichuFor(it) }
-        if (isTeamOne(seat)) {
-            totalPoints += hand.totalScoreTeamOne(addOnFailure)
-            if (hand.cardScoreTeamOne == 200) {
-                cardPoints += 100
-                numDoubleWins++
-            } else {
-                cardPoints += hand.cardScoreTeamOne
-            }
-            if (hand.isTichuFor(1) || hand.isGrandTichuFor(1)) {
-                numTichusCalledByOpps++
-                if (hand.playerOutFirst != 1) numTichusStopped++
-            }
-            if (hand.isTichuFor(3) || hand.isGrandTichuFor(3)) {
-                numTichusCalledByOpps++
-                if (hand.playerOutFirst != 3) numTichusStopped++
-            }
-        } else {
-            totalPoints += hand.totalScoreTeamTwo(addOnFailure)
-            if (hand.cardScoreTeamTwo == 200) {
-                cardPoints += 100
-                numDoubleWins++
-            } else {
-                cardPoints += hand.cardScoreTeamTwo
-            }
-            if (hand.isTichuFor(0) || hand.isGrandTichuFor(0)) {
-                numTichusCalledByOpps++
-                if (hand.playerOutFirst != 0) numTichusStopped++
-            }
-            if (hand.isTichuFor(2) || hand.isGrandTichuFor(2)) {
-                numTichusCalledByOpps++
-                if (hand.playerOutFirst != 2) numTichusStopped++
-            }
-        }
-        if (numTichusThisHand == 0 && hand.playerOutFirst == seat) tichuEfficiencyHands++
-        if (hand.isTichuFor(seat)) {
-            numTichuCalled++
-            if (hand.playerOutFirst == seat) numTichuMade++
-            tichuEfficiencyPoints += if (seat == hand.playerOutFirst) 100 else -100
-            tichuEfficiencyHands++
-        }
-        if (hand.isGrandTichuFor(seat)) {
-            numGTCalled++
-            if (hand.playerOutFirst == seat) numGTMade++
-        }
-        val partner = (seat + 2) % 4
-        if (hand.isTichuFor(partner)) {
-            numTichusCalledByPartner++
-            if (hand.playerOutFirst == partner) numTichusMadeByPartner++
-        }
+        adjustHandStats(hand, seat, addOnFailure, +1)
     }
 
     fun unrecordHand(
@@ -110,61 +61,64 @@ class Player(var name: String = "") : Comparable<Player> {
     ) {
         if (numHands == 0) return
         numHands--
+        adjustHandStats(hand, seat, addOnFailure, -1)
+    }
+
+    private fun adjustHandStats(
+        hand: Hand,
+        seat: Int,
+        addOnFailure: Boolean,
+        sign: Int,
+    ) {
         val numTichusThisHand = (0..3).count { hand.isTichuFor(it) || hand.isGrandTichuFor(it) }
         if (isTeamOne(seat)) {
-            totalPoints -= hand.totalScoreTeamOne(addOnFailure)
+            totalPoints += sign * hand.totalScoreTeamOne(addOnFailure)
             if (hand.cardScoreTeamOne == 200) {
-                cardPoints -= 100
-                numDoubleWins--
+                cardPoints += sign * 100
+                numDoubleWins += sign
             } else {
-                cardPoints -= hand.cardScoreTeamOne
-            }
-            if (hand.isTichuFor(seat)) {
-                tichuEfficiencyPoints -= if (seat == hand.playerOutFirst) 100 else -100
-                tichuEfficiencyHands--
+                cardPoints += sign * hand.cardScoreTeamOne
             }
             if (hand.isTichuFor(1) || hand.isGrandTichuFor(1)) {
-                numTichusCalledByOpps--
-                if (hand.playerOutFirst != 1) numTichusStopped--
+                numTichusCalledByOpps += sign
+                if (hand.playerOutFirst != 1) numTichusStopped += sign
             }
             if (hand.isTichuFor(3) || hand.isGrandTichuFor(3)) {
-                numTichusCalledByOpps--
-                if (hand.playerOutFirst != 3) numTichusStopped--
+                numTichusCalledByOpps += sign
+                if (hand.playerOutFirst != 3) numTichusStopped += sign
             }
         } else {
-            totalPoints -= hand.totalScoreTeamTwo(addOnFailure)
+            totalPoints += sign * hand.totalScoreTeamTwo(addOnFailure)
             if (hand.cardScoreTeamTwo == 200) {
-                cardPoints -= 100
-                numDoubleWins--
+                cardPoints += sign * 100
+                numDoubleWins += sign
             } else {
-                cardPoints -= hand.cardScoreTeamTwo
-            }
-            if (hand.isTichuFor(seat)) {
-                tichuEfficiencyPoints -= if (seat == hand.playerOutFirst) 100 else -100
-                tichuEfficiencyHands--
+                cardPoints += sign * hand.cardScoreTeamTwo
             }
             if (hand.isTichuFor(0) || hand.isGrandTichuFor(0)) {
-                numTichusCalledByOpps--
-                if (hand.playerOutFirst != 0) numTichusStopped--
+                numTichusCalledByOpps += sign
+                if (hand.playerOutFirst != 0) numTichusStopped += sign
             }
             if (hand.isTichuFor(2) || hand.isGrandTichuFor(2)) {
-                numTichusCalledByOpps--
-                if (hand.playerOutFirst != 2) numTichusStopped--
+                numTichusCalledByOpps += sign
+                if (hand.playerOutFirst != 2) numTichusStopped += sign
             }
         }
-        if (numTichusThisHand == 0 && hand.playerOutFirst == seat) tichuEfficiencyHands--
+        if (numTichusThisHand == 0 && hand.playerOutFirst == seat) tichuEfficiencyHands += sign
         if (hand.isTichuFor(seat)) {
-            numTichuCalled--
-            if (hand.playerOutFirst == seat) numTichuMade--
+            numTichuCalled += sign
+            if (hand.playerOutFirst == seat) numTichuMade += sign
+            tichuEfficiencyPoints += sign * if (seat == hand.playerOutFirst) 100 else -100
+            tichuEfficiencyHands += sign
         }
         if (hand.isGrandTichuFor(seat)) {
-            numGTCalled--
-            if (hand.playerOutFirst == seat) numGTMade--
+            numGTCalled += sign
+            if (hand.playerOutFirst == seat) numGTMade += sign
         }
         val partner = (seat + 2) % 4
         if (hand.isTichuFor(partner)) {
-            numTichusCalledByPartner--
-            if (hand.playerOutFirst == partner) numTichusMadeByPartner--
+            numTichusCalledByPartner += sign
+            if (hand.playerOutFirst == partner) numTichusMadeByPartner += sign
         }
     }
 
