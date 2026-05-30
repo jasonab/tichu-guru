@@ -146,7 +146,7 @@ class CurHandFragment :
             binding.curHandP4.setTextColor(winColor(!team1wins))
             binding.curHandScoreHand.isEnabled = false
         } else {
-            val color = Color.GRAY
+            val color = Color.LTGRAY
             binding.curHandScore1.setTextColor(color)
             binding.curHandP1.setTextColor(color)
             binding.curHandP3.setTextColor(color)

@@ -2,6 +2,7 @@ package com.tichuguru.ui
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
@@ -28,26 +29,30 @@ class SegmentedControlButton
 
         override fun onDraw(canvas: Canvas) {
             val text = getText().toString()
-            val textPaint = Paint()
-            textPaint.isAntiAlias = true
-            val currentHeight = textPaint.measureText("x")
-            textPaint.textSize = getTextSize()
-            textPaint.textAlign = Paint.Align.CENTER
+            val textPaint =
+                Paint().apply {
+                    isAntiAlias = true
+                    textSize = height * 0.45f
+                    textAlign = Paint.Align.CENTER
+                    isFakeBoldText = true
+                }
             if (isChecked) {
-                GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(-2302756, -15658735))
+                GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(CHECKED_TOP, CHECKED_BOTTOM))
                     .apply { setBounds(0, 0, width, height) }
                     .draw(canvas)
-                textPaint.color = -1
+                textPaint.color = Color.WHITE
             } else {
-                GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(-5921371, -16777216))
+                GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(UNCHECKED_TOP, UNCHECKED_BOTTOM))
                     .apply { setBounds(0, 0, width, height) }
                     .draw(canvas)
-                textPaint.color = -3355444
+                textPaint.color = UNCHECKED_TEXT
             }
-            canvas.drawText(text, mX, (height / 2) + currentHeight, textPaint)
+            val fm = textPaint.fontMetrics
+            val textY = (height - fm.descent - fm.ascent) / 2f
+            canvas.drawText(text, mX, textY, textPaint)
             Paint()
                 .apply {
-                    color = -16777216
+                    color = Color.rgb(110, 110, 110)
                     style = Paint.Style.STROKE
                 }.also { canvas.drawRect(Rect(0, 0, width, height), it) }
         }
@@ -60,5 +65,13 @@ class SegmentedControlButton
         ) {
             super.onSizeChanged(w, h, ow, oh)
             mX = w * 0.5f
+        }
+
+        companion object {
+            private val CHECKED_TOP = Color.rgb(0, 150, 136) // Teal 500
+            private val CHECKED_BOTTOM = Color.rgb(0, 77, 64) // Teal 800
+            private val UNCHECKED_TOP = Color.rgb(90, 90, 90)
+            private val UNCHECKED_BOTTOM = Color.rgb(55, 55, 55)
+            private val UNCHECKED_TEXT = Color.rgb(170, 170, 170)
         }
     }

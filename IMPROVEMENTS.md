@@ -19,24 +19,11 @@ Open items only appear in the active sections below. All completed work is in th
 
 ---
 
-## Medium
-
-- [ ] **#47 Win-color logic duplicated across three fragments**
-  `if (team1wins) Color.YELLOW else Color.GRAY` appears in `CurHandFragment`,
-  `AllGamesFragment`, and `ScorecardFragment`. Extract to a single extension or top-level
-  function, e.g. `fun winColor(team1wins: Boolean): Int`.
-
 ---
 
 ## Testing
 
 Add in priority order.
-
-- [ ] **#30 Unit tests for `model/` business logic**
-  `Game` score calculation, `Hand` bid/outcome logic, and `Player` stat accumulation
-  (`recordHand`/`unrecordHand`) are pure logic with no Android dependencies — ideal for
-  plain JUnit tests in `src/test/`. Focus on edge cases: double win, mercy rule trigger,
-  tichu success/failure, grand tichu, score boundaries.
 
 - [ ] **#31 Unit tests for `db/` entity mappers**
   `GameEntity.from()`/`toGame()`, `HandEntity.from()`/`toHand()`, `PlayerEntity.from()`/`toPlayer()`
@@ -49,6 +36,26 @@ Add in priority order.
 ---
 
 ## Completed
+
+- [x] **#47 Win-color logic duplicated across three fragments**
+  Extracted `internal fun winColor(team1wins: Boolean): Int` as a package-level function in
+  `AllGamesFragment.kt`. `AllGamesFragment` and `CurHandFragment` now call `winColor(team1wins)`
+  and `winColor(!team1wins)` instead of inline `if (team1wins) Color.YELLOW else Color.GRAY`.
+  (`ScorecardFragment` uses green/red for a different purpose and was unaffected.)
+
+- [x] **#53 Split `StatsListFragment` into `PlayerStatsFragment` + `RankingFragment`**
+  `StatsListFragment` used a nullable `player` field as a mode switch, inflating different
+  layouts and conditionally wiring buttons based on null/non-null. Split into two focused
+  fragments: `PlayerStatsFragment` (non-nullable `lateinit var player`, `statslist.xml`,
+  Rename/Clear/Delete buttons) and `RankingFragment` (`rankinglist.xml`, no player state).
+  `StatsFragment` updated to push the correct type. `StatsListFragment.kt` deleted.
+
+- [x] **#52 No way to rename an existing player**
+  Added "Rename Player" button to `PlayerStatsFragment` (per-player detail screen).
+  Shows an `AlertDialog` with an `EditText` pre-filled with the current name.
+  Validates: non-empty, not already taken. `TGViewModel.renamePlayer()` mutates
+  `player.name` in place, re-sorts the player list, and saves players, games, and all
+  LiveData. Bundle key uses stable `dbId` instead of mutable name.
 
 - [x] **#1 `Player.equals()` crashes on non-Player input** (`Player.java:363`)
   Unchecked cast with no null/type guard. Fixed: added `instanceof` check.
@@ -195,6 +202,12 @@ Add in priority order.
   `saveGames` uses `deleteOrphanHands` (instead of delete-all + re-insert) now that `Hand`
   carries a `dbId` field for DB identity.
   Files: `TGViewModel`, `TGApp`.
+
+- [x] **#30 Unit tests for `model/` business logic**
+  `HandTest`, `GameTest`, and `PlayerTest` cover all edge cases: tichu/grand tichu
+  success and failure, addOnFailure mode, double win, mercy rule trigger, score
+  boundaries, `removeHand` revert, `unrecordHand` inverse, `clearStats`, and all
+  stat helper functions. 77 tests total in `src/test/kotlin/com/tichuguru/model/`.
 
 - [x] **#29 Convert Fragments and `TGActivity` to Kotlin**
   All 8 files converted. Lambda syntax replaces anonymous inner classes (`OnClickListener`,
