@@ -82,6 +82,7 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteLastHand() {
         val game = curGame ?: return
+        if (game.hands.isEmpty()) return
         game.removeHand(game.hands.size - 1)
         saveGames()
         savePlayers()

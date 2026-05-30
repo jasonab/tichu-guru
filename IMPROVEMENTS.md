@@ -49,10 +49,8 @@ Open items only appear in the active sections below. All completed work is in th
   `StatsAdapter` created once in `onViewCreated` with `var players: List<Player> = emptyList()`;
   setter calls `notifyDataSetChanged()`. Observer now sets `adapter.players = players`.
 
-- [ ] **#59 `deleteLastHand` crashes on empty hand list** (`TGViewModel.kt:85`)
-  `game.removeHand(game.hands.size - 1)` evaluates to `removeHand(-1)` when `hands` is empty,
-  causing `IndexOutOfBoundsException`. The Scorecard delete button can reach this path.
-  Fix: guard with `if (game.hands.isEmpty()) return` and/or disable the button when the list is empty.
+- [x] **#59 `deleteLastHand` crashes on empty hand list** (`TGViewModel.kt:85`)
+  Added `if (game.hands.isEmpty()) return` guard before `removeHand(game.hands.size - 1)`.
 
 - [x] **#60 Scorecard running totals recomputed O(N²)** (`ScorecardFragment.kt:96-101`)
   Added `cumTotals1`/`cumTotals2: IntArray` computed once in the `game` setter. `onBindViewHolder`
@@ -73,10 +71,9 @@ Open items only appear in the active sections below. All completed work is in th
   `createFirstGame()`. This orchestration logic belongs in the ViewModel: emit a state/event the
   Activity observes, rather than the list Fragment reaching into the Activity.
 
-- [ ] **#64 `deleteOrphanHands` with an empty `keepIds` list generates invalid SQL** (`HandDao.kt:18-22`)
-  `NOT IN ()` is a SQL syntax error in SQLite. The repository guards against this at the call
-  site, but the DAO method has no precondition documentation or internal guard. Document the
-  constraint clearly, or move the guard into the DAO.
+- [x] **#64 `deleteOrphanHands` with an empty `keepIds` list generates invalid SQL** (`HandDao.kt:18-22`)
+  Split into a public default interface method `deleteOrphanHands` (guards with `isNotEmpty()`)
+  and a private `@Query` method `deleteOrphanHandsInternal`. Any caller now gets the guard for free.
 
 - [ ] **#65 Icon-only buttons lack `contentDescription`** (`allgamesrow.xml`, `statsrow.xml`, scorecard delete)
   TalkBack announces nothing meaningful for delete and expand `ImageButton`s. Add

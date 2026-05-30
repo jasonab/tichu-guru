@@ -53,6 +53,7 @@ class ScorecardFragment : Fragment() {
         binding.scorecardName2.text = players[1].name
         binding.scorecardName3.text = players[2].name
         binding.scorecardName4.text = players[3].name
+        binding.scorecardDelete.isEnabled = game.hands.isNotEmpty()
         adapter.game = game
     }
 

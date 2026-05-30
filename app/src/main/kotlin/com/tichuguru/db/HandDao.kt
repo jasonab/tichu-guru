@@ -15,8 +15,15 @@ interface HandDao {
     @Query("DELETE FROM hands WHERE gameId = :gameId")
     fun deleteHandsForGame(gameId: Long)
 
-    @Query("DELETE FROM hands WHERE gameId = :gameId AND id NOT IN (:keepIds)")
     fun deleteOrphanHands(
+        gameId: Long,
+        keepIds: List<Long>,
+    ) {
+        if (keepIds.isNotEmpty()) deleteOrphanHandsInternal(gameId, keepIds)
+    }
+
+    @Query("DELETE FROM hands WHERE gameId = :gameId AND id NOT IN (:keepIds)")
+    fun deleteOrphanHandsInternal(
         gameId: Long,
         keepIds: List<Long>,
     )
