@@ -34,7 +34,7 @@ Open items only appear in the active sections below. All completed work is in th
 
 ## Medium
 
-- [ ] **#56 Initial DB load goes through `viewModelScope`, saves go through `dbScope`** (`TGViewModel.kt:37-48`)
+- [x] **#56 Initial DB load goes through `viewModelScope`, saves go through `dbScope`** (`TGViewModel.kt:37-48`)
   The `init {}` block loads data via `viewModelScope.launch(Dispatchers.IO)` while every save
   uses `dbScope` (`Dispatchers.IO.limitedParallelism(1)`). These are independent dispatchers, so
   a save triggered right after startup can race the load, breaking the single-writer guarantee.

@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.tichuguru.db.TichuDatabase
 import com.tichuguru.model.Game
 import com.tichuguru.model.Hand
@@ -35,7 +34,7 @@ class TGViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        dbScope.launch {
             players.addAll(repository.loadPlayers())
             games.addAll(repository.loadGames(players))
             curGame = games.lastOrNull()
